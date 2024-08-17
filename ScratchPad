@@ -1,1 +1,575 @@
-Test
+Force sync on Intune Managed Devices: https://github.com/DeploymentResearch/DRFiles/blob/master/Scripts/Intune/ForceSyncOnAllWindowsDevices-MgModule.ps1
+
+
+[Video] How to setup Windows Hello for Business with Cloud Trust:  https://www.youtube.com/watch?v=XDPGMwVLDm0
+
+How to Configure Cloud Kerberos Trust to Authenticate an Entra ID Joined Device Using Windows Hello for Business (WHfB)?: https://emsroute.com/2024/07/02/cloud-kerberos-trust-whfb-01/
+
+Reenrol devices without wipe: https://jannikreinhard.com/2024/01/29/reenrol-devices-without-wipe/
+
+
+Get-IntuneManagementExtensionDiagnostics v2.0: https://github.com/DanielBradley1/Get-IntuneManagementExtensionDiagnostics
+
+
+PowerShell Functions to Invoke an Intune Remediation Script on Demand and View Remediation Status: https://smsagent.blog/2023/07/12/powershell-functions-to-invoke-an-intune-remediation-script-on-demand-and-view-remediation-states/
+
+Endpoint Analytics Remediation Scripts (Community Driven): https://github.com/JayRHa/EndpointAnalyticsRemediationScripts/tree/main
+
+Uninstalling Office365home with Intune : https://intune.tech/2024/04/29/Uninstalling-office365home-with-Intune.html
+
+Invoke Command alternative for Intune-managed Windows devices: https://doitpshway.com/invoke-command-alternative-for-intune-managed-windows-devices
+
+IntuneDeviceDetailsGUI: https://github.com/petripaavola/IntuneDeviceDetailsGUI
+
+Endpoint Analytics Remediation Scripts : https://github.com/thisisevilevil/IntunePublic/tree/main/Remediations
+
+How to get all Graph API permissions required to run selected code using PowerShell: https://doitpshway.com/how-to-get-all-graph-api-permissions-required-to-run-selected-code-using-powershell
+
+IntuneStuff 1.6.0: https://www.powershellgallery.com/packages/IntuneStuff/1.6.0
+
+**************************************
+#Set PSGallery as Trusted repository
+Set-PSRepository -InstallationPolicy Trusted -Name PSGallery -Verbose
+
+#Install required modules
+Install-PackageProvider -Name NuGet -Force
+Install-Module PSWindowsUpdate -Force -Verbose
+Import-Module PSWindowsUpdate
+
+#Install all updates from Windows Update
+Get-WindowsUpdate -WindowsUpdate -AcceptAll -Install -Silent -Verbose
+
+#Collect the WindowsUpdateLog file.
+Get-WindowsUpdateLog -LogPath C:\Windows\Logs\Intune-OnDemand-WindowsUpdate.log
+**************************************
+
+--------------------
+Entered on 2/25/2024
+--------------------
+
+Custom Intune Reporting: https://www.youtube.com/watch?v=VA4mKfW43FE
+
+Intune PowerShell SDK: Making a POST Call: https://www.youtube.com/watch?v=C2ldqZD8JXI
+
+Deploy Win32 App with User Device Affinity: https://oliverkieselbach.com/2022/08/30/deploy-an-intune-application-with-user-device-affinity/
+Convert a Pro to Enterprise: https://oofhours.com/2021/06/01/what-are-windows-10-virtual-skus/
+
+Configure Azure file shares for Entra joined Windows devices and hybrid identities: https://www.inthecloud247.com/configure-azure-file-shares-for-entra-joined-windows-devices-and-hybrid-identities/
+
+https://lazyadmin.nl/powershell/connect-mggraph/
+
+https://lazyadmin.nl/powershell/set-environment-variable/
+https://lazyadmin.nl/it/how-to-fix-trust-relationship-between-this-workstation-and-the-primary-domain-failed/
+https://lazyadmin.nl/win-11/disable-widgets-windows-11/
+https://lazyadmin.nl/it/get-adobject/
+
+https://lazyadmin.nl/it/windows-hello-for-business-cloud-trust/
+https://lazyadmin.nl/it/net-user-command/
+--------------------
+Entered on 3/31/2024
+--------------------
+
+Updating in-box apps with PowerShell - Winget Update during Autopilot: https://oofhours.com/2024/04/04/updating-in-box-apps-with-powershell/ 
+
+Autopilot Troubleshooting new way Get-AutopilotDiagnosticsCommunity: https://oofhours.com/2024/02/05/new-enhancements-to-get-autopilotdiagnosticscommunity/ 
+--------------------
+Entered on 2/15/2024
+--------------------
+Cleaning up inactive Intune and Entra ID devices: https://www.tbone.se/2024/02/09/cleaning-up-inactive-intune-and-entra-id-devices/
+
+Pacakge Apps in SCCM using Winget.exe Never Need to Pacakge Apps anymore: https://www.youtube.com/watch?v=22gkFSAIYZI
+
+
+End-to-end guide to get started with macOS endpoints: https://learn.microsoft.com/en-gb/mem/solutions/end-to-end-guides/macos-endpoints-get-started
+
+--------------------
+Entered on Set-IntunePrimaryUser-ScrapthPad.ps1
+--------------------
+Connect-MgGraph -appid 73b497b5-6c4b-4014-b031-79479736eea5 -tenantid 04f066a7-886b-4d04-b15f-acb544af8551
+
+<##
+
+#ScratchPad Area
+
+Get-IntuneManagedDevice | Get-MSGraphAllPages | Where-Object {$_.operatingsystem -eq 'Windows' } 
+Get-IntuneManagedDevice | Get-MSGraphAllPages | Where-Object {$_.UserPrincipalName -eq 'P44894@aaa-acg.net' } | Select-Object DeviceName, OperatingSystem, emailaddress, UserprincipalName
+Get-DeviceManagement_ManagedDevices | Get-MSGraphallpages | Where-Object {($_.UserPrincipalName -eq 'P44894@aaa-acg.net') -and ($_.operatingsystem -eq 'windows')} | Select-Object DeviceName, OperatingSystem, emailaddress, UserprincipalName
+
+
+##>
+
+#Step 0: Connect to Graph API.
+#Step 1: Determine who the target user is and get their UPN.  
+#step 2: Export all the Windows devices that are assigned to Target User from Step 1 via Intune Graph API to a CSV File, ensure this file has Enrolled by user info and the Primary User Info. 
+#Step 3: From the exported list of Windows Devices from Step 2, get the Associated Primary user Info from SCCM and ensure that it gets populated into the same CSV File in a different Column. 
+#Step 4: Make the necessary Graph Call to the Intune device to update it's primary user info. 
+
+#Step 0: Connect to Graph 
+#Finalized Script
+
+Connect-MgGraph -Scopes "DeviceManagementManagedDevices.ReadWrite.All"
+
+Connect-MSGraph 
+
+#Step 1: Enter the target User Name
+
+$TargetUserUPN= 'P70294@aaa-acg.net' ##Jeff Cardinal 
+
+Get-DeviceManagement_ManagedDevices | Get-MSGraphallpages | Where-Object {($_.UserPrincipalName -eq "$TargetUserUPN") -and ($_.operatingsystem -eq 'windows')} | Select-Object DeviceName, OperatingSystem, emailaddress, UserprincipalName | Export-Csv "C:\temp\some.csv" -Append -NoTypeInformation 
+
+#------------------
+
+#Step2: 
+
+$machines = Get-content "C:\temp.something.txt"
+$TotolCount = $Machines.Count 
+$CompletedCount = 0
+
+Foreach ($machine in $machines) {
+
+#Get-DeviceManagement_ManagedDevices | Get-MSGraphallpages | Where-Object {$_.DeviceName -eq "$Machine"} | Select-Object DeviceName, id | Export-Csv "C:\temp\some.csv" -Append -NoTypeInformation  
+
+Get-IntuneManagedDevice | Get-MSGraphallPages | Where-Object {$_.DeviceName -eq "$Machine"} | Select-Object DeviceName, id | Export-Csv "C:\temp\some.csv" -Append -NoTypeInformation  
+
+$CompletedCount++
+Write-Host "Completed $CompletedCount out of $TotalCount devices. Proceeding onto next....$Machine"
+
+}
+
+#----------------
+#--------------------
+#Step2.1: #
+# Define the path to your CSV file
+$csvPath = "C:\Path\to\your\input\file.csv"
+
+# Read the CSV file
+$csvData = Import-Csv -Path $csvPath
+
+# Initialize counters
+$totalCount = $csvData.Count
+$completedCount = 0
+
+# Loop through each row in the CSV and update Column B
+foreach ($row in $csvData) {
+    $machine = $row.'Column A'  # Replace 'Column A' with the actual column name
+
+    # Run the PowerShell command to get Intune Device ID
+    $intuneDevice = Get-IntuneManagedDevice | Get-MSGraphAllPages | Where-Object {$_.deviceName -eq $machine} | Select-Object deviceName, id
+
+    if ($intuneDevice) {
+        $row.'Column B' = $intuneDevice.id  # Replace 'Column B' with the actual column name
+    } else {
+        $row.'Column B' = "Device not found"  # Replace with an appropriate message if the device is not found
+    }
+
+    $completedCount++
+    Write-Host "Completed $completedCount out of $totalCount devices. Proceeding onto next... $machine"
+}
+
+# Save the updated CSV data back to the file
+$csvData | Export-Csv -Path $csvPath -NoTypeInformation
+
+Write-Host "CSV file updated with Intune Device IDs."
+#------------------
+
+
+#step 4:
+#The Target user must have an E5/E3 license assinged, if not this will not work. 
+
+$userId = "Enter your User Object ID here"
+
+$IntuneDeviceID = "Enter your User Intune Device ID here"
+
+$uri = "https://graph.microsoft.com/beta/deviceManagement/managedDevices('$IntuneDeviceID')/users/`$ref"
+
+$Body = @{ "@odata.id" = "https://graph.microsoft.com/beta/users/$userId" } | ConvertTo-Json
+
+$Method = "POST"
+
+Invoke-MgGraphRequest -Method $Method -uri $uri -body $Body
+--------------------
+Entered on 1/15/2024
+--------------------
+Monitoring Battery Health Using Powershell: https://www.cyberdrain.com/monitoring-with-powershell-monitoring-battery-health/?utm_source=dlvr.it&utm_medium=twitter
+
+PSwindowsupdate Module: https://powershellisfun.com/2024/01/19/using-the-powershell-pswindowsupdate-module/
+
+Re-Designing M365 Apps: https://blog.mindcore.dk/2024/01/building-m365-apps-designed-for-autopilot-and-beyond/
+
+Extension/Custom Device Attributes: https://blogs.gowdhaman.in/intune-grouping-based-on-hardware-inventory-data/
+
+
+Windows Updates via Powershell: https://woshub.com/pswindowsupdate-module/
+Implement this kind of strategy for LAPS ASC Documentation: https://www.youtube.com/watch?v=d6usiB4MKq8
+--------------------
+Entered on 1/11/2024
+--------------------
+
+Create a File share in Azure Storage Account & Drive Mapping: https://www.inthecloud247.com/configure-azure-file-shares-for-entra-joined-windows-devices-and-hybrid-identities/
+
+Microsoft Security Insights Show Episode 185 - Steven Hosking (How Wifi Auth Works): https://www.youtube.com/watch?v=nCthOat8Pqg
+Time Sync Troubleshooting : https://www.youtube.com/watch?v=kzquLWtJEXE&ab_channel=TroubleChute
+--------------------
+Entered on 1/10/2024
+--------------------
+How to Enroll a Mac to Intune: https://www.youtube.com/watch?v=84kwUXKdOFc
+
+Import CIS Benchmark Baselines to Intune: https://www.youtube.com/watch?v=FUYQ7gWFWDc
+
+The way I do this:
+1. Login to CIS Workbench and download CIS Build Pack for given benchmark eg Windows 11... (https://workbench.cisecurity.org/)
+2. Unzip the build pack 
+3. Import whatever you need to Intune GPO Analyser
+4. You can even merge GPOs in Intune eg  Comp L1 and Comp L2
+5. Review and select policies
+6. Export as Intune configuration profile
+Done
+This way you have original stuff from CIS. You can edit this - add, remove etc.
+
+WindowsHardening as per CIS: https://github.com/R33Dfield/WindowsHardening
+
+MacOSHardening as per CIS: https://github.com/R33Dfield/MacOSHardening/tree/main
+
+--------------------
+Entered on 1/7/2024
+--------------------
+LAPS: https://charbelnemnom.com/windows-laps-with-microsoft-entra-and-intune/
+LAPS: https://www.petervanderwoude.nl/post/getting-started-with-windows-local-administrator-password-solution/
+LAPS: https://www.youtube.com/watch?v=-xjYp4FsLZw
+LAPS: https://www.youtube.com/watch?v=0qTqhmgQCes
+LAPS: https://www.youtube.com/watch?v=0SlHW0oVJfQ
+Windows LAPS: New post-authentication-action features explination: https://www.youtube.com/watch?v=iypr8o98JkU (Copy the CMDs used in this video to a txt file)
+
+Windows LAPS: Integration with the local device MaximumPasswordAge policy: https://www.youtube.com/watch?v=-RpuQIsiO_Q (Copy the CMDs used in this video to a txt file)
+
+
+Managed Identity (aka: service Account in Intune): https://tbone.se/2024/01/04/create-a-managed-identity-to-automate-intune-tasks/
+Win11 Test Base Azure: https://www.youtube.com/watch?v=y61IaQvO2NE
+
+--------------------
+Entered on 12/17/2023
+--------------------
+Get-IntuneManagementExtensionDiagnostics v2.0: https://github.com/petripaavola/Get-IntuneManagementExtensionDiagnostics
+
+How to Export Third-Party Drivers with PowerShell: https://www.scriptinglibrary.com/languages/powershell/how-to-export-third-party-drivers-with-powershell/?utm_source=dlvr.it&utm_medium=twitter
+
+Intune Logs: A Deep Dive into Locations, Interpretation, and Configuration :https://mem.zone/intune/intune-logs-deep-dive/
+--------------------
+Quick Assist - Allow the admin to type in the Password in UAC Box on the remote system: https://www.pathumudana.com/2023/11/improve-experience-with-quick-assist.html
+
+One Drive Known Folder Move(KFM): https://tech.nicolonsky.ch/onedrive-known-folder-move-ms-intune/
+
+PowerShell Script Test Open TCP Ports: https://tech.nicolonsky.ch/power-shell-script-test-open-tcp-ports/
+
+Map Network Drives on AADJ Machines: https://www.inthecloud247.com/map-network-drives-on-cloud-managed-windows-devices/
+
+--------------------
+Using Intune to configure a Scheduled Task to start a service at User logon: https://rahuljindalmyit.blogspot.com/2021/05/using-intune-to-configure-scheduled.html
+
+Intune: Desktop & Start menu customizations: https://rahuljindalmyit.blogspot.com/2021/01/intune-desktop-start-menu-customizations.html
+
+
+Intune Deploy Default Taskbar: https://thedxt.ca/2023/09/intune-deploy-default-taskbar/
+
+Get all assigned Intune policies and apps from a Microsoft Entra group: https://timmyit.com/2023/10/09/get-all-assigned-intune-policies-and-apps-from-a-microsoft-entra-group/
+
+Android emulation for endpoint Manager Admins: https://timmyit.com/2021/01/25/android-emulation-for-endpoint-manager-admins/
+
+Community Repository for ProActive Remediations: https://github.com/JayRHa/EndpointAnalyticsRemediationScripts/tree/main
+
+Get-IntuneManagementExtensionDiagnostics : https://github.com/petripaavola/Get-IntuneManagementExtensionDiagnostics
+--------------------------------
+Setting up Update OS as a Win32 app ( PSWindowsUpdate PowerShell module) in Autopilot: https://oofhours.com/2020/05/18/two-for-one-updated-autopilot-branding-and-update-os-scripts/ 
+
+Autopilot Diagnostics Digging Deeper: 
+https://oofhours.com/2020/07/12/windows-autopilot-diagnostics-digging-deeper/
+
+
+Run the command w32tm /resync /force to sync the time with the default time server (time.windows.com).
+
+start ms-settings:
+start ms-availablenetworks:
+start http://www.msn.com
+
+Troubleshooting Guide for Windows Autopilot: https://oofhours.com/2019/10/08/troubleshooting-windows-autopilot-a-reference/
+
+-----------------------------
+Disable first sign-in animation: https://skotheimsvik.no/the-ultimate-guide-to-intune-powered-windows-11-shared-devices
+
+Autopilot Import GUI: https://ugurkoc.de/autopilot-import-gui/
+Simplest explination of Making a POST Call via Powershell to Graph - Intune Primary User Automation: https://www.youtube.com/watch?v=C2ldqZD8JXI
+Autopilot GUI Tool – Upload HW hash with a user interface INTUNE : https://www.rockenroll.tech/2020/11/09/autopilot-tool-upload-hw-hash-with-a-user-interface/#primary
+
+Intune Management Extension Deepdive: https://github.com/smcallister594/memugscotland/blob/main/MEMUGScotland-Resources/Slides/2023/31st-August/Intune%20Management%20Extension%20Deep%20Dive.pptx
+
+Intune Debug Toolkit: https://msendpointmgr.com/intune-debug-toolkit/
+
+Intune Wipe vs Fresh Start difference: https://blog.skymadesimple.io/intune-wipe-vs-fresh-start/
+
+Zero Trust Architecuture: https://blog.skymadesimple.io/we-need-to-talk-about-zero-trust-its-necessary/
+
+Windows Autopatch Deployment Guide: https://learn.microsoft.com/en-us/windows/deployment/windows-autopatch/overview/windows-autopatch-deployment-guide
+Lock screen & wallpaper with Intune: https://osddeployment.dk/2019/04/14/how-to-set-windows-10-lock-screen-and-background-picture-with-intune/
+Enable Languagae Packs on Autopilot Devices:https://memv.ennbee.uk/posts/windows-autopilot-languages/
+
+Configure Applocker via Inunte:https://www.youtube.com/watch?v=CnaoET4gt5A&ab_channel=Intune%26VitaDoctrina
+
+Azure Log Analytics, Intune Data Warehouse, Custom Reporting in Intune, KQl Queries & creating Log Analytics workbooks: https://www.youtube.com/watch?v=JOYcOmJOk6k&ab_channel=DamienVanRobaeys
+
+Co-Management Moving Workloads to Intune: https://www.youtube.com/watch?v=1IVC2q-LDQk&ab_channel=PatchMyPC (22:33 info about Resource Access policies)
+
+Update Drivers on HP using Proactive Remediation: https://scloud.work/hp-driver-intune/ 
+
+Lock Screen Images with Intune: https://www.imab.dk/moving-away-from-group-policy-and-set-wallpaper-and-lock-screen-images-with-local-source-files-with-microsoft-endpoint-manager-intune/
+
+************************************************
+Entered on:07/16/23
+**********************************************
+RBAC in Intune: https://vmlabblog.com/2021/01/implementing-rbac-in-intune/
+
+Network Drive Mapping with Intune: https://www.anoopcnair.com/managing-network-drive-mappings-with-intune/
+
+Understanding Bitlocker Compliance policy using Intune: https://www.anoopcnair.com/bitlocker-compliance-policy-using-intune/ 
+
+Google Mobile Services (GMS)/Google Play Store and Android Enterprise are not available in China. In countries/regions where GMS is not available, use device administrator to enroll devices in Intune. 
+
+Enroll Corporate owned Andriod Dedicated devices in China. RF
+The Probelm: Devices can't communincate with Intune Service in China and Google Mobile Services (GMS)/Google Play Store are not avilable in china. 
+
+Possbiel Solutions: 
+Device administrator enrollment
+Can Devices be enrolledinot Intune in Closer country and shipped themn out to china and can we manage it that way? 
+
+URLs to share it with the Team: 
+Managing Android Devices where Google Playstore is not available: https://techcommunity.microsoft.com/t5/intune-customer-success/intune-customer-success-managing-android-devices-where-google/ba-p/1628793 
+How to use Intune in environments without Google Mobile Services: https://learn.microsoft.com/en-us/mem/intune/apps/manage-without-gms#limitations-of-intune-device-administrator-management-when-gms-is-unavailable 
+
+Andriod Dedicated devices Security settings: https://learn.microsoft.com/en-us/mem/intune/enrollment/android-fully-managed-security-settings
+Android Open Source Project Supported Devices: https://learn.microsoft.com/en-us/mem/intune/fundamentals/android-os-project-supported-devices?source=recommendations
+
+Intune operated by 21Vianet in China  https://learn.microsoft.com/en-us/mem/intune/fundamentals/china.
+
+Android"S Website on Enterprise Management: https://www.android.com/enterprise/management/
+
+Andriod Device Adminstrator: https://learn.microsoft.com/en-us/mem/intune/enrollment/android-enroll-device-administrator
+
+************************************************
+Entered on:06/24/23
+**********************************************
+
+How to package DMG MacOS Apps: https://seesmitty.com/how-to-package-dmg-macos-apps-for-company-portal/
+How to package PKG MacOS Apps: https://seesmitty.com/how-to-package-macos-pkg-apps-for-company-portal/
+Pacakging Company portal to MacOS devices: https://www.youtube.com/watch?v=TzwCtD1mtJk&ab_channel=IntuneTraining
+Configure SSO for MacOS devices (Configuration Profiles): https://seesmitty.com/how-to-configure-microsoft-sso-for-macos-devices-in-mem/
+Configure Storage Sense(the Automatic stale file cleanup tool) in Windows via Intune: https://seesmitty.com/how-to-configure-storage-sense-for-windows/
+USB Restrictions in Intune (Deny all access to Removable Storage using Intune): https://rahuljindalmyit.blogspot.com/2023/02/deny-all-access-to-removable-storage.html
+Allow Specific USB Hardware ID classes in Intune (removable storage): https://rahuljindalmyit.blogspot.com/2021/10/the-fine-balance-between-device-control.html
+Creating a WIFI Profile in Intune for Windows devices via Configuration profile: https://www.prajwaldesai.com/create-a-wi-fi-profile-in-intune/
+Creating a WIFI Profile in Intune for Windows devices via OMA URI Settings: https://allthingscloud.blog/deploy-wifi-profile-with-pre-shared-key-to-windows-10-using-microsoft-intune/
+Best practices for WIFI Profile security in Intune: https://www.securew2.com/blog/intune-enterprise-wifi-profile-security
+Single App Kiosk Mode in Intune: https://www.youtube.com/watch?v=aVHT2jFlL_g&t=2s&ab_channel=IntuneMadeSimple
+Single App Kiosk Mode in Intune: https://www.systemcenterdudes.com/windows-10-intune-autopilot-kiosk-single-app/
+************************************************
+
+https://www.bleepingcomputer.com/news/microsoft/microsoft-outlook-is-disabling-teams-meeting-add-in-how-to-fix/
+https://www.linkedin.com/pulse/case-missing-teams-add-arno-van-dijk/
+https://seesmitty.com/how-to-deploy-a-registry-key-using-proactive-remediation/
+
+************************************************
+Entered on:05/22/23
+************************************************
+Your broken Sid Answer (aka: Managing Local Admins on AADJ devices)- https://oceanleaf.ch/local-admin-privilege-management-with-intune/
+
+WHfB: https://msendpointmgr.com/2022/09/04/manage-windows-hello-for-business-whfb-with-intune/
+
+WHfB(More secure deployment method, but quite not sure if it is needed at all):https://brookspeppin.com/2021/08/13/how-to-setup-windows-hello-for-business-key-trust-method/
+Enable Windows Hello - Intune + PowerShell (This is Simple - but don't know if it provides access to on-Prem Resources): https://scloud.work/en/windows-hello-enabled/
+Enable Windows Hello by leveraging the Hybrid Cloud Trust model: https://scloud.work/windows-hello-for-business-cloud-trust-hybrid/
+
+Dsregcmd /status /debug
+Retry failed Apps Installation in Microsoft Intune: https://www.youtube.com/watch?v=gHG84MKE5O4&ab_channel=MSEndpointMgr-JunglingtheCloud
+Battery Health with Intune:https://msendpointmgr.com/2020/08/07/proactive-battery-replacement-with-endpoint-analytics/
+
+AddUserToAADGroup.ps1 : https://github.com/MSB365/AzureADGroup-MGMT
+
+Office 365 Ports and Firewall Challenges: https://www.msb365.blog/?p=4268
+
+Windows Update Settings Compliance: https://msendpointmgr.com/2022/05/13/windows-update-settings-compliance/
+
+************************************************
+Entered on:05/15/23
+************************************************
+Edge Extentions via Intune: https://letsconfigmgr.com/control-edge-extensions-intune/
+
+Edge Extentions: https://www.imab.dk/install-google-chrome-extensions-using-microsoft-intune/
+
+************************************************
+Entered on:05/13/23
+************************************************
+Create Dynamic Groups in Intune: https://thedxt.ca/2023/04/intune-dynamic-device-groups/
+Intune Debug Toolkit: https://msendpointmgr.com/intune-debug-toolkit/
+Deploy Trusted sties via Intune: https://letsconfigmgr.com/mem-deploying-trusted-sites/
+Set DNS suffixes for AADJ Devices:https://mauvtek.com/home/so-we-are-still-talking-dns-suffix-for-azure-ad-join-devices
+Set DNS suffixes via Intune: https://letsconfigmgr.com/set-dns-suffixes-via-microsoft-intune/
+Install Apps via Intune after Autopilot: https://jannikreinhard.com/2022/10/02/how-to-skip-the-esp-for-a-single-app-installation/
+
+************************************************
+Entered on:05/10/23
+************************************************
+
+AAD lo 3 sceanrios get pictures and dsregcmd status picuters 
+
+1. Enroll only in Device Management.
+2. Join this device to Azure Active Directory. 
+3. Connect your work or School accoutn. 
+4. MDM and MAM scope what is it's importace. 
+
+
+************************************************
+Entered on:04/29/23
+************************************************
+
+Wallpaper as Win32 Applicaiton: https://ccmexec.com/2015/08/replacing-default-wallpaper-in-windows-10-using-scriptmdtsccm/
+
+Drill down into Patch Reports from WufB via Log Analytics: (40.56) https://www.youtube.com/watch?v=R2sLtd2fi-Y&ab_channel=ViaMonstraOnlineAcademy
+
+Granualr AP deployment events: https://www.petervanderwoude.nl/post/working-with-windows-autopilot-deployment-events/
+
+Set Device Porperties using Powershell: https://powerstacks.com/index.html%3Fp=11306.html
+
+Drivers & Firmware with Powershell: https://euc365.com/post/driver-firmware-servicing-powershell-module/
+
+Set Wallpaper with Intune: https://ccmexec.com/2015/08/replacing-default-wallpaper-in-windows-10-using-scriptmdtsccm/
+
+SSO to On-Prem How?: https://call4cloud.nl/2021/03/deliver-us-from-hybrid/
+
+************************************************
+Entered on:04/29/23
+************************************************
+
+Android Emulators: https://timmyit.com/2021/01/25/android-emulation-for-endpoint-manager-admins/
+
+AAD Dynamic Queries: https://timmyit.com/2020/07/09/azure-ad-dynamic-queries-for-intune-mem-administrators/
+
+Rename IOS Device: https://timmyit.com/2019/05/21/intune-rename-ios-devices-with-intune-powershell-sdk/
+
+************************************************
+Entered on:04/29/23
+************************************************
+
+Get-assignments-of-a-device-via-powershell: https://jannikreinhard.com/2023/01/29/get-assignments-of-an-device-via-powershell/
+
+Create Store Apps New in Intune(For Arun): https://jannikreinhard.com/2022/12/11/deploy-windows-store-apps-via-intune/
+
+For Arun Detection script for Winget Based SCCM Apps: https://github.com/retsak/Scripts/blob/main/Get-WingetPackageVersion.ps1
+
+Get Network Endpoints for Intune: (invoke-restmethod -Uri (“https://endpoints.office.com/endpoints/WorldWide?ServiceAreas=MEM&clientrequestid=” + ([GUID]::NewGuid()).Guid)) | ?{$_.ServiceArea -eq "MEM" -and $_.urls} | select -unique -ExpandProperty urls 
+
+Use this methodology for Installing SCCM Agent during AP Process: https://jannikreinhard.com/2022/10/02/how-to-skip-the-esp-for-a-single-app-installation/
+
+Check Autopilot enrollment prerequisite: https://jannikreinhard.com/2022/08/24/check-autopilot-enrollment-prerequisite/
+
+Check if your Device Traffic is going through Zscaler or not: https://www.nielskok.tech/intune/zscaler-custom-compliance-in-intune/
+
+Chrome Extensions via Intune Win32 App: https://www.nielskok.tech/microsoft365/chrome-extension-via-win32app-in-intune/ 
+
+************************************************
+Win32 App Object for Reset from Company Portal: https://www.burgerhout.org/reset-your-device-with-a-simple-app/
+
+Teams Missing addin package : https://www.linkedin.com/pulse/case-missing-teams-add-arno-van-dijk/
+
+Enable Bitlocker via Intune during Autopilot: https://www.linkedin.com/pulse/must-three-ways-enable-bitlocker-arno-van-dijk/
+
+Uninstall Java using Proactive Remediation: https://www.rockenroll.tech/2023/02/09/uninstall-java-using-proactive-remediation
+
+Unpin the ms Store: https://andrewstaylor.com/2022/08/30/unpinning-the-microsoft-store-using-intune/ (Go with Proactive Rem approach)
+
+Autopilot troubleshooting tools during esp PS GUI Styple: https://andrewstaylor.com/2022/08/16/autopilot-troubleshooting-tools-during-esp/
+
+Customise start menu Win10: https://andrewstaylor.com/2022/05/03/using-intune-to-customise-the-start-menu-on-windows-10-and-windows-11/
+
+Finding devices (and details) assigned to a user in Intune: https://andrewstaylor.com/2021/12/22/finding-devices-and-details-assigned-to-a-user-in-intune/
+
+Getting App ID from Intune for AP Troubleshooting: https://andrewstaylor.com/2021/09/29/getting-app-id-from-intune/
+
+
+************************************************
+
+Winget Stuff
+https://winget.run/
+
+https://learn.microsoft.com/en-us/training/modules/explore-windows-package-manager-tool/3-install-uninstall-software
+
+https://learn.microsoft.com/en-us/training/modules/explore-windows-package-manager-tool/?WT.mc_id=AZ-MVP-5004737
+
+https://www.youtube.com/watch?v=ea0g1Y1zaek&ab_channel=Intune%26VitaDoctrina
+
+https://techcommunity.microsoft.com/t5/intune-customer-success/troubleshooting-the-microsoft-store-and-microsoft-intune/ba-p/3750341
+
+https://learn.microsoft.com/en-us/mem/intune/apps/store-apps-microsoft#store-group-policies-restrictions
+
+https://www.ccmtune.fr/2023/04/rename-devices-with-powershell-and.html
+
+(https://storeedgefd.dsk.mp.microsoft.com). 
+
+https://github.com/microsoft/winget-cli
+https://github.com/microsoft/winget-pkgs
+
+
+From CMd line: 
+Winget --Info: Gives you information about the Winget Tool itself, where the logs are local cached installers are etc.,
+Winget --Source List: Give you information about the MSStore link and Github link where the manifest files are located at. 
+Winget list: This command will give you the list of your installed software with information about any updates available or not. 
+
+Winget show 7zip.zip: This command will give you information about what is the installer type and it's properties of the 7zip applicaiton 
+
+Winget search 7zip.7zip: This command will give you information about what are the different installer types available that can be installed from Command line. 
+
+Winget search 9WZDNCRFJ3PZ: For company portal
+
+winget install -e --id 9WZDNCRFJ3PZ --accept-package-agreements --accept-source-agreements : This command will silently install the Company portal in the background, it requires Ms Store to be open. 
+winget install -Scope Machine -e --id 9WZDNCRFJ3PZ --accept-package-agreements --accept-source-agreements : Installs in System Context 
+Trigger Winget.exe: https://gal.vin/posts/2022/win-package-managers/
+Scheduled Task for Appx Apps Updates: https://social.technet.microsoft.com/Forums/windows/en-US/5ac7daa9-54e6-43c0-9746-293dcb8ef2ec/how-to-force-update-of-windows-store-apps-without-launching-the-store-app?forum=win10itprosetup
+************************************************
+Graph
+************************************************
+
+## Gives you info about the Version of Graph you are communicating with.
+Get-MGProfile 
+
+
+## Changes the Version of Graph that you want to communicate with.
+Select-MGProfile - Name "beta"
+ 
+
+## We can set the permission our sesion we wil have when we connect. 
+ TO do this we will first need to know the commands we need to run
+
+#Find the permission available
+Find-mggraphcommand -command Get-mggroup | Select -first 1 -expandproperty Permissions
+
+ # For Expample we wnat to create and update a group so the best match is Group.readWrite.All
+
+Find-mggraphcommand -command Get-mguser | Select -first 1 -expandproperty Permissions
+
+# For Expample we wnat to create and update a group so the best match is User.read.All
+
+# Now that we know the permisions needed. (THeriry of least permissions) 
+So we are granting the rights we need - AKA passing in the permissions we need. 
+
+COnnect-mggraph -scope "Group.readWrite.All", "User.read.All"
+
+Now all your subsequent Graph cmdlets will work. 
+
+Get-MGGroup, Get-MGDevice, Get-GMDevice etcc etc..
+
+Rename multiple devices in Intune with Graph and a CSV file: https://ugurkoc.de/rename-multiple-devices-in-intune-with-a-csv-file/
+
+Every Niche thing about Graph Permisssions: https://www.french365connection.co.uk/post/graph-sdk-permissions
+
+How to Use -Filter with Microsoft Graph PowerShell: https://ourcloudnetwork.com/how-to-use-filter-with-microsoft-graph-powershell/
+
+Find out Effective Graph Permisssions: https://ourcloudnetwork.com/how-to-find-permissions-for-microsoft-graph-powershell/
+
+Install Graph X ray : THis will provide you the info on what is the relevant PS CMD that you can run on the device. 
