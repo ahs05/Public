@@ -1,6 +1,15 @@
 --------------------
 Entered on 8/15/2024
 --------------------
+How to Clear Your Update Cache on Windows 11 and 10: 
+https://www.howtogeek.com/how-to-clear-your-update-cache-on-windows-11-and-10/
+
+How To Manually Update Windows 10/11 Using PSWindowsUpdate via PowerShell: https://thegeekpage.com/how-to-manually-update-windows-10-11-using-powershell/
+
+Check Windows 11 Hardware Readiness with PowerShell Script: https://woshub.com/check-windows-11-hardware-readiness-powershell/#:~:text=To%20manually%20check%20that%20a%20specific%20machine%E2%80%99s%20hardware,-Scope%20Process%20RemoteSigned%204%20Run%20the%20script%3A%20.%5CHardwareReadiness.ps1
+
+How to Enable Automatic Windows 11 Upgrade Using a Custom PowerShell Script: https://www.ninjaone.com/script-hub/enable-windows-11-upgrade-powershell/
+
 Force sync on Intune Managed Devices: https://github.com/DeploymentResearch/DRFiles/blob/master/Scripts/Intune/ForceSyncOnAllWindowsDevices-MgModule.ps1
 
 [Video] How to setup Windows Hello for Business with Cloud Trust:  https://www.youtube.com/watch?v=XDPGMwVLDm0
