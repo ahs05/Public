@@ -1,5 +1,7 @@
+--------------------
+Entered on 8/15/2024
+--------------------
 Force sync on Intune Managed Devices: https://github.com/DeploymentResearch/DRFiles/blob/master/Scripts/Intune/ForceSyncOnAllWindowsDevices-MgModule.ps1
-
 
 [Video] How to setup Windows Hello for Business with Cloud Trust:  https://www.youtube.com/watch?v=XDPGMwVLDm0
 
@@ -9,7 +11,6 @@ Reenrol devices without wipe: https://jannikreinhard.com/2024/01/29/reenrol-devi
 
 
 Get-IntuneManagementExtensionDiagnostics v2.0: https://github.com/DanielBradley1/Get-IntuneManagementExtensionDiagnostics
-
 
 PowerShell Functions to Invoke an Intune Remediation Script on Demand and View Remediation Status: https://smsagent.blog/2023/07/12/powershell-functions-to-invoke-an-intune-remediation-script-on-demand-and-view-remediation-states/
 
