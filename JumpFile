@@ -1,1 +1,116 @@
-Test
+<#
+.SYNOPSIS
+    Checks if BitLocker keys for Windows devices are stored in Entra ID based on a list of devices from a CSV file.
+
+.DESCRIPTION
+    This script reads a list of devices from a specified CSV file, connects to the Microsoft Graph API, and checks if each device
+    has a BitLocker key stored in Entra ID. The results are displayed in a table and exported to a CSV file.
+
+.EXAMPLE
+    .\BitLocker_EntraID_Check.ps1 -CsvPath "DeviceList.csv"
+
+.NOTES
+    Author: Ugur Koc (Modified by [Your Name])
+    GitHub: https://github.com/ugurkocde
+    Twitter: https://x.com/UgurKocDe
+    LinkedIn: https://www.linkedin.com/in/ugurkocde/
+
+    Version: 1.2
+    Created: 31/07/2024
+    Updated: [Today's Date]
+    Changes: Read device list from CSV file.
+
+    Required Permissions:
+    - DeviceManagementManagedDevices.Read.All
+    - BitlockerKey.Read.All
+
+    Disclaimer: This script is provided AS IS without warranty of any kind.
+#>
+
+param (
+    [string]$CsvPath = "DeviceList.csv"
+)
+
+# Check if the CSV file exists
+if (-not (Test-Path -Path $CsvPath)) {
+    Write-Host "CSV file not found at path: $CsvPath. Please provide a valid CSV file path." -ForegroundColor Red
+    exit 1
+}
+
+# Check if Microsoft.Graph.Authentication module is installed and import it
+if (-not (Get-Module -ListAvailable -Name Microsoft.Graph.Authentication)) {
+    Write-Host "Microsoft.Graph.Authentication module not found. Attempting to install..." -ForegroundColor Yellow
+    try {
+        Install-Module -Name Microsoft.Graph.Authentication -Scope CurrentUser -Force -AllowClobber
+        Write-Host "Microsoft.Graph.Authentication module installed successfully" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Failed to install Microsoft.Graph.Authentication module: $_" -ForegroundColor Red
+        Write-Host "Please install the Microsoft.Graph.Authentication module manually and rerun the script" -ForegroundColor Red
+        exit 1
+    }
+}
+
+# Connect to Microsoft Graph
+Connect-MgGraph -Scopes "DeviceManagementManagedDevices.Read.All", "BitlockerKey.Read.All" -NoWelcome
+
+# Function to get BitLocker key for a device
+function Get-BitLockerKey {
+    param (
+        [string]$azureADDeviceId
+    )
+
+    $keyIdUri = "https://graph.microsoft.com/beta/informationProtection/bitlocker/recoveryKeys?`$filter=deviceId eq '$azureADDeviceId'"
+    $keyIdResponse = Invoke-MgGraphRequest -Uri $keyIdUri -Method GET
+
+    if ($keyIdResponse.value.Count -gt 0) {
+        return "Yes"
+    }
+    return "No"
+}
+
+# Import the list of devices from the CSV file
+$deviceList = Import-Csv -Path $CsvPath
+
+# Check if the CSV file has the necessary column (assuming 'AzureADDeviceId')
+if (-not $deviceList | Get-Member -Name 'AzureADDeviceId') {
+    Write-Host "CSV file does not have a column named 'AzureADDeviceId'. Please ensure the CSV file has the correct format." -ForegroundColor Red
+    exit 1
+}
+
+$results = @()
+
+foreach ($device in $deviceList) {
+    $azureADDeviceId = $device.AzureADDeviceId
+
+    if ([string]::IsNullOrWhiteSpace($azureADDeviceId)) {
+        Write-Host "Device entry with missing AzureADDeviceId found. Skipping this entry..." -ForegroundColor Yellow
+        continue
+    }
+
+    $hasBitlockerKey = Get-BitLockerKey -azureADDeviceId $azureADDeviceId
+
+    $results += [PSCustomObject]@{
+        "AzureAD Device ID" = $azureADDeviceId
+        DeviceName = $device.DeviceName
+        SerialNumber = $device.SerialNumber
+        "BitLocker Key in EntraID" = $hasBitlockerKey
+    }
+}
+
+# Display results
+$results | Format-Table -AutoSize
+
+# Calculate summary statistics
+$totalDevices = $results.Count
+$devicesWithKey = ($results | Where-Object { $_.'BitLocker Key in EntraID' -eq 'Yes' }).Count
+$devicesWithoutKey = $totalDevices - $devicesWithKey
+
+# Display summary
+Write-Host "`nSummary:" -ForegroundColor Cyan
+Write-Host "Total devices checked: $totalDevices" -ForegroundColor Yellow
+Write-Host "Devices with BitLocker key stored in Entra ID: $devicesWithKey" -ForegroundColor Green
+Write-Host "Devices without BitLocker key stored in Entra ID: $devicesWithoutKey" -ForegroundColor Red
+
+# Export results to CSV
+$results | Export-Csv -Path "BitLockerKeyStatus.csv" -NoTypeInformation
