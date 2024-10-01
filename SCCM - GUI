@@ -1,1 +1,120 @@
-Test
+# Load the necessary .NET assembly for Windows Forms
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+# Create the form
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Device Collection Management"
+$form.Size = New-Object System.Drawing.Size(400, 300)
+$form.StartPosition = "CenterScreen"
+
+# Create label and input for the first computer
+$label1 = New-Object System.Windows.Forms.Label
+$label1.Text = "First Computer Name (source):"
+$label1.AutoSize = $true
+$label1.Location = New-Object System.Drawing.Point(10, 20)
+$form.Controls.Add($label1)
+
+$inputComputer1 = New-Object System.Windows.Forms.TextBox
+$inputComputer1.Location = New-Object System.Drawing.Point(200, 20)
+$inputComputer1.Size = New-Object System.Drawing.Size(150, 20)
+$form.Controls.Add($inputComputer1)
+
+# Create label and input for the second computer
+$label2 = New-Object System.Windows.Forms.Label
+$label2.Text = "Second Computer Name (target):"
+$label2.AutoSize = $true
+$label2.Location = New-Object System.Drawing.Point(10, 60)
+$form.Controls.Add($label2)
+
+$inputComputer2 = New-Object System.Windows.Forms.TextBox
+$inputComputer2.Location = New-Object System.Drawing.Point(200, 60)
+$inputComputer2.Size = New-Object System.Drawing.Size(150, 20)
+$form.Controls.Add($inputComputer2)
+
+# Create a button to trigger the action
+$button = New-Object System.Windows.Forms.Button
+$button.Text = "Get and Add to Collections"
+$button.Location = New-Object System.Drawing.Point(100, 100)
+$button.Size = New-Object System.Drawing.Size(200, 30)
+$form.Controls.Add($button)
+
+# Create a text box to display the output
+$outputBox = New-Object System.Windows.Forms.TextBox
+$outputBox.Multiline = $true
+$outputBox.ScrollBars = "Vertical"
+$outputBox.Location = New-Object System.Drawing.Point(10, 150)
+$outputBox.Size = New-Object System.Drawing.Size(360, 100)
+$form.Controls.Add($outputBox)
+
+# Function to retrieve static device collections of a computer
+function Get-StaticCollections {
+    param (
+        [string]$ComputerName
+    )
+
+    $device = Get-CMDevice -Name $ComputerName
+    if ($device) {
+        $deviceID = $device.ResourceID
+        $staticCollections = Get-CMDeviceCollection | Where-Object {
+            $collectionMembers = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $_.CollectionID
+            $collectionMembers | Where-Object { $_.ResourceID -eq $deviceID }
+        }
+        return $staticCollections
+    } else {
+        return $null
+    }
+}
+
+# Function to add a device to a collection
+function Add-DeviceToCollections {
+    param (
+        [string]$TargetComputer,
+        [array]$Collections
+    )
+
+    $targetDevice = Get-CMDevice -Name $TargetComputer
+    if ($targetDevice) {
+        $targetDeviceID = $targetDevice.ResourceID
+        foreach ($collection in $Collections) {
+            Add-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID -ResourceID $targetDeviceID
+        }
+        return $true
+    } else {
+        return $false
+    }
+}
+
+# Action when button is clicked
+$button.Add_Click({
+    $computer1 = $inputComputer1.Text
+    $computer2 = $inputComputer2.Text
+    
+    if ($computer1 -and $computer2) {
+        # Get static collections of the first computer
+        $staticCollections = Get-StaticCollections -ComputerName $computer1
+
+        if ($staticCollections) {
+            $outputBox.AppendText("Collections found for $computer1:`r`n")
+            $staticCollections | ForEach-Object {
+                $outputBox.AppendText(" - $($_.Name)`r`n")
+            }
+
+            # Add the second computer to the same collections
+            $success = Add-DeviceToCollections -TargetComputer $computer2 -Collections $staticCollections
+
+            if ($success) {
+                $outputBox.AppendText("Successfully added $computer2 to the same collections.`r`n")
+            } else {
+                $outputBox.AppendText("Failed to add $computer2 to the collections.`r`n")
+            }
+        } else {
+            $outputBox.AppendText("No collections found for $computer1 or computer not found.`r`n")
+        }
+    } else {
+        $outputBox.AppendText("Please enter both computer names.`r`n")
+    }
+})
+
+# Show the form
+[void]$form.ShowDialog()
