@@ -118,3 +118,164 @@ $button.Add_Click({
 
 # Show the form
 [void]$form.ShowDialog()
+
+
+
+#Sped up Script
+
+# Load the necessary .NET assembly for Windows Forms
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+# Create the form
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Device Collection Management"
+$form.Size = New-Object System.Drawing.Size(400, 300)
+$form.StartPosition = "CenterScreen"
+
+# Create label and input for the first computer
+$label1 = New-Object System.Windows.Forms.Label
+$label1.Text = "First Computer Name (source):"
+$label1.AutoSize = $true
+$label1.Location = New-Object System.Drawing.Point(10, 20)
+$form.Controls.Add($label1)
+
+$inputComputer1 = New-Object System.Windows.Forms.TextBox
+$inputComputer1.Location = New-Object System.Drawing.Point(200, 20)
+$inputComputer1.Size = New-Object System.Drawing.Size(150, 20)
+$form.Controls.Add($inputComputer1)
+
+# Create label and input for the second computer
+$label2 = New-Object System.Windows.Forms.Label
+$label2.Text = "Second Computer Name (target):"
+$label2.AutoSize = $true
+$label2.Location = New-Object System.Drawing.Point(10, 60)
+$form.Controls.Add($label2)
+
+$inputComputer2 = New-Object System.Windows.Forms.TextBox
+$inputComputer2.Location = New-Object System.Drawing.Point(200, 60)
+$inputComputer2.Size = New-Object System.Drawing.Size(150, 20)
+$form.Controls.Add($inputComputer2)
+
+# Create a button to trigger the action
+$button = New-Object System.Windows.Forms.Button
+$button.Text = "Get and Add to Collections"
+$button.Location = New-Object System.Drawing.Point(100, 100)
+$button.Size = New-Object System.Drawing.Size(200, 30)
+$form.Controls.Add($button)
+
+# Create a text box to display the output
+$outputBox = New-Object System.Windows.Forms.TextBox
+$outputBox.Multiline = $true
+$outputBox.ScrollBars = "Vertical"
+$outputBox.Location = New-Object System.Drawing.Point(10, 150)
+$outputBox.Size = New-Object System.Drawing.Size(360, 100)
+$form.Controls.Add($outputBox)
+
+# Function to retrieve static device collections of a computer
+function Get-StaticCollections {
+    param (
+        [string]$ComputerName
+    )
+
+    try {
+        $device = Get-CMDevice -Name $ComputerName
+        if ($device) {
+            $deviceID = $device.ResourceID
+            # Instead of getting all collections, get only collections that contain the device
+            $staticCollections = Get-CMDeviceCollectionDirectMembershipRule | Where-Object {
+                $_.ResourceID -eq $deviceID
+            } | ForEach-Object {
+                Get-CMDeviceCollection -CollectionId $_.CollectionID
+            }
+            return $staticCollections
+        } else {
+            return $null
+        }
+    } catch {
+        Write-Warning "Failed to retrieve collections for $ComputerName: $_"
+        return $null
+    }
+}
+
+# Function to add a device to a collection
+function Add-DeviceToCollections {
+    param (
+        [string]$TargetComputer,
+        [array]$Collections
+    )
+
+    try {
+        $targetDevice = Get-CMDevice -Name $TargetComputer
+        if ($targetDevice) {
+            $targetDeviceID = $targetDevice.ResourceID
+            foreach ($collection in $Collections) {
+                Add-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID -ResourceID $targetDeviceID
+            }
+            return $true
+        } else {
+            return $false
+        }
+    } catch {
+        Write-Warning "Failed to add $TargetComputer to collections: $_"
+        return $false
+    }
+}
+
+# Function to run long tasks in the background using runspaces
+function Start-RunspaceJob {
+    param (
+        [ScriptBlock]$Script
+    )
+    $runspacePool = [runspacefactory]::CreateRunspacePool(1, [Environment]::ProcessorCount)
+    $runspacePool.Open()
+    $runspace = [powershell]::Create().AddScript($Script)
+    $runspace.RunspacePool = $runspacePool
+    $runspace.BeginInvoke() | Out-Null
+}
+
+# Action when button is clicked
+$button.Add_Click({
+    # Disable the button to avoid multiple clicks during execution
+    $button.Enabled = $false
+    $outputBox.Clear()
+    $computer1 = $inputComputer1.Text
+    $computer2 = $inputComputer2.Text
+    
+    if ($computer1 -and $computer2) {
+        # Start the task in a runspace to avoid UI freezing
+        Start-RunspaceJob -Script {
+            $outputBox.AppendText("Processing collections for $computer1...`r`n")
+            $staticCollections = Get-StaticCollections -ComputerName $computer1
+
+            if ($staticCollections) {
+                $outputBox.AppendText("Collections found for $computer1:`r`n")
+                $staticCollections | ForEach-Object {
+                    $outputBox.AppendText(" - $($_.Name)`r`n")
+                }
+
+                # Add the second computer to the same collections
+                $outputBox.AppendText("Adding $computer2 to the collections...`r`n")
+                $success = Add-DeviceToCollections -TargetComputer $computer2 -Collections $staticCollections
+
+                if ($success) {
+                    $outputBox.AppendText("Successfully added $computer2 to the same collections.`r`n")
+                } else {
+                    $outputBox.AppendText("Failed to add $computer2 to the collections.`r`n")
+                }
+            } else {
+                $outputBox.AppendText("No collections found for $computer1 or computer not found.`r`n")
+            }
+
+            # Re-enable the button after the process completes
+            $button.Enabled = $true
+        }
+    } else {
+        $outputBox.AppendText("Please enter both computer names.`r`n")
+        $button.Enabled = $true
+    }
+})
+
+# Show the form
+[void]$form.ShowDialog()
+
