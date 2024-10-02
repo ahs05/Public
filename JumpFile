@@ -1,3 +1,25 @@
+# Define the UNC path to the share
+#$uncShare = "\\server\sharedfolder"
+$uncShare = "C:\Program Files"
+
+# Define the output CSV file location
+$outputCsv = "C:\temp\2exeFiles.csv"
+
+# Get all EXE files in the UNC path and its subdirectories
+$exeFiles = Get-ChildItem -Path $uncShare -Recurse -Filter *.exe -ErrorAction SilentlyContinue | 
+            Where-Object { $_.PSIsContainer -eq $false }
+
+# Create an array of objects containing File Name and Full Path
+$exeFilesList = $exeFiles | Select-Object @{Name="FileName";Expression={$_.Name}}, 
+                                           @{Name="FilePath";Expression={$_.FullName}},
+                                           @{Name="FileVersion";Expression={if ($_.VersionInfo) { $_.VersionInfo.FileVersion } else { "N/A" }}}
+
+# Export the result to a CSV file
+$exeFilesList | Export-Csv -Path $outputCsv -NoTypeInformation
+
+# Inform the user that the export is complete
+Write-Host "Export complete. EXE files have been saved to $outputCsv"
+-----------------
 
 
 
