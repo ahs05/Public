@@ -53,17 +53,26 @@ $btnFetch.Add_Click({
     $siteCode = "ABC"  # Replace with your site code
     cd "$siteCode:"
 
-    # Get collections for Computer 1
+    # Get the device object for Computer 1
+    $device1 = Get-CMDevice -Name $computer1
+    if (-not $device1) {
+        [System.Windows.Forms.MessageBox]::Show("Computer 1 not found.")
+        return
+    }
+
+    $deviceID = $device1.ResourceID
+
+    # Get all collections the device is part of
     $collections = Get-CMDeviceCollection | Where-Object {
         Get-CMDeviceCollectionMembership -CollectionId $_.CollectionId | Where-Object {
-            $_.Name -eq $computer1
+            $_.ResourceID -eq $deviceID
         }
     }
 
     if ($collections.Count -eq 0) {
         [System.Windows.Forms.MessageBox]::Show("No collections found for Computer 1.")
     } else {
-        $global:staticCollections = $collections | Where-Object { $_.LimitingCollectionId -ne $null } # Static collections only
+        $global:staticCollections = $collections | Where-Object { $_.CollectionType -eq "1" }  # 1 = Direct (Static) collections
         [System.Windows.Forms.MessageBox]::Show("Collections fetched successfully.")
     }
 })
@@ -81,8 +90,15 @@ $btnAdd.Add_Click({
         return
     }
 
-    # Add Computer 2 to the collections of Computer 1
+    # Get the device object for Computer 2
+    $device2 = Get-CMDevice -Name $computer2
+    if (-not $device2) {
+        [System.Windows.Forms.MessageBox]::Show("Computer 2 not found.")
+        return
+    }
+
     foreach ($collection in $global:staticCollections) {
+        # Add Computer 2 to the collections of Computer 1
         Add-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionId -ResourceName $computer2
     }
 
