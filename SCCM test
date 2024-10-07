@@ -58,6 +58,17 @@ $OutputBox = $Window.FindName("OutputBox")
 # Global variable to store collections for Computer 1
 $global:computer1Collections = $null
 
+# Function to update the output box using the Dispatcher to avoid blocking the UI
+function Update-OutputBox {
+    param (
+        [string]$Message
+    )
+
+    $OutputBox.Dispatcher.Invoke([action]{
+        $OutputBox.AppendText("$Message`r`n")
+    })
+}
+
 # Function to retrieve static device collections of a computer
 function Get-StaticCollections {
     param (
@@ -133,22 +144,29 @@ $CheckComputer1Button.Add_Click({
     $OutputBox.Clear()
 
     if ($computer1) {
-        $OutputBox.AppendText("Checking collections for $computer1...`r`n")
-        $global:computer1Collections = Get-StaticCollections -ComputerName $computer1
+        Update-OutputBox "Checking collections for $computer1..."
 
-        if ($global:computer1Collections) {
-            $OutputBox.AppendText("Collections found for $computer1:`r`n")
-            $global:computer1Collections | ForEach-Object {
-                $OutputBox.AppendText(" - $($_.Name)`r`n")
+        Start-Job -ScriptBlock {
+            $global:computer1Collections = Get-StaticCollections -ComputerName $computer1
+
+            if ($global:computer1Collections) {
+                Update-OutputBox "Collections found for $computer1:"
+                $global:computer1Collections | ForEach-Object {
+                    Update-OutputBox " - $($_.Name)"
+                }
+                # Enable the "Check Computer 2" button if collections are found
+                $CheckComputer2Button.Dispatcher.Invoke([action]{
+                    $CheckComputer2Button.IsEnabled = $true
+                })
+            } else {
+                Update-OutputBox "No collections found or computer does not exist."
+                $CheckComputer2Button.Dispatcher.Invoke([action]{
+                    $CheckComputer2Button.IsEnabled = $false
+                })
             }
-            # Enable the "Check Computer 2" button if collections are found
-            $CheckComputer2Button.IsEnabled = $true
-        } else {
-            $OutputBox.AppendText("No collections found or computer does not exist.`r`n")
-            $CheckComputer2Button.IsEnabled = $false
-        }
+        } | Out-Null
     } else {
-        $OutputBox.AppendText("Please enter a valid computer name for the old device.`r`n")
+        Update-OutputBox "Please enter a valid computer name for the old device."
     }
 })
 
@@ -158,14 +176,18 @@ $CheckComputer2Button.Add_Click({
     $OutputBox.Clear()
 
     if ($computer2) {
-        $exists = Check-ComputerExists -ComputerName $computer2
-        if ($exists) {
-            $OutputBox.AppendText("$computer2 exists.`r`n")
-        } else {
-            $OutputBox.AppendText("$computer2 does not exist.`r`n")
-        }
+        Update-OutputBox "Checking if $computer2 exists..."
+
+        Start-Job -ScriptBlock {
+            $exists = Check-ComputerExists -ComputerName $computer2
+            if ($exists) {
+                Update-OutputBox "$computer2 exists."
+            } else {
+                Update-OutputBox "$computer2 does not exist."
+            }
+        } | Out-Null
     } else {
-        $OutputBox.AppendText("Please enter a valid computer name for the new device.`r`n")
+        Update-OutputBox "Please enter a valid computer name for the new device."
     }
 })
 
@@ -174,27 +196,30 @@ $AddToCollectionsButton.Add_Click({
     $computer1 = $InputComputer1.Text
     $computer2 = $InputComputer2.Text
     $OutputBox.Clear()
-    
+
     if ($computer1 -and $computer2) {
         if ($global:computer1Collections) {
-            $OutputBox.AppendText("Using cached collections for $computer1...`r`n")
+            Update-OutputBox "Using cached collections for $computer1..."
             $global:computer1Collections | ForEach-Object {
-                $OutputBox.AppendText(" - $($_.Name)`r`n")
+                Update-OutputBox " - $($_.Name)"
             }
 
-            $OutputBox.AppendText("Adding $computer2 to the collections...`r`n")
-            $success = Add-DeviceToCollections -TargetComputer $computer2 -Collections $global:computer1Collections
+            Start-Job -ScriptBlock {
+                Update-OutputBox "Adding $computer2 to the collections..."
 
-            if ($success) {
-                $OutputBox.AppendText("Successfully added $computer2 to the same collections.`r`n")
-            } else {
-                $OutputBox.AppendText("Failed to add $computer2 to the collections.`r`n")
-            }
+                $success = Add-DeviceToCollections -TargetComputer $computer2 -Collections $global:computer1Collections
+
+                if ($success) {
+                    Update-OutputBox "Successfully added $computer2 to the same collections."
+                } else {
+                    Update-OutputBox "Failed to add $computer2 to the collections."
+                }
+            } | Out-Null
         } else {
-            $OutputBox.AppendText("No collections found for $computer1. Please check collections first.`r`n")
+            Update-OutputBox "No collections found for $computer1. Please check collections first."
         }
     } else {
-        $OutputBox.AppendText("Please enter both computer names.`r`n")
+        Update-OutputBox "Please enter both computer names."
     }
 })
 
