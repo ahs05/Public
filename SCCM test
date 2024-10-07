@@ -1,66 +1,59 @@
-# Load the necessary .NET assembly for Windows Forms
-Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName System.Drawing
+# Load necessary .NET assemblies for WPF
+Add-Type -AssemblyName PresentationFramework
 
-# Create the form
-$form = New-Object System.Windows.Forms.Form
-$form.Text = "Device Collection Management"
-$form.Size = New-Object System.Drawing.Size(450, 300)
-$form.StartPosition = "CenterScreen"
+# Define the WPF XAML layout
+[xml]$xaml = @"
+<Window 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Device Collection Management" Height="400" Width="570" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-# Create label and input for the first computer
-$label1 = New-Object System.Windows.Forms.Label
-$label1.Text = "First Computer Name (source):"
-$label1.AutoSize = $true
-$label1.Location = New-Object System.Drawing.Point(10, 20)
-$form.Controls.Add($label1)
+        <!-- Title -->
+        <Label Content="Device Collection Management" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" Grid.Row="0"/>
 
-$inputComputer1 = New-Object System.Windows.Forms.TextBox
-$inputComputer1.Location = New-Object System.Drawing.Point(200, 20)
-$inputComputer1.Size = New-Object System.Drawing.Size(150, 20)
-$form.Controls.Add($inputComputer1)
+        <!-- Main Content -->
+        <StackPanel Grid.Row="1" Margin="20">
+            
+            <!-- First Computer (Old Device) Input -->
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <Label Content="Old Device Name:" Width="150"/>
+                <TextBox x:Name="InputComputer1" Width="200"/>
+                <Button x:Name="CheckComputer1Button" Content="Get Collections" Width="100" Margin="10,0,0,0"/>
+            </StackPanel>
 
-# Button to check if Computer 1 exists and get its static collections
-$checkComputer1Button = New-Object System.Windows.Forms.Button
-$checkComputer1Button.Text = "Check Collections"
-$checkComputer1Button.Location = New-Object System.Drawing.Point(360, 18)
-$checkComputer1Button.Size = New-Object System.Drawing.Size(75, 25)
-$form.Controls.Add($checkComputer1Button)
+            <!-- Second Computer (New Device) Input -->
+            <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                <Label Content="New Device Name:" Width="150"/>
+                <TextBox x:Name="InputComputer2" Width="200"/>
+                <Button x:Name="CheckComputer2Button" Content="Check Device" Width="100" Margin="10,0,0,0" IsEnabled="False"/>
+            </StackPanel>
 
-# Create label and input for the second computer
-$label2 = New-Object System.Windows.Forms.Label
-$label2.Text = "Second Computer Name (target):"
-$label2.AutoSize = $true
-$label2.Location = New-Object System.Drawing.Point(10, 60)
-$form.Controls.Add($label2)
+            <!-- Action Button -->
+            <Button x:Name="AddToCollectionsButton" Content="Add New Device to Collections" Width="250" HorizontalAlignment="Center" Margin="10,20,0,0"/>
 
-$inputComputer2 = New-Object System.Windows.Forms.TextBox
-$inputComputer2.Location = New-Object System.Drawing.Point(200, 60)
-$inputComputer2.Size = New-Object System.Drawing.Size(150, 20)
-$form.Controls.Add($inputComputer2)
+            <!-- Output TextBox -->
+            <TextBox x:Name="OutputBox" Height="100" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="0,20,0,0" IsReadOnly="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
+"@
 
-# Button to check if Computer 2 exists (disabled initially)
-$checkComputer2Button = New-Object System.Windows.Forms.Button
-$checkComputer2Button.Text = "Check Existence"
-$checkComputer2Button.Location = New-Object System.Drawing.Point(360, 58)
-$checkComputer2Button.Size = New-Object System.Drawing.Size(75, 25)
-$checkComputer2Button.Enabled = $false
-$form.Controls.Add($checkComputer2Button)
+# Parse the XAML
+$reader = (New-Object System.Xml.XmlNodeReader $xaml)
+$Window = [Windows.Markup.XamlReader]::Load($reader)
 
-# Create a button to trigger the action to get collections and add to collections
-$button = New-Object System.Windows.Forms.Button
-$button.Text = "Get and Add to Collections"
-$button.Location = New-Object System.Drawing.Point(100, 100)
-$button.Size = New-Object System.Drawing.Size(200, 30)
-$form.Controls.Add($button)
-
-# Create a text box to display the output
-$outputBox = New-Object System.Windows.Forms.TextBox
-$outputBox.Multiline = $true
-$outputBox.ScrollBars = "Vertical"
-$outputBox.Location = New-Object System.Drawing.Point(10, 150)
-$outputBox.Size = New-Object System.Drawing.Size(420, 100)
-$form.Controls.Add($outputBox)
+# Get references to the controls
+$InputComputer1 = $Window.FindName("InputComputer1")
+$InputComputer2 = $Window.FindName("InputComputer2")
+$CheckComputer1Button = $Window.FindName("CheckComputer1Button")
+$CheckComputer2Button = $Window.FindName("CheckComputer2Button")
+$AddToCollectionsButton = $Window.FindName("AddToCollectionsButton")
+$OutputBox = $Window.FindName("OutputBox")
 
 # Global variable to store collections for Computer 1
 $global:computer1Collections = $null
@@ -75,9 +68,8 @@ function Get-StaticCollections {
         $device = Get-CMDevice -Name $ComputerName
         if ($device) {
             $deviceID = $device.ResourceID
-            Write-Host "Device found with ResourceID: $deviceID"  # Debugging output
 
-            # Get all collections and filter by the ones that contain the device (via direct membership)
+            # Get all collections that contain the device (via direct membership)
             $deviceCollections = Get-CMDeviceCollection | ForEach-Object {
                 $collection = $_
                 $rules = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID
@@ -86,18 +78,12 @@ function Get-StaticCollections {
                 }
             } | Where-Object { $_ -ne $null }
 
-            if ($deviceCollections.Count -gt 0) {
-                return $deviceCollections
-            } else {
-                Write-Host "No collections found for the device."  # Debugging output
-                return $null
-            }
+            return $deviceCollections
         } else {
-            Write-Host "Device not found."  # Debugging output
             return $null
         }
     } catch {
-        Write-Warning "Failed to retrieve collections for $ComputerName: $_"
+        Write-Warning "Failed to retrieve collections for $ComputerName - $_"
         return $null
     }
 }
@@ -112,7 +98,7 @@ function Check-ComputerExists {
         $device = Get-CMDevice -Name $ComputerName
         return $device -ne $null
     } catch {
-        Write-Warning "Error occurred while checking $ComputerName: $_"
+        Write-Warning "Error occurred while checking $ComputerName - $_"
         return $false
     }
 }
@@ -141,76 +127,76 @@ function Add-DeviceToCollections {
     }
 }
 
-# Action: Check Computer 1 and get collections when the "Check Collections" button is clicked
-$checkComputer1Button.Add_Click({
-    $computer1 = $inputComputer1.Text
-    $outputBox.Clear()
+# Event: Check Computer 1 (Old Device) and get collections
+$CheckComputer1Button.Add_Click({
+    $computer1 = $InputComputer1.Text
+    $OutputBox.Clear()
 
     if ($computer1) {
-        $outputBox.AppendText("Checking collections for $computer1...`r`n")
+        $OutputBox.AppendText("Checking collections for $computer1...`r`n")
         $global:computer1Collections = Get-StaticCollections -ComputerName $computer1
 
         if ($global:computer1Collections) {
-            $outputBox.AppendText("Collections found for $computer1:`r`n")
+            $OutputBox.AppendText("Collections found for $computer1:`r`n")
             $global:computer1Collections | ForEach-Object {
-                $outputBox.AppendText(" - $($_.Name)`r`n")
+                $OutputBox.AppendText(" - $($_.Name)`r`n")
             }
-            # Enable the "Check Computer 2" button now that Computer 1 exists and has collections
-            $checkComputer2Button.Enabled = $true
+            # Enable the "Check Computer 2" button if collections are found
+            $CheckComputer2Button.IsEnabled = $true
         } else {
-            $outputBox.AppendText("No collections found or computer does not exist.`r`n")
-            $checkComputer2Button.Enabled = $false
+            $OutputBox.AppendText("No collections found or computer does not exist.`r`n")
+            $CheckComputer2Button.IsEnabled = $false
         }
     } else {
-        $outputBox.AppendText("Please enter a valid computer name for Computer 1.`r`n")
+        $OutputBox.AppendText("Please enter a valid computer name for the old device.`r`n")
     }
 })
 
-# Action: Check if Computer 2 exists when the "Check Existence" button is clicked
-$checkComputer2Button.Add_Click({
-    $computer2 = $inputComputer2.Text
-    $outputBox.Clear()
+# Event: Check if Computer 2 (New Device) exists
+$CheckComputer2Button.Add_Click({
+    $computer2 = $InputComputer2.Text
+    $OutputBox.Clear()
 
     if ($computer2) {
         $exists = Check-ComputerExists -ComputerName $computer2
         if ($exists) {
-            $outputBox.AppendText("$computer2 exists.`r`n")
+            $OutputBox.AppendText("$computer2 exists.`r`n")
         } else {
-            $outputBox.AppendText("$computer2 does not exist.`r`n")
+            $OutputBox.AppendText("$computer2 does not exist.`r`n")
         }
     } else {
-        $outputBox.AppendText("Please enter a valid computer name for Computer 2.`r`n")
+        $OutputBox.AppendText("Please enter a valid computer name for the new device.`r`n")
     }
 })
 
-# Action: When the "Get and Add to Collections" button is clicked
-$button.Add_Click({
-    $computer1 = $inputComputer1.Text
-    $computer2 = $inputComputer2.Text
-    $outputBox.Clear()
+# Event: Add the new device to the collections from the old device
+$AddToCollectionsButton.Add_Click({
+    $computer1 = $InputComputer1.Text
+    $computer2 = $InputComputer2.Text
+    $OutputBox.Clear()
     
     if ($computer1 -and $computer2) {
         if ($global:computer1Collections) {
-            $outputBox.AppendText("Using cached collections for $computer1...`r`n")
+            $OutputBox.AppendText("Using cached collections for $computer1...`r`n")
             $global:computer1Collections | ForEach-Object {
-                $outputBox.AppendText(" - $($_.Name)`r`n")
+                $OutputBox.AppendText(" - $($_.Name)`r`n")
             }
 
-            $outputBox.AppendText("Adding $computer2 to the collections...`r`n")
+            $OutputBox.AppendText("Adding $computer2 to the collections...`r`n")
             $success = Add-DeviceToCollections -TargetComputer $computer2 -Collections $global:computer1Collections
 
             if ($success) {
-                $outputBox.AppendText("Successfully added $computer2 to the same collections.`r`n")
+                $OutputBox.AppendText("Successfully added $computer2 to the same collections.`r`n")
             } else {
-                $outputBox.AppendText("Failed to add $computer2 to the collections.`r`n")
+                $OutputBox.AppendText("Failed to add $computer2 to the collections.`r`n")
             }
         } else {
-            $outputBox.AppendText("No collections found for $computer1. Please check collections first.`r`n")
+            $OutputBox.AppendText("No collections found for $computer1. Please check collections first.`r`n")
         }
     } else {
-        $outputBox.AppendText("Please enter both computer names.`r`n")
+        $OutputBox.AppendText("Please enter both computer names.`r`n")
     }
 })
 
-# Show the form
-[void]$form.ShowDialog()
+# Show the window
+$Window.ShowDialog()
