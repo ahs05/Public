@@ -238,7 +238,7 @@ $button.Add_Click({
             # Re-enable the button after the process completes
             $button.Enabled = $true
         }  # <-- Missing brace added here
-        }
+        
     } else {
         $outputBox.AppendText("Please enter both computer names.`r`n")
         $button.Enabled = $true
