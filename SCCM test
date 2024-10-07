@@ -1,0 +1,250 @@
+# Load the necessary .NET assembly for Windows Forms
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+# Create the form
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Device Collection Management"
+$form.Size = New-Object System.Drawing.Size(450, 400)
+$form.Size = New-Object System.Drawing.Size(400, 400)
+$form.StartPosition = "CenterScreen"
+
+# Create a panel to hold the controls (like a container)
+$panel = New-Object System.Windows.Forms.Panel
+$panel.Location = New-Object System.Drawing.Point(10, 10)
+$panel.Size = New-Object System.Drawing.Size(360, 280)
+$form.Controls.Add($panel)
+# Create label and input for the first computer
+$label1 = New-Object System.Windows.Forms.Label
+$label1.Text = "First Computer Name (source):"
+$label1.AutoSize = $true
+$label1.Location = New-Object System.Drawing.Point(10, 20)
+$form.Controls.Add($label1)
+$panel.Controls.Add($label1)
+
+$inputComputer1 = New-Object System.Windows.Forms.TextBox
+$inputComputer1.Location = New-Object System.Drawing.Point(200, 20)
+$inputComputer1.Size = New-Object System.Drawing.Size(150, 20)
+$form.Controls.Add($inputComputer1)
+$panel.Controls.Add($inputComputer1)
+
+# Create a button to check if Computer 1 exists next to the input field
+$checkComputer1Button = New-Object System.Windows.Forms.Button
+$checkComputer1Button.Text = "Check Computer 1 Exists"
+$checkComputer1Button.Location = New-Object System.Drawing.Point(360, 18)
+$checkComputer1Button.Size = New-Object System.Drawing.Size(70, 25)
+$form.Controls.Add($checkComputer1Button)
+$checkComputer1Button.Text = "Check"
+$checkComputer1Button.Location = New-Object System.Drawing.Point(10, 50)
+$checkComputer1Button.Size = New-Object System.Drawing.Size(150, 30)
+$panel.Controls.Add($checkComputer1Button)
+
+# Create label and input for the second computer
+$label2 = New-Object System.Windows.Forms.Label
+$label2.Text = "Second Computer Name (target):"
+$label2.AutoSize = $true
+$label2.Location = New-Object System.Drawing.Point(10, 60)
+$form.Controls.Add($label2)
+$label2.Location = New-Object System.Drawing.Point(10, 100)
+$panel.Controls.Add($label2)
+
+$inputComputer2 = New-Object System.Windows.Forms.TextBox
+$inputComputer2.Location = New-Object System.Drawing.Point(200, 60)
+$inputComputer2.Location = New-Object System.Drawing.Point(200, 100)
+$inputComputer2.Size = New-Object System.Drawing.Size(150, 20)
+$form.Controls.Add($inputComputer2)
+$panel.Controls.Add($inputComputer2)
+
+# Create a button to check if Computer 2 exists next to the input field
+$checkComputer2Button = New-Object System.Windows.Forms.Button
+$checkComputer2Button.Text = "Check Computer 2 Exists"
+$checkComputer2Button.Location = New-Object System.Drawing.Point(360, 58)
+$checkComputer2Button.Size = New-Object System.Drawing.Size(70, 25)
+$checkComputer2Button.Enabled = $false  # Initially disabled until Computer 1 is validated
+$form.Controls.Add($checkComputer2Button)
+$checkComputer2Button.Text = "Check"
+$checkComputer2Button.Location = New-Object System.Drawing.Point(10, 130)
+$checkComputer2Button.Size = New-Object System.Drawing.Size(150, 30)
+$checkComputer2Button.Enabled = $false
+$panel.Controls.Add($checkComputer2Button)
+
+# Create a button to trigger the action for getting and adding collections
+$button = New-Object System.Windows.Forms.Button
+$button.Text = "Get and Add to Collections"
+$button.Location = New-Object System.Drawing.Point(125, 100)
+$button.Size = New-Object System.Drawing.Size(200, 30)
+$form.Controls.Add($button)
+$button.Location = New-Object System.Drawing.Point(10, 180)
+$button.Size = New-Object System.Drawing.Size(340, 30)
+$panel.Controls.Add($button)
+
+# Create a text box to display the output
+$outputBox = New-Object System.Windows.Forms.TextBox
+$outputBox.Multiline = $true
+$outputBox.ScrollBars = "Vertical"
+$outputBox.Location = New-Object System.Drawing.Point(10, 150)
+$outputBox.Size = New-Object System.Drawing.Size(420, 200)
+$form.Controls.Add($outputBox)
+$outputBox.Location = New-Object System.Drawing.Point(10, 230)
+$outputBox.Size = New-Object System.Drawing.Size(340, 120)
+$panel.Controls.Add($outputBox)
+
+# Function to check if a computer exists
+function Check-ComputerExists {
+    param (
+        [string]$ComputerName
+    )
+
+    try {
+        $device = Get-CMDevice -Name $ComputerName
+        return $device -ne $null
+    } catch {
+        Write-Warning "Error checking existence of $ComputerName- $_"
+        return $false
+    }
+}
+
+# Function to retrieve static device collections of a computer
+function Get-StaticCollections {
+    param (
+        [string]$ComputerName
+    )
+
+    try {
+        $device = Get-CMDevice -Name $ComputerName
+        if ($device) {
+            $deviceID = $device.ResourceID
+            # Instead of getting all collections, get only collections that contain the device
+            $staticCollections = Get-CMDeviceCollectionDirectMembershipRule | Where-Object {
+                $_.ResourceID -eq $deviceID
+            } | ForEach-Object {
+                Get-CMDeviceCollection -CollectionId $_.CollectionID
+            }
+            return $staticCollections
+        } else {
+            return $null
+        }
+    } catch {
+        Write-Warning "Failed to retrieve collections for $ComputerName- $_"
+        return $null
+    }
+}
+
+# Function to add a device to a collection
+function Add-DeviceToCollections {
+    param (
+        [string]$TargetComputer,
+        [array]$Collections
+    )
+
+    try {
+        $targetDevice = Get-CMDevice -Name $TargetComputer
+        if ($targetDevice) {
+            $targetDeviceID = $targetDevice.ResourceID
+            foreach ($collection in $Collections) {
+                Add-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID -ResourceID $targetDeviceID
+            }
+            return $true
+        } else {
+            return $false
+        }
+    } catch {
+        Write-Warning "Failed to add $TargetComputer to collections: $_"
+        return $false
+    }
+}
+
+# Check if Computer 1 exists and retrieve collections when button is clicked
+$checkComputer1Button.Add_Click({
+    $outputBox.Clear()
+    $computer1 = $inputComputer1.Text
+    if ($computer1) {
+        $exists = Check-ComputerExists -ComputerName $computer1
+        if ($exists) {
+            $outputBox.AppendText("$computer1 exists.`r`n")
+            $outputBox.AppendText("Retrieving collections for $computer1...`r`n")
+
+            $staticCollections = Get-StaticCollections -ComputerName $computer1
+            if ($staticCollections) {
+                $outputBox.AppendText("Collections found for $computer1-`r`n")
+                $staticCollections | ForEach-Object {
+                    $outputBox.AppendText(" - $($_.Name)`r`n")
+                }
+
+                # Enable the "Check Computer 2" button only if collections are found
+                $checkComputer2Button.Enabled = $true
+            } else {
+                $outputBox.AppendText("No collections found for $computer1.`r`n")
+                $checkComputer2Button.Enabled = $false
+            }
+        } else {
+            $outputBox.AppendText("$computer1 does not exist.`r`n")
+            $checkComputer2Button.Enabled = $false
+        }
+    } else {
+        $outputBox.AppendText("Please enter a valid computer name for Computer 1.`r`n")
+    }
+})
+
+# Check if Computer 2 exists when button is clicked
+$checkComputer2Button.Add_Click({
+    $outputBox.Clear()
+    $computer2 = $inputComputer2.Text
+    if ($computer2) {
+        $exists = Check-ComputerExists -ComputerName $computer2
+        if ($exists) {
+            $outputBox.AppendText("$computer2 exists.`r`n")
+        } else {
+            $outputBox.AppendText("$computer2 does not exist.`r`n")
+        }
+    } else {
+        $outputBox.AppendText("Please enter a valid computer name for Computer 2.`r`n")
+    }
+})
+
+# Action when the main button is clicked to get collections and add the second computer
+$button.Add_Click({
+    # Disable the button to avoid multiple clicks during execution
+    $button.Enabled = $false
+    $outputBox.Clear()
+    $computer1 = $inputComputer1.Text
+    $computer2 = $inputComputer2.Text
+    
+    if ($computer1 -and $computer2) {
+        # Start the task in a runspace to avoid UI freezing
+        Start-RunspaceJob -Script {
+            $outputBox.AppendText("Processing collections for $computer1...`r`n")
+            $staticCollections = Get-StaticCollections -ComputerName $computer1
+
+            if ($staticCollections) {
+                $outputBox.AppendText("Collections found for $computer1-`r`n")
+                $staticCollections | ForEach-Object {
+                    $outputBox.AppendText(" - $($_.Name)`r`n")
+                }
+
+                # Add the second computer to the same collections
+                $outputBox.AppendText("Adding $computer2 to the collections...`r`n")
+                $success = Add-DeviceToCollections -TargetComputer $computer2 -Collections $staticCollections
+
+                if ($success) {
+                    $outputBox.AppendText("Successfully added $computer2 to the same collections.`r`n")
+                } else {
+                    $outputBox.AppendText("Failed to add $computer2 to the collections.`r`n")
+                }
+            } else {
+                $outputBox.AppendText("No collections found for $computer1 or computer not found.`r`n")
+            }
+
+            # Re-enable the button after the process completes
+            $button.Enabled = $true
+        }  # <-- Missing brace added here
+        }
+    } else {
+        $outputBox.AppendText("Please enter both computer names.`r`n")
+        $button.Enabled = $true
+    }
+})
+
+# Show the form
+[void]$form.ShowDialog()
+[void]$form
