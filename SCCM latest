@@ -5,7 +5,7 @@ Add-Type -AssemblyName System.Drawing
 # Create the form
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Device Collection Management"
-$form.Size = New-Object System.Drawing.Size(450, 350)
+$form.Size = New-Object System.Drawing.Size(450, 400)
 $form.StartPosition = "CenterScreen"
 
 # Create label and input for the first computer
@@ -59,7 +59,7 @@ $outputBox = New-Object System.Windows.Forms.TextBox
 $outputBox.Multiline = $true
 $outputBox.ScrollBars = "Vertical"
 $outputBox.Location = New-Object System.Drawing.Point(10, 150)
-$outputBox.Size = New-Object System.Drawing.Size(420, 150)
+$outputBox.Size = New-Object System.Drawing.Size(420, 200)
 $form.Controls.Add($outputBox)
 
 # Function to check if a computer exists
@@ -127,7 +127,7 @@ function Add-DeviceToCollections {
     }
 }
 
-# Check if Computer 1 exists when button is clicked
+# Check if Computer 1 exists and retrieve collections when button is clicked
 $checkComputer1Button.Add_Click({
     $outputBox.Clear()
     $computer1 = $inputComputer1.Text
@@ -135,8 +135,21 @@ $checkComputer1Button.Add_Click({
         $exists = Check-ComputerExists -ComputerName $computer1
         if ($exists) {
             $outputBox.AppendText("$computer1 exists.`r`n")
-            # Enable the "Check Computer 2" button only if Computer 1 exists
-            $checkComputer2Button.Enabled = $true
+            $outputBox.AppendText("Retrieving collections for $computer1...`r`n")
+
+            $staticCollections = Get-StaticCollections -ComputerName $computer1
+            if ($staticCollections) {
+                $outputBox.AppendText("Collections found for $computer1:`r`n")
+                $staticCollections | ForEach-Object {
+                    $outputBox.AppendText(" - $($_.Name)`r`n")
+                }
+
+                # Enable the "Check Computer 2" button only if collections are found
+                $checkComputer2Button.Enabled = $true
+            } else {
+                $outputBox.AppendText("No collections found for $computer1.`r`n")
+                $checkComputer2Button.Enabled = $false
+            }
         } else {
             $outputBox.AppendText("$computer1 does not exist.`r`n")
             $checkComputer2Button.Enabled = $false
@@ -197,12 +210,3 @@ $button.Add_Click({
 
             # Re-enable the button after the process completes
             $button.Enabled = $true
-        }
-    } else {
-        $outputBox.AppendText("Please enter both computer names.`r`n")
-        $button.Enabled = $true
-    }
-})
-
-# Show the form
-[void]$form.ShowDialog()
