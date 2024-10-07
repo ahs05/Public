@@ -82,14 +82,26 @@ function Get-StaticCollections {
         $device = Get-CMDevice -Name $ComputerName
         if ($device) {
             $deviceID = $device.ResourceID
-            # Get collections that contain the device
-            $staticCollections = Get-CMDeviceCollectionDirectMembershipRule | Where-Object {
-                $_.ResourceID -eq $deviceID
-            } | ForEach-Object {
-                Get-CMDeviceCollection -CollectionId $_.CollectionID
+            Write-Host "Device found with ResourceID: $deviceID"  # Debugging output
+
+            # Get all collections and filter by the ones that contain the device (via direct membership)
+            $deviceCollections = Get-CMDeviceCollection | ForEach-Object {
+                $collection = $_
+                $rules = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID
+                if ($rules.ResourceID -contains $deviceID) {
+                    return $collection
+                }
+            } | Where-Object { $_ -ne $null }
+
+            if ($deviceCollections.Count -gt 0) {
+                Write-Host "Found $($deviceCollections.Count) collections for the device."  # Debugging output
+                return $deviceCollections
+            } else {
+                Write-Host "No collections found for the device."  # Debugging output
+                return $null
             }
-            return $staticCollections
         } else {
+            Write-Host "Device not found."  # Debugging output
             return $null
         }
     } catch {
@@ -192,15 +204,4 @@ $AddToCollectionsButton.Add_Click({
             if ($success) {
                 $OutputBox.AppendText("Successfully added $computer2 to the same collections.`r`n")
             } else {
-                $OutputBox.AppendText("Failed to add $computer2 to the collections.`r`n")
-            }
-        } else {
-            $OutputBox.AppendText("No collections found for $computer1 or computer not found.`r`n")
-        }
-    } else {
-        $OutputBox.AppendText("Please enter both computer names.`r`n")
-    }
-})
-
-# Show the WPF window
-$Window.ShowDialog()
+                $OutputBox.AppendText("Failed to add $computer2 to the collections.`
