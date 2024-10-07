@@ -68,17 +68,29 @@ function Get-StaticCollections {
     )
 
     try {
+        # Retrieve the device using Get-CMDevice
         $device = Get-CMDevice -Name $ComputerName
         if ($device) {
             $deviceID = $device.ResourceID
-            # Instead of getting all collections, get only collections that contain the device
-            $staticCollections = Get-CMDeviceCollectionDirectMembershipRule | Where-Object {
-                $_.ResourceID -eq $deviceID
-            } | ForEach-Object {
-                Get-CMDeviceCollection -CollectionId $_.CollectionID
+            Write-Host "Device found with ResourceID: $deviceID"  # Debugging output
+
+            # Get all collections and filter by the ones that contain the device (via direct membership)
+            $deviceCollections = Get-CMDeviceCollection | ForEach-Object {
+                $collection = $_
+                $rules = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID
+                if ($rules.ResourceID -contains $deviceID) {
+                    return $collection
+                }
+            } | Where-Object { $_ -ne $null }
+
+            if ($deviceCollections.Count -gt 0) {
+                return $deviceCollections
+            } else {
+                Write-Host "No collections found for the device."  # Debugging output
+                return $null
             }
-            return $staticCollections
         } else {
+            Write-Host "Device not found."  # Debugging output
             return $null
         }
     } catch {
@@ -124,18 +136,6 @@ function Add-DeviceToCollections {
         Write-Warning "Failed to add $TargetComputer to collections: $_"
         return $false
     }
-}
-
-# Function to run long tasks in the background using runspaces
-function Start-RunspaceJob {
-    param (
-        [ScriptBlock]$Script
-    )
-    $runspacePool = [runspacefactory]::CreateRunspacePool(1, [Environment]::ProcessorCount)
-    $runspacePool.Open()
-    $runspace = [powershell]::Create().AddScript($Script)
-    $runspace.RunspacePool = $runspacePool
-    $runspace.BeginInvoke() | Out-Null
 }
 
 # Action: Check Computer 1 and get collections when the "Check Collections" button is clicked
