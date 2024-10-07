@@ -5,7 +5,7 @@ Add-Type -AssemblyName System.Drawing
 # Create the form
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Device Collection Management"
-$form.Size = New-Object System.Drawing.Size(400, 350)
+$form.Size = New-Object System.Drawing.Size(450, 350)
 $form.StartPosition = "CenterScreen"
 
 # Create label and input for the first computer
@@ -20,6 +20,13 @@ $inputComputer1.Location = New-Object System.Drawing.Point(200, 20)
 $inputComputer1.Size = New-Object System.Drawing.Size(150, 20)
 $form.Controls.Add($inputComputer1)
 
+# Create a button to check if Computer 1 exists next to the input field
+$checkComputer1Button = New-Object System.Windows.Forms.Button
+$checkComputer1Button.Text = "Check Computer 1 Exists"
+$checkComputer1Button.Location = New-Object System.Drawing.Point(360, 18)
+$checkComputer1Button.Size = New-Object System.Drawing.Size(70, 25)
+$form.Controls.Add($checkComputer1Button)
+
 # Create label and input for the second computer
 $label2 = New-Object System.Windows.Forms.Label
 $label2.Text = "Second Computer Name (target):"
@@ -32,24 +39,18 @@ $inputComputer2.Location = New-Object System.Drawing.Point(200, 60)
 $inputComputer2.Size = New-Object System.Drawing.Size(150, 20)
 $form.Controls.Add($inputComputer2)
 
-# Create a button to check if Computer 1 exists
-$checkComputer1Button = New-Object System.Windows.Forms.Button
-$checkComputer1Button.Text = "Check Computer 1 Exists"
-$checkComputer1Button.Location = New-Object System.Drawing.Point(10, 90)
-$checkComputer1Button.Size = New-Object System.Drawing.Size(170, 30)
-$form.Controls.Add($checkComputer1Button)
-
-# Create a button to check if Computer 2 exists
+# Create a button to check if Computer 2 exists next to the input field
 $checkComputer2Button = New-Object System.Windows.Forms.Button
 $checkComputer2Button.Text = "Check Computer 2 Exists"
-$checkComputer2Button.Location = New-Object System.Drawing.Point(200, 90)
-$checkComputer2Button.Size = New-Object System.Drawing.Size(170, 30)
+$checkComputer2Button.Location = New-Object System.Drawing.Point(360, 58)
+$checkComputer2Button.Size = New-Object System.Drawing.Size(70, 25)
+$checkComputer2Button.Enabled = $false  # Initially disabled until Computer 1 is validated
 $form.Controls.Add($checkComputer2Button)
 
-# Create a button to trigger the action
+# Create a button to trigger the action for getting and adding collections
 $button = New-Object System.Windows.Forms.Button
 $button.Text = "Get and Add to Collections"
-$button.Location = New-Object System.Drawing.Point(100, 130)
+$button.Location = New-Object System.Drawing.Point(125, 100)
 $button.Size = New-Object System.Drawing.Size(200, 30)
 $form.Controls.Add($button)
 
@@ -57,8 +58,8 @@ $form.Controls.Add($button)
 $outputBox = New-Object System.Windows.Forms.TextBox
 $outputBox.Multiline = $true
 $outputBox.ScrollBars = "Vertical"
-$outputBox.Location = New-Object System.Drawing.Point(10, 170)
-$outputBox.Size = New-Object System.Drawing.Size(360, 150)
+$outputBox.Location = New-Object System.Drawing.Point(10, 150)
+$outputBox.Size = New-Object System.Drawing.Size(420, 150)
 $form.Controls.Add($outputBox)
 
 # Function to check if a computer exists
@@ -134,8 +135,11 @@ $checkComputer1Button.Add_Click({
         $exists = Check-ComputerExists -ComputerName $computer1
         if ($exists) {
             $outputBox.AppendText("$computer1 exists.`r`n")
+            # Enable the "Check Computer 2" button only if Computer 1 exists
+            $checkComputer2Button.Enabled = $true
         } else {
             $outputBox.AppendText("$computer1 does not exist.`r`n")
+            $checkComputer2Button.Enabled = $false
         }
     } else {
         $outputBox.AppendText("Please enter a valid computer name for Computer 1.`r`n")
