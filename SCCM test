@@ -39,11 +39,12 @@ $inputComputer2.Location = New-Object System.Drawing.Point(200, 60)
 $inputComputer2.Size = New-Object System.Drawing.Size(150, 20)
 $form.Controls.Add($inputComputer2)
 
-# Button to check if Computer 2 exists
+# Button to check if Computer 2 exists (disabled initially)
 $checkComputer2Button = New-Object System.Windows.Forms.Button
 $checkComputer2Button.Text = "Check Existence"
 $checkComputer2Button.Location = New-Object System.Drawing.Point(360, 58)
 $checkComputer2Button.Size = New-Object System.Drawing.Size(75, 25)
+$checkComputer2Button.Enabled = $false
 $form.Controls.Add($checkComputer2Button)
 
 # Create a button to trigger the action to get collections and add to collections
@@ -61,6 +62,9 @@ $outputBox.Location = New-Object System.Drawing.Point(10, 150)
 $outputBox.Size = New-Object System.Drawing.Size(420, 100)
 $form.Controls.Add($outputBox)
 
+# Global variable to store collections for Computer 1
+$global:computer1Collections = $null
+
 # Function to retrieve static device collections of a computer
 function Get-StaticCollections {
     param (
@@ -68,7 +72,6 @@ function Get-StaticCollections {
     )
 
     try {
-        # Retrieve the device using Get-CMDevice
         $device = Get-CMDevice -Name $ComputerName
         if ($device) {
             $deviceID = $device.ResourceID
@@ -145,15 +148,18 @@ $checkComputer1Button.Add_Click({
 
     if ($computer1) {
         $outputBox.AppendText("Checking collections for $computer1...`r`n")
-        $staticCollections = Get-StaticCollections -ComputerName $computer1
+        $global:computer1Collections = Get-StaticCollections -ComputerName $computer1
 
-        if ($staticCollections) {
+        if ($global:computer1Collections) {
             $outputBox.AppendText("Collections found for $computer1:`r`n")
-            $staticCollections | ForEach-Object {
+            $global:computer1Collections | ForEach-Object {
                 $outputBox.AppendText(" - $($_.Name)`r`n")
             }
+            # Enable the "Check Computer 2" button now that Computer 1 exists and has collections
+            $checkComputer2Button.Enabled = $true
         } else {
             $outputBox.AppendText("No collections found or computer does not exist.`r`n")
+            $checkComputer2Button.Enabled = $false
         }
     } else {
         $outputBox.AppendText("Please enter a valid computer name for Computer 1.`r`n")
@@ -184,17 +190,14 @@ $button.Add_Click({
     $outputBox.Clear()
     
     if ($computer1 -and $computer2) {
-        $outputBox.AppendText("Processing collections for $computer1...`r`n")
-        $staticCollections = Get-StaticCollections -ComputerName $computer1
-
-        if ($staticCollections) {
-            $outputBox.AppendText("Collections found for $computer1:`r`n")
-            $staticCollections | ForEach-Object {
+        if ($global:computer1Collections) {
+            $outputBox.AppendText("Using cached collections for $computer1...`r`n")
+            $global:computer1Collections | ForEach-Object {
                 $outputBox.AppendText(" - $($_.Name)`r`n")
             }
 
             $outputBox.AppendText("Adding $computer2 to the collections...`r`n")
-            $success = Add-DeviceToCollections -TargetComputer $computer2 -Collections $staticCollections
+            $success = Add-DeviceToCollections -TargetComputer $computer2 -Collections $global:computer1Collections
 
             if ($success) {
                 $outputBox.AppendText("Successfully added $computer2 to the same collections.`r`n")
@@ -202,7 +205,7 @@ $button.Add_Click({
                 $outputBox.AppendText("Failed to add $computer2 to the collections.`r`n")
             }
         } else {
-            $outputBox.AppendText("No collections found for $computer1 or computer not found.`r`n")
+            $outputBox.AppendText("No collections found for $computer1. Please check collections first.`r`n")
         }
     } else {
         $outputBox.AppendText("Please enter both computer names.`r`n")
