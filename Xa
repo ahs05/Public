@@ -1,4 +1,35 @@
+# 2. Navigate to C:\ProgramData\Package Cache and delete Xactimate installer file (XactimateInstall.exe)
+$packageCachePath = "C:\ProgramData\Package Cache"
+$installerFile = "XactimateInstall.exe"
 
+# Get all directories (GUID folders) in the Package Cache directory
+$guidFolders = Get-ChildItem -Path $packageCachePath -Directory
+
+$found = $false
+
+# Loop through each folder
+foreach ($folder in $guidFolders) {
+    # Construct the path to the potential installer file inside the current folder
+    $installerFilePath = Join-Path $folder.FullName $installerFile
+
+    # Check if the XactimateInstall.exe file exists in this folder
+    if (Test-Path -Path $installerFilePath) {
+        # Delete the installer file
+        Remove-Item -Path $installerFilePath -Force
+        Write-Host "$installerFile deleted from $folder.FullName"
+        $found = $true
+    }
+}
+
+# If no installer file was found and deleted
+if (-not $found) {
+    Write-Host "$installerFile not found in any of the GUID folders inside $packageCachePath"
+}
+
+Write-Host "Script execution completed."
+
+
+---------
 # 1. Ensure the folder C:\ProgramData\Xactware\XactimateDesktop exists, if not create it.
 $folderPath = "C:\ProgramData\Xactware\XactimateDesktop"
 if (-Not (Test-Path -Path $folderPath)) {
