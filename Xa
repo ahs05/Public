@@ -1,1 +1,55 @@
 
+# 1. Ensure the folder C:\ProgramData\Xactware\XactimateDesktop exists, if not create it.
+$folderPath = "C:\ProgramData\Xactware\XactimateDesktop"
+if (-Not (Test-Path -Path $folderPath)) {
+    New-Item -ItemType Directory -Path $folderPath -Force
+    Write-Host "Folder created at $folderPath"
+} else {
+    Write-Host "Folder already exists at $folderPath"
+}
+
+# 2. Navigate to C:\ProgramData\Package Cache and delete Xactimate installer file (XactimateInstall.exe)
+$packageCachePath = "C:\ProgramData\Package Cache"
+$installerFile = "XactimateInstall.exe"
+$installerFilePath = Join-Path $packageCachePath $installerFile
+
+if (Test-Path -Path $installerFilePath) {
+    Remove-Item -Path $installerFilePath -Force
+    Write-Host "$installerFile deleted from $packageCachePath"
+} else {
+    Write-Host "$installerFile not found in $packageCachePath"
+}
+
+# 3. Rename C:\Program Files\Xactware\XactimateDesktop to XactimateDesktop.old
+$xactimateDesktopPath = "C:\Program Files\Xactware\XactimateDesktop"
+$xactimateDesktopOldPath = "$xactimateDesktopPath.old"
+
+if (Test-Path -Path $xactimateDesktopPath) {
+    Rename-Item -Path $xactimateDesktopPath -NewName $xactimateDesktopOldPath -Force
+    Write-Host "Renamed $xactimateDesktopPath to $xactimateDesktopOldPath"
+} else {
+    Write-Host "Folder $xactimateDesktopPath does not exist."
+}
+
+# 4. Rename C:\ProgramData\Xactware to Xactware.old
+$xactwarePath = "C:\ProgramData\Xactware"
+$xactwareOldPath = "$xactwarePath.old"
+
+if (Test-Path -Path $xactwarePath) {
+    Rename-Item -Path $xactwarePath -NewName $xactwareOldPath -Force
+    Write-Host "Renamed $xactwarePath to $xactwareOldPath"
+} else {
+    Write-Host "Folder $xactwarePath does not exist."
+}
+
+# 5. Remove registry key HKEY_LOCAL_MACHINE\SOFTWARE\Xactware
+$regPath = "HKLM:\SOFTWARE\Xactware"
+
+if (Test-Path -Path $regPath) {
+    Remove-Item -Path $regPath -Recurse -Force
+    Write-Host "Registry path $regPath deleted."
+} else {
+    Write-Host "Registry path $regPath not found."
+}
+
+Write-Host "Script execution completed."
