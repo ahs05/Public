@@ -1,3 +1,23 @@
+# Array of registry paths to check and delete
+$regPaths = @(
+    "HKLM:\SOFTWARE\Classes\Installer\Dependencies\217CD114-E6F5-4163-B9B7-5D4B73858006",
+    "HKLM:\SOFTWARE\Classes\Installer\Dependencies\AnotherRegKey1",
+    "HKLM:\SOFTWARE\Classes\Installer\Dependencies\AnotherRegKey2",
+    "HKLM:\SOFTWARE\Classes\Installer\Dependencies\AnotherRegKey3"
+)
+
+foreach ($regPath in $regPaths) {
+    if (Test-Path -Path $regPath) {
+        Remove-Item -Path $regPath -Recurse -Force
+        # Write-Host "Registry path $regPath deleted."
+        Write-Log -Message "Registry path $regPath deleted" -Source 'xactimate' -LogType 'CMTrace'
+    } else {
+        # Write-Host "Registry path $regPath not found."
+        Write-Log -Message "Registry path $regPath not found" -Source 'xactimate' -LogType 'CMTrace'
+    }
+}
+
+-------
 # Define the UNC path to the share
 #$uncShare = "\\server\sharedfolder"
 $uncShare = "C:\Program Files"
