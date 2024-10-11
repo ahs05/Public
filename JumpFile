@@ -8,8 +8,8 @@
 # This script was auto-generated at '5/16/2023 8:18:57 AM'.
 
 # Site configuration
-$SiteCode = "ACG" # Site code 
-$ProviderMachineName = "PWSCCMHQ01.aaa-acg.net" # SMS Provider machine name
+#$SiteCode = "ACG" # Site code 
+#$ProviderMachineName = "PWSCCMHQ01.aaa-acg.net" # SMS Provider machine name
 
 # Customizations
 $initParams = @{}
@@ -20,28 +20,30 @@ $initParams = @{}
 
 # Import the ConfigurationManager.psd1 module 
 if((Get-Module ConfigurationManager) -eq $null) {
-    Import-Module "$($ENV:SMS_ADMIN_UI_PATH)\..\ConfigurationManager.psd1" @initParams 
+   # Import-Module "$($ENV:SMS_ADMIN_UI_PATH)\..\ConfigurationManager.psd1" @initParams 
 }
 
 # Connect to the site's drive if it is not already present
 if((Get-PSDrive -Name $SiteCode -PSProvider CMSite -ErrorAction SilentlyContinue) -eq $null) {
-    New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $ProviderMachineName @initParams
+    #New-PSDrive -Name $SiteCode -PSProvider CMSite -Root $ProviderMachineName @initParams
 }
 
 # Set the current location to be the site code.
-Set-Location "$($SiteCode):\" @initParams
+#Set-Location "$($SiteCode):\" @initParams
 
 ################################################################################################
 
 # Load necessary .NET assemblies for WPF
 Add-Type -AssemblyName PresentationFramework
 
+
+
 # Define the WPF XAML layout
 [xml]$xaml = @"
 <Window 
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Device Collection Management" Height="400" Width="570" ResizeMode="NoResize">
+    Title="Device Collection Management" Height="400" Width="600" ResizeMode="NoResize" Background="#f0f0f0">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -49,30 +51,30 @@ Add-Type -AssemblyName PresentationFramework
         </Grid.RowDefinitions>
 
         <!-- Title -->
-        <Label Content="Device Collection Management" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" Grid.Row="0"/>
+        <Label Content="Device Collection Management" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" FontFamily="Segoe UI Semibold" Foreground="#0078D7" Margin="0,10,0,10"/>
 
         <!-- Main Content -->
         <StackPanel Grid.Row="1" Margin="20">
             
             <!-- First Computer (Old Device) Input -->
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <Label Content="Old Device Name:" Width="150"/>
-                <TextBox x:Name="InputComputer1" Width="200"/>
-                <Button x:Name="CheckComputer1Button" Content="Get Collections" Width="100" Margin="10,0,0,0"/>
+                <Label Content="Old Device Name:" Width="150" FontFamily="Segoe UI" FontSize="14"/>
+                <TextBox x:Name="InputComputer1" Width="250" Height="25" FontFamily="Segoe UI" FontSize="12"/>
+                <Button x:Name="CheckComputer1Button" Content="Get Collections" Width="120" Margin="10,0,0,0" Background="#0078D7" Foreground="White" FontFamily="Segoe UI" FontSize="12"/>
             </StackPanel>
 
             <!-- Second Computer (New Device) Input -->
             <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <Label Content="New Device Name:" Width="150"/>
-                <TextBox x:Name="InputComputer2" Width="200"/>
-                <Button x:Name="CheckComputer2Button" Content="Check Device" Width="100" Margin="10,0,0,0" IsEnabled="False"/>
+                <Label Content="New Device Name:" Width="150" FontFamily="Segoe UI" FontSize="14"/>
+                <TextBox x:Name="InputComputer2" Width="250" Height="25" FontFamily="Segoe UI" FontSize="12"/>
+                <Button x:Name="CheckComputer2Button" Content="Check Device" Width="120" Margin="10,0,0,0" IsEnabled="False" Background="#0078D7" Foreground="White" FontFamily="Segoe UI" FontSize="12"/>
             </StackPanel>
 
             <!-- Action Button -->
-            <Button x:Name="AddToCollectionsButton" Content="Add New Device to Collections" Width="250" HorizontalAlignment="Center" Margin="10,20,0,0"/>
+            <Button x:Name="AddToCollectionsButton" Content="Add New Device to Collections" Width="300" HorizontalAlignment="Center" Margin="10,20,0,0" Background="#E81123" Foreground="White" FontFamily="Segoe UI Semibold" FontSize="14"/>
 
             <!-- Output TextBox -->
-            <TextBox x:Name="OutputBox" Height="100" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="0,20,0,0" IsReadOnly="True"/>
+            <TextBox x:Name="OutputBox" Height="150" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="0,20,0,0" IsReadOnly="True" FontFamily="Segoe UI" FontSize="12" Background="#f9f9f9"/>
         </StackPanel>
     </Grid>
 </Window>
@@ -166,9 +168,6 @@ function Add-DeviceToCollections {
 $CheckComputer1Button.Add_Click({
     $computer1 = $InputComputer1.Text
     $OutputBox.Clear()
-    ## New Line
-   #$Comp1Exists = Check-ComputerExists -ComputerName $computer1
-    
 
     if ($computer1) {
         $OutputBox.AppendText("$computer1 Exists...Checking collections for $computer1...`r`n")
