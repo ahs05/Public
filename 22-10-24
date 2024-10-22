@@ -1,0 +1,82 @@
+# Function to retrieve static device collections of a computer
+function Get-StaticCollections {
+    param (
+        [string]$ComputerName
+    )
+
+    try {
+        $device = Get-CMDevice -Name $ComputerName
+        if ($device) {
+            $deviceID = $device.ResourceID
+            Write-Host "Device found with ResourceID: $deviceID"  # Debugging output
+
+            # Get all collections and filter by the ones that contain the device (via direct membership)
+            $deviceCollections = Get-CMDeviceCollection | ForEach-Object {
+                $collection = $_
+                $rules = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID
+                if ($rules.ResourceID -contains $deviceID) {
+                    return $collection
+                }
+            } | Where-Object { $_ -ne $null }
+
+            if ($deviceCollections.Count -gt 0) {
+                Write-Host "Found $($deviceCollections.Count) collections for the device."  # Debugging output
+                return $deviceCollections
+            } else {
+                Write-Host "No collections found for the device."  # Debugging output
+                return $null
+            }
+        } else {
+            Write-Host "Device not found."  # Debugging output
+            return $null
+        }
+    } catch {
+        Write-Warning "Failed to retrieve collections for $ComputerName: $_"
+        return $null
+    }
+}
+
+# Event: When the "Check Computer 1" button is clicked
+$CheckComputer1Button.Add_Click({
+    $computer1 = $InputComputer1.Text
+    if ($computer1) {
+        $OutputBox.Clear()
+        $exists = Check-ComputerExists -ComputerName $computer1
+        if ($exists) {
+            $OutputBox.AppendText("$computer1 exists.`r`n")
+            $OutputBox.AppendText("Retrieving collections for $computer1...`r`n")
+
+            # Retrieve collections
+            $staticCollections = Get-StaticCollections -ComputerName $computer1
+            if ($staticCollections) {
+                $OutputBox.AppendText("Collections found for $computer1:`r`n")
+                $containsDiscoveryDevice = $false  # Variable to track if "Discovery (Device)" is found
+                
+                $staticCollections | ForEach-Object {
+                    $OutputBox.AppendText(" - $($_.Name)`r`n")
+                    if ($_.Name -like "*Discovery (Device)*") {
+                        $containsDiscoveryDevice = $true
+                    }
+                }
+
+                # Output message if "Discovery (Device)" is found
+                if ($containsDiscoveryDevice) {
+                    $OutputBox.AppendText("Collection 'Discovery (Device)' is found for $computer1.`r`n")
+                } else {
+                    $OutputBox.AppendText("Collection 'Discovery (Device)' is NOT found for $computer1.`r`n")
+                }
+
+                # Enable "Check Computer 2" button if collections found
+                $CheckComputer2Button.IsEnabled = $true
+            } else {
+                $OutputBox.AppendText("No collections found for $computer1.`r`n")
+                $CheckComputer2Button.IsEnabled = $false
+            }
+        } else {
+            $OutputBox.AppendText("$computer1 does not exist.`r`n")
+            $CheckComputer2Button.IsEnabled = $false
+        }
+    } else {
+        $OutputBox.AppendText("Please enter a valid computer name for Computer 1.`r`n")
+    }
+})
