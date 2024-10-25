@@ -1,1 +1,17 @@
+- **Java Usage Tracking System:**
+  - Successfully gathered Java-related telemetry data from production systems into SCCM for monitoring Java usage.
 
+- **ECM Remediation Strategy:**
+  - Collaborated with ECM application owners to develop and test a remediation strategy using Azul Java JRE.
+  - The tested package will be ready for phased deployment to production systems.
+
+- **Java Standardization:**
+  - Achieved reduction and standardization in the use of various Oracle Java builds.
+  - Provided developers with access to standardized HCSC-packaged Azul JDKs.
+
+- **Security Enhancements:**
+  - Partnered with CyberArk to establish policies aimed at easing the use of Red Hat Java JDKs by unlicensed users.
+  - Ensured that developer applications utilize Azul JDKs whenever possible.
+
+- **Deployment of Azul Java Applications:**
+  - Rolled out Azul JDKs to developers and cataloged Azul JDKs for future installations.
