@@ -1,84 +1,23 @@
-# Load necessary .NET assemblies for WPF
-Add-Type -AssemblyName PresentationFramework
-
-# Define the WPF XAML layout
-[xml]$xaml = @"
-<Window 
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="Device Collection Management" Height="400" Width="570" ResizeMode="NoResize">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-
-        <!-- Title -->
-        <Label Content="Device Collection Management" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" Grid.Row="0"/>
-
-        <!-- Main Content -->
-        <StackPanel Grid.Row="1" Margin="20">
-            
-            <!-- First Computer (Old Device) Input -->
-            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                <Label Content="Old Device Name:" Width="150"/>
-                <TextBox x:Name="InputComputer1" Width="200"/>
-                <Button x:Name="CheckComputer1Button" Content="Get Collections" Width="100" Margin="10,0,0,0"/>
-            </StackPanel>
-
-            <!-- Second Computer (New Device) Input -->
-            <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
-                <Label Content="New Device Name:" Width="150"/>
-                <TextBox x:Name="InputComputer2" Width="200"/>
-                <Button x:Name="CheckComputer2Button" Content="Check Device" Width="100" Margin="10,0,0,0" IsEnabled="False"/>
-            </StackPanel>
-
-            <!-- Action Button -->
-            <Button x:Name="AddToCollectionsButton" Content="Add New Device to Collections" Width="250" HorizontalAlignment="Center" Margin="10,20,0,0"/>
-
-            <!-- Output TextBox -->
-            <TextBox x:Name="OutputBox" Height="100" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="0,20,0,0" IsReadOnly="True"/>
-        </StackPanel>
-    </Grid>
-</Window>
-"@
-
-# Parse the XAML
-$reader = (New-Object System.Xml.XmlNodeReader $xaml)
-$Window = [Windows.Markup.XamlReader]::Load($reader)
-
-# Get references to the controls
-$InputComputer1 = $Window.FindName("InputComputer1")
-$InputComputer2 = $Window.FindName("InputComputer2")
-$CheckComputer1Button = $Window.FindName("CheckComputer1Button")
-$CheckComputer2Button = $Window.FindName("CheckComputer2Button")
-$AddToCollectionsButton = $Window.FindName("AddToCollectionsButton")
-$OutputBox = $Window.FindName("OutputBox")
-
-# Global variable to store collections for Computer 1
-$global:computer1Collections = $null
-
-# Function to update the output box using the Dispatcher to avoid blocking the UI
-function Update-OutputBox {
-    param (
-        [string]$Message
-    )
-
-    $OutputBox.Dispatcher.Invoke([action]{
-        $OutputBox.AppendText("$Message`r`n")
-    })
-}
-
-# Function to retrieve dynamic device collections of a computer
+# Function to retrieve dynamic device collections whose names contain "discovery"
 function Get-DynamicCollections {
     param (
         [string]$ComputerName
     )
 
     try {
-        # Retrieve dynamic collections that contain "discovery" in their names
-        $dynamicCollections = Get-CMDeviceCollection | Where-Object {
-            $_.Name -match "discovery" -and $_.CollectionType -eq "Query"
+        # Retrieve all collections and filter only those with "discovery" in the name
+        $collections = Get-CMDeviceCollection | Where-Object {
+            $_.Name -match "discovery"
+        }
+
+        # Filter only collections that have query-based membership rules
+        $dynamicCollections = @()
+        foreach ($collection in $collections) {
+            # Check if the collection has a query-based membership rule
+            $queryRule = Get-CMDeviceCollectionQueryMembershipRule -CollectionId $collection.CollectionID -ErrorAction SilentlyContinue
+            if ($queryRule) {
+                $dynamicCollections += $collection
+            }
         }
 
         return $dynamicCollections
@@ -87,122 +26,3 @@ function Get-DynamicCollections {
         return $null
     }
 }
-
-# Function to add a device to dynamic collections by modifying the collection's query
-function Add-DeviceToDynamicCollections {
-    param (
-        [string]$TargetComputer,
-        [array]$Collections
-    )
-
-    try {
-        foreach ($collection in $Collections) {
-            # Get the existing query rule for this collection
-            $queryRule = Get-CMDeviceCollectionQueryMembershipRule -CollectionId $collection.CollectionID
-
-            if ($queryRule) {
-                # Modify the query to include the new device
-                # This assumes the query is simple and we are appending an OR condition for the TargetComputer name
-                $newQuery = $queryRule.QueryExpression -replace ";", " OR Name = '$TargetComputer';"
-                Set-CMDeviceCollectionQueryMembershipRule -CollectionId $collection.CollectionID -QueryExpression $newQuery
-
-                Update-OutputBox "Updated collection '$($collection.Name)' to include device '$TargetComputer'."
-            } else {
-                Update-OutputBox "No query rule found for collection '$($collection.Name)'."
-            }
-        }
-
-        return $true
-    } catch {
-        Write-Warning "Failed to modify query for dynamic collections: $_"
-        return $false
-    }
-}
-
-# Event: Check Computer 1 (Old Device) and get dynamic collections
-$CheckComputer1Button.Add_Click({
-    $computer1 = $InputComputer1.Text
-    $OutputBox.Clear()
-
-    if ($computer1) {
-        Update-OutputBox "Checking dynamic collections for $computer1..."
-
-        Start-Job -ScriptBlock {
-            $global:computer1Collections = Get-DynamicCollections -ComputerName $computer1
-
-            if ($global:computer1Collections) {
-                Update-OutputBox "Dynamic collections found for $computer1:"
-                $global:computer1Collections | ForEach-Object {
-                    Update-OutputBox " - $($_.Name)"
-                }
-                # Enable the "Check Computer 2" button if collections are found
-                $CheckComputer2Button.Dispatcher.Invoke([action]{
-                    $CheckComputer2Button.IsEnabled = $true
-                })
-            } else {
-                Update-OutputBox "No dynamic collections found or computer does not exist."
-                $CheckComputer2Button.Dispatcher.Invoke([action]{
-                    $CheckComputer2Button.IsEnabled = $false
-                })
-            }
-        } | Out-Null
-    } else {
-        Update-OutputBox "Please enter a valid computer name for the old device."
-    }
-})
-
-# Event: Check if Computer 2 (New Device) exists
-$CheckComputer2Button.Add_Click({
-    $computer2 = $InputComputer2.Text
-    $OutputBox.Clear()
-
-    if ($computer2) {
-        Update-OutputBox "Checking if $computer2 exists..."
-
-        Start-Job -ScriptBlock {
-            $exists = Check-ComputerExists -ComputerName $computer2
-            if ($exists) {
-                Update-OutputBox "$computer2 exists."
-            } else {
-                Update-OutputBox "$computer2 does not exist."
-            }
-        } | Out-Null
-    } else {
-        Update-OutputBox "Please enter a valid computer name for the new device."
-    }
-})
-
-# Event: Add the new device to the dynamic collections from the old device
-$AddToCollectionsButton.Add_Click({
-    $computer1 = $InputComputer1.Text
-    $computer2 = $InputComputer2.Text
-    $OutputBox.Clear()
-
-    if ($computer1 -and $computer2) {
-        if ($global:computer1Collections) {
-            Update-OutputBox "Using cached dynamic collections for $computer1..."
-            $global:computer1Collections | ForEach-Object {
-                Update-OutputBox " - $($_.Name)"
-            }
-
-            Start-Job -ScriptBlock {
-                Update-OutputBox "Modifying queries to include $computer2 in the dynamic collections..."
-
-                $success = Add-DeviceToDynamicCollections -TargetComputer $computer2 -Collections $global:computer1Collections
-
-                if ($success) {
-                    Update-OutputBox "Successfully modified queries to include $computer2 in the same collections."
-                } else {
-                    Update-OutputBox "Failed to update collections for $computer2."
-                }
-            } | Out-Null
-        } else {
-            Update-OutputBox "No dynamic collections found for $computer1. Please check collections first."
-        }
-    } else {
-        Update-OutputBox "Please enter both computer names."
-    }
-})
-
-# Show the window
-$Window.ShowDialog()
