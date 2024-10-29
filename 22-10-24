@@ -231,3 +231,185 @@ $AddToCollectionsButton.Add_Click({
 
 # Show the window
 $Window.ShowDialog()
+
+
+#####################################################
+# Load necessary .NET assemblies for WPF
+Add-Type -AssemblyName PresentationFramework
+
+# Define the WPF XAML layout
+[xml]$xaml = @"
+<Window 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Device Collection Management" Height="400" Width="570" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <Label Content="Device Collection Management" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" Grid.Row="0"/>
+
+        <!-- Main Content -->
+        <StackPanel Grid.Row="1" Margin="20">
+            
+            <!-- First Computer (Old Device) Input -->
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <Label Content="Old Device Name:" Width="150"/>
+                <TextBox x:Name="InputComputer1" Width="200"/>
+                <Button x:Name="CheckComputer1Button" Content="Get Collections" Width="100" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <!-- Second Computer (New Device) Input -->
+            <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                <Label Content="New Device Name:" Width="150"/>
+                <TextBox x:Name="InputComputer2" Width="200"/>
+                <Button x:Name="CheckComputer2Button" Content="Check Device" Width="100" Margin="10,0,0,0" IsEnabled="False"/>
+            </StackPanel>
+
+            <!-- Action Button -->
+            <Button x:Name="AddToCollectionsButton" Content="Add New Device to Collections" Width="250" HorizontalAlignment="Center" Margin="10,20,0,0" IsEnabled="False"/>
+
+            <!-- Output TextBox -->
+            <TextBox x:Name="OutputBox" Height="100" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="0,20,0,0" IsReadOnly="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
+"@
+
+# Parse the XAML
+$reader = (New-Object System.Xml.XmlNodeReader $xaml)
+$Window = [Windows.Markup.XamlReader]::Load($reader)
+
+# Get references to the controls
+$InputComputer1 = $Window.FindName("InputComputer1")
+$InputComputer2 = $Window.FindName("InputComputer2")
+$CheckComputer1Button = $Window.FindName("CheckComputer1Button")
+$CheckComputer2Button = $Window.FindName("CheckComputer2Button")
+$AddToCollectionsButton = $Window.FindName("AddToCollectionsButton")
+$OutputBox = $Window.FindName("OutputBox")
+
+# Global variable to store collections for Computer 1
+$global:computer1Collections = $null
+
+# Function to update the output box using the Dispatcher
+function Update-OutputBox {
+    param (
+        [string]$Message
+    )
+
+    $OutputBox.Dispatcher.Invoke([action]{
+        $OutputBox.AppendText("$Message`r`n")
+    })
+}
+
+# Function to retrieve SCCM collections with "Discovery" in the name
+function Get-SCCMDiscoveryCollections {
+    param (
+        [string]$ComputerName
+    )
+
+    try {
+        # Retrieve collections containing 'Discovery' in the name (Replace with actual SCCM code)
+        Update-OutputBox "Retrieving collections for $ComputerName..."
+
+        # Dummy collections for testing purposes
+        # Replace with Get-CMDeviceCollection logic for actual SCCM query
+        $discoveryCollections = @(
+            [PSCustomObject]@{ Name = "Discovery Collection 1"; CollectionID = "COL001" },
+            [PSCustomObject]@{ Name = "Discovery Collection 2"; CollectionID = "COL002" }
+        )
+
+        return $discoveryCollections
+    } catch {
+        Update-OutputBox "Failed to retrieve collections: $_"
+        return $null
+    }
+}
+
+# Function to check if a computer exists (simulate with a dummy return value for testing)
+function Check-ComputerExists {
+    param (
+        [string]$ComputerName
+    )
+
+    # Simulated check for device existence (replace with Get-CMDevice logic for actual SCCM query)
+    return $true  # Assume the device exists for testing purposes
+}
+
+# Event: Get Collections for Old Device
+$CheckComputer1Button.Add_Click({
+    $computer1 = $InputComputer1.Text
+    $OutputBox.Clear()
+
+    if ($computer1) {
+        Update-OutputBox "Checking collections for $computer1..."
+
+        # Retrieve collections for the old device
+        $collections = Get-SCCMDiscoveryCollections -ComputerName $computer1
+
+        if ($collections -and $collections.Count -gt 0) {
+            $global:computer1Collections = $collections
+            Update-OutputBox "Collections containing 'Discovery' for $computer1:"
+            $collections | ForEach-Object {
+                Update-OutputBox " - $($_.Name) (ID: $($_.CollectionID))"
+            }
+
+            # Enable "Check Device" button
+            $CheckComputer2Button.IsEnabled = $true
+        } else {
+            Update-OutputBox "No collections found for $computer1 or failed to retrieve collections."
+            $CheckComputer2Button.IsEnabled = $false
+        }
+    } else {
+        Update-OutputBox "Please enter a valid computer name for the old device."
+    }
+})
+
+# Event: Check if New Device Exists
+$CheckComputer2Button.Add_Click({
+    $computer2 = $InputComputer2.Text
+    $OutputBox.Clear()
+
+    if ($computer2) {
+        Update-OutputBox "Checking if $computer2 exists..."
+
+        $exists = Check-ComputerExists -ComputerName $computer2
+
+        if ($exists) {
+            Update-OutputBox "$computer2 exists. You can now add it to the collections."
+            # Enable "Add New Device to Collections" button
+            $AddToCollectionsButton.IsEnabled = $true
+        } else {
+            Update-OutputBox "$computer2 does not exist. Cannot add to collections."
+            $AddToCollectionsButton.IsEnabled = $false
+        }
+    } else {
+        Update-OutputBox "Please enter a valid computer name for the new device."
+    }
+})
+
+# Event: Add New Device to Collections
+$AddToCollectionsButton.Add_Click({
+    $computer2 = $InputComputer2.Text
+    $OutputBox.Clear()
+
+    if ($global:computer1Collections -and $computer2) {
+        Update-OutputBox "Adding $computer2 to collections from the old device..."
+
+        $global:computer1Collections | ForEach-Object {
+            # Simulated addition to collections (replace with actual SCCM Add logic)
+            Update-OutputBox "Added $computer2 to collection '$($_.Name)' (ID: $($_.CollectionID))"
+        }
+
+        Update-OutputBox "Successfully added $computer2 to all applicable collections."
+    } else {
+        Update-OutputBox "Cannot add $computer2 to collections. Please ensure all fields are correctly filled."
+    }
+})
+
+# Show the window
+$Window.ShowDialog()
+
