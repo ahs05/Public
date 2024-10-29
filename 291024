@@ -1,0 +1,53 @@
+function Get-SCCMDiscoveryCollectionsWMI {
+    param (
+        [string]$SiteServer
+    )
+
+    $namespace = "root\sms\site_$SiteCode"
+    $query = "SELECT Name, CollectionID FROM SMS_Collection WHERE Name LIKE '%Discovery%'"
+    $discoveryCollections = Get-WmiObject -Namespace $namespace -Query $query -ComputerName $SiteServer
+
+    return $discoveryCollections | Select-Object -Property Name, CollectionID
+}
+
+# Example usage
+$SiteCode = 'ABC' # Replace with your SCCM site code
+$SiteServer = 'YourSiteServer' # Replace with your SCCM site server hostname
+
+Get-SCCMDiscoveryCollectionsWMI -SiteServer $SiteServer
+
+
+
+
+111111111111111111111111111111111111111111
+
+
+
+function Get-SCCMDiscoveryCollections {
+    param (
+        [string]$SiteCode,
+        [string]$SiteServer
+    )
+
+    # Import the ConfigurationManager module if not already loaded
+    if (-not (Get-Module -ListAvailable -Name 'ConfigurationManager')) {
+        throw "ConfigurationManager module not found. Make sure it's installed and loaded on this machine."
+    }
+
+    # Set the SCCM site context
+    Import-Module ConfigurationManager
+    cd "$SiteCode`:"
+
+    # Use Get-CMDeviceCollection with a property filter to reduce data retrieval
+    # Only select the Name and CollectionID properties to reduce data load
+    $discoveryCollections = Get-CMDeviceCollection -Fast | Where-Object { $_.Name -match 'Discovery' } | 
+                            Select-Object -Property Name, CollectionID
+
+    return $discoveryCollections
+}
+
+# Example usage
+$SiteCode = 'ABC' # Replace with your SCCM site code
+$SiteServer = 'YourSiteServer' # Replace with your SCCM site server hostname
+
+Get-SCCMDiscoveryCollections -SiteCode $SiteCode -SiteServer $SiteServer
