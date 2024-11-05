@@ -367,3 +367,63 @@ $AddToCollectionsButton.Add_Click({
 
 # Show the window
 $Window.ShowDialog()
+
+
+11111111111111111111111111111
+# Optimized Function to retrieve SCCM collections with "Discovery" in the name that contain a specified device
+function Get-DiscoveryCollectionsForDevice {
+    param (
+        [string]$ComputerName,
+        [string]$SiteCode,
+        [string]$SiteServer
+    )
+
+    try {
+        # Import the ConfigurationManager module if not already loaded
+        if (-not (Get-Module -ListAvailable -Name 'ConfigurationManager')) {
+            throw "ConfigurationManager module not found. Ensure it's installed and loaded on this machine."
+        }
+
+        # Set the SCCM site context
+        Update-OutputBox "Setting SCCM site context to $SiteCode on $SiteServer..."
+        Import-Module ConfigurationManager -ErrorAction Stop
+        cd "$SiteCode`:"  # Use a backtick for the colon to avoid parsing errors in PowerShell
+
+        # Get the device by name
+        Update-OutputBox "Retrieving device information for $ComputerName..."
+        $device = Get-CMDevice -Name $ComputerName -ErrorAction Stop
+        if (-not $device) {
+            throw "Device $ComputerName not found in SCCM."
+        }
+        
+        Update-OutputBox "Device $ComputerName found with Resource ID: $($device.ResourceID)"
+
+        # Retrieve only collections containing "Discovery" in their names
+        Update-OutputBox "Retrieving collections with 'Discovery' in the name..."
+        $discoveryCollections = Get-CMDeviceCollection | Where-Object { $_.Name -match 'Discovery' }
+
+        if (-not $discoveryCollections) {
+            throw "No collections with 'Discovery' in the name were found."
+        }
+
+        # Filter to only those collections where the device is a member
+        Update-OutputBox "Filtering collections to those containing device $ComputerName..."
+        $memberCollections = @()
+        foreach ($collection in $discoveryCollections) {
+            $isMember = Get-CMDeviceCollectionMembership -CollectionId $collection.CollectionID | Where-Object { $_.ResourceID -eq $device.ResourceID }
+            if ($isMember) {
+                $memberCollections += $collection
+                Update-OutputBox "Device is a member of collection: $($collection.Name) (ID: $($collection.CollectionID))"
+            }
+        }
+
+        if ($memberCollections.Count -eq 0) {
+            Update-OutputBox "Device $ComputerName is not a member of any 'Discovery' collections."
+        }
+
+        return $memberCollections
+    } catch {
+        Update-OutputBox "Error retrieving collections for $ComputerName: $_"
+        return $null
+    }
+}
