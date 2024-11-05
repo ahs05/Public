@@ -1,0 +1,128 @@
+# Load necessary .NET assemblies for WPF
+Add-Type -AssemblyName PresentationFramework
+
+# Define the WPF XAML layout
+[xml]$xaml = @"
+<Window 
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Device Collection Management" Height="400" Width="570" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Title -->
+        <Label Content="Device Collection Management" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" Grid.Row="0"/>
+
+        <!-- Main Content -->
+        <StackPanel Grid.Row="1" Margin="20">
+            
+            <!-- First Computer (Old Device) Input -->
+            <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <Label Content="Old Device Name:" Width="150"/>
+                <TextBox x:Name="InputComputer1" Width="200"/>
+                <Button x:Name="CheckComputer1Button" Content="Get Collections" Width="100" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <!-- Second Computer (New Device) Input -->
+            <StackPanel Orientation="Horizontal" Margin="10,10,0,0">
+                <Label Content="New Device Name:" Width="150"/>
+                <TextBox x:Name="InputComputer2" Width="200"/>
+                <Button x:Name="CheckComputer2Button" Content="Check Device" Width="100" Margin="10,0,0,0" IsEnabled="False"/>
+            </StackPanel>
+
+            <!-- Action Button -->
+            <Button x:Name="AddToCollectionsButton" Content="Add New Device to Collections" Width="250" HorizontalAlignment="Center" Margin="10,20,0,0"/>
+
+            <!-- Output TextBox -->
+            <TextBox x:Name="OutputBox" Height="100" VerticalScrollBarVisibility="Auto" TextWrapping="Wrap" HorizontalAlignment="Stretch" Margin="0,20,0,0" IsReadOnly="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
+"@
+
+# Parse the XAML
+$reader = (New-Object System.Xml.XmlNodeReader $xaml)
+$Window = [Windows.Markup.XamlReader]::Load($reader)
+
+# Get references to the controls
+$InputComputer1 = $Window.FindName("InputComputer1")
+$InputComputer2 = $Window.FindName("InputComputer2")
+$CheckComputer1Button = $Window.FindName("CheckComputer1Button")
+$CheckComputer2Button = $Window.FindName("CheckComputer2Button")
+$AddToCollectionsButton = $Window.FindName("AddToCollectionsButton")
+$OutputBox = $Window.FindName("OutputBox")
+
+# Function to update the output box using the Dispatcher
+function Update-OutputBox {
+    param (
+        [string]$Message
+    )
+
+    $OutputBox.Dispatcher.Invoke([action]{
+        $OutputBox.AppendText("$Message`r`n")
+    })
+}
+
+# Function to retrieve collections for a device
+function Get-SCCMDiscoveryCollections {
+    param (
+        [string]$ComputerName
+    )
+
+    try {
+        Update-OutputBox "Retrieving collections for device $ComputerName..."
+
+        # Use the Get-CMDeviceCollection to retrieve collections for the specified computer
+        # Replace <SiteServer> with your SCCM site server
+        $collections = Get-CMDeviceCollection | Where-Object {
+            $_.MembershipRules | ForEach-Object {
+                $_.ResourceName -eq $ComputerName
+            }
+        }
+
+        if ($collections.Count -eq 0) {
+            Update-OutputBox "No collections found for $ComputerName."
+            return $null
+        }
+
+        return $collections
+    } catch {
+        Update-OutputBox "Error retrieving collections: $_"
+        return $null
+    }
+}
+
+# Event: Check Computer 1 (Old Device) and get dynamic collections
+$CheckComputer1Button.Add_Click({
+    try {
+        $computer1 = $InputComputer1.Text
+        $OutputBox.Clear()
+        Update-OutputBox "Button clicked. Starting collection retrieval..."
+
+        if ($computer1) {
+            $collections = Get-SCCMDiscoveryCollections -ComputerName $computer1
+
+            if ($collections) {
+                Update-OutputBox "Collections for $computer1:"
+                $collections | ForEach-Object {
+                    Update-OutputBox " - $($_.Name) (ID: $($_.CollectionID))"
+                }
+                # Enable the "Check Computer 2" button if collections are found
+                $CheckComputer2Button.IsEnabled = $true
+            } else {
+                Update-OutputBox "No collections found for $computer1."
+                $CheckComputer2Button.IsEnabled = $false
+            }
+        } else {
+            Update-OutputBox "Please enter a valid computer name for the old device."
+        }
+    } catch {
+        Update-OutputBox "Error in button click event: $_"
+    }
+})
+
+# Show the window
+$Window.ShowDialog()
