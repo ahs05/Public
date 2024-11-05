@@ -55,7 +55,10 @@ $CheckComputer2Button = $Window.FindName("CheckComputer2Button")
 $AddToCollectionsButton = $Window.FindName("AddToCollectionsButton")
 $OutputBox = $Window.FindName("OutputBox")
 
-# Function to update the output box using the Dispatcher
+# Global variable to store collections for Computer 1
+$global:computer1Collections = $null
+
+# Function to update the output box using the Dispatcher to avoid blocking the UI
 function Update-OutputBox {
     param (
         [string]$Message
@@ -66,61 +69,98 @@ function Update-OutputBox {
     })
 }
 
-# Function to retrieve collections for a device
-function Get-SCCMDiscoveryCollections {
+# Function to retrieve SCCM collections with "Discovery" in the name that contain a specified device
+function Get-SCCMDiscoveryCollectionsForDevice {
     param (
-        [string]$ComputerName
+        [string]$ComputerName,
+        [string]$SiteCode,
+        [string]$SiteServer
     )
 
     try {
-        Update-OutputBox "Retrieving collections for device $ComputerName..."
+        # Import the ConfigurationManager module if not already loaded
+        if (-not (Get-Module -ListAvailable -Name 'ConfigurationManager')) {
+            throw "ConfigurationManager module not found. Ensure it's installed and loaded on this machine."
+        }
 
-        # Use the Get-CMDeviceCollection to retrieve collections for the specified computer
-        # Replace <SiteServer> with your SCCM site server
+        # Set the SCCM site context
+        Import-Module ConfigurationManager -ErrorAction Stop
+        cd "$SiteCode`:"
+
+        # Get the device by name
+        $device = Get-CMDevice -Name $ComputerName -ErrorAction Stop
+        if (-not $device) {
+            throw "Device $ComputerName not found in SCCM."
+        }
+
+        # Get all collections containing the device
         $collections = Get-CMDeviceCollection | Where-Object {
-            $_.MembershipRules | ForEach-Object {
-                $_.ResourceName -eq $ComputerName
-            }
-        }
-
-        if ($collections.Count -eq 0) {
-            Update-OutputBox "No collections found for $ComputerName."
-            return $null
-        }
+            $_.Name -match 'Discovery' -and (Get-CMDeviceCollectionMembership -CollectionId $_.CollectionID | Where-Object { $_.ResourceID -eq $device.ResourceID })
+        } | Select-Object -Property Name, CollectionID
 
         return $collections
     } catch {
-        Update-OutputBox "Error retrieving collections: $_"
+        Update-OutputBox "Error retrieving collections for $ComputerName: $_"
         return $null
     }
 }
 
 # Event: Check Computer 1 (Old Device) and get dynamic collections
 $CheckComputer1Button.Add_Click({
-    try {
-        $computer1 = $InputComputer1.Text
-        $OutputBox.Clear()
-        Update-OutputBox "Button clicked. Starting collection retrieval..."
+    $computer1 = $InputComputer1.Text
+    $OutputBox.Clear()
 
-        if ($computer1) {
-            $collections = Get-SCCMDiscoveryCollections -ComputerName $computer1
+    if ($computer1) {
+        Update-OutputBox "Checking collections for $computer1..."
+
+        # Define SCCM site details (replace with your SCCM details)
+        $SiteCode = 'ABC' # Replace with your SCCM site code
+        $SiteServer = 'YourSiteServer' # Replace with your SCCM site server hostname
+
+        # Fetch collections in a background job to avoid blocking the UI
+        Start-Job -ScriptBlock {
+            $collections = Get-SCCMDiscoveryCollectionsForDevice -ComputerName $using:computer1 -SiteCode $using:SiteCode -SiteServer $using:SiteServer
 
             if ($collections) {
-                Update-OutputBox "Collections for $computer1:"
+                $global:computer1Collections = $collections
+                Update-OutputBox "Collections containing 'Discovery' for $using:computer1:"
                 $collections | ForEach-Object {
                     Update-OutputBox " - $($_.Name) (ID: $($_.CollectionID))"
                 }
                 # Enable the "Check Computer 2" button if collections are found
-                $CheckComputer2Button.IsEnabled = $true
+                $CheckComputer2Button.Dispatcher.Invoke([action]{
+                    $CheckComputer2Button.IsEnabled = $true
+                })
             } else {
-                Update-OutputBox "No collections found for $computer1."
-                $CheckComputer2Button.IsEnabled = $false
+                Update-OutputBox "No collections with 'Discovery' found or failed to retrieve collections."
+                $CheckComputer2Button.Dispatcher.Invoke([action]{
+                    $CheckComputer2Button.IsEnabled = $false
+                })
             }
-        } else {
-            Update-OutputBox "Please enter a valid computer name for the old device."
-        }
-    } catch {
-        Update-OutputBox "Error in button click event: $_"
+        } | Out-Null
+    } else {
+        Update-OutputBox "Please enter a valid computer name for the old device."
+    }
+})
+
+# Event: Check if Computer 2 (New Device) exists
+$CheckComputer2Button.Add_Click({
+    $computer2 = $InputComputer2.Text
+    $OutputBox.Clear()
+
+    if ($computer2) {
+        Update-OutputBox "Checking if $computer2 exists..."
+
+        Start-Job -ScriptBlock {
+            $exists = Check-ComputerExists -ComputerName $using:computer2
+            if ($exists) {
+                Update-OutputBox "$using:computer2 exists."
+            } else {
+                Update-OutputBox "$using:computer2 does not exist."
+            }
+        } | Out-Null
+    } else {
+        Update-OutputBox "Please enter a valid computer name for the new device."
     }
 })
 
