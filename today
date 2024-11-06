@@ -152,3 +152,40 @@ $addNewDeviceButton.Add_Click({
 
 # Show the Window
 $window.ShowDialog() | Out-Null
+
+
+11111111111111111111111
+# Function to retrieve static device collections of a computer with filtering
+function Get-StaticCollections {
+    param (
+        [string]$ComputerName
+    )
+
+    try {
+        $device = Get-CMDevice -Name $ComputerName
+        if ($device) {
+            $deviceID = $device.ResourceID
+
+            # Get all collections that contain the device (via direct membership) and have "Discovery" in their name
+            $deviceCollections = Get-CMDeviceCollection | ForEach-Object {
+                $collection = $_
+                
+                # Check if collection name contains "Discovery"
+                if ($collection.Name -like "*Discovery*") {
+                    # Retrieve direct membership rules for the collection
+                    $rules = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID
+                    if ($rules.ResourceID -contains $deviceID) {
+                        return $collection
+                    }
+                }
+            } | Where-Object { $_ -ne $null }
+
+            return $deviceCollections
+        } else {
+            return $null
+        }
+    } catch {
+        Write-Warning "Failed to retrieve collections for $ComputerName - $_"
+        return $null
+    }
+}
