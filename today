@@ -50,6 +50,15 @@ $outputListBox = $window.FindName("OutputListBox")
 # Placeholder for collections retrieved
 $collectionsList = @()
 
+# Helper function to update output
+function Update-Output {
+    param (
+        [string]$message
+    )
+    # Update the OutputListBox on the main thread
+    $window.Dispatcher.Invoke([action]{ $outputListBox.Items.Add($message) })
+}
+
 # Event Handler for Get Collections button
 $getCollectionsButton.Add_Click({
     $oldDeviceName = $oldDeviceNameTextBox.Text
@@ -58,29 +67,33 @@ $getCollectionsButton.Add_Click({
         return
     }
 
-    # Load ConfigurationManager module and set site code (adjust the path and site code as needed)
-    Import-Module 'C:\Program Files (x86)\Microsoft Endpoint Manager\AdminConsole\bin\ConfigurationManager.psd1'
-    CD SMS:<YourSiteCode> # e.g., CD SMS:PS1:
-
-    # SCCM check for device existence
-    $device = Get-CMDevice -Name $oldDeviceName -ErrorAction SilentlyContinue
-    if ($null -ne $device) {
-        # Fetch collections containing "Discovery" in their name and including the device
-        $collectionsList = Get-CMDeviceCollection | Where-Object {
-            $_.Name -match 'Discovery' -and (Get-CMDeviceCollectionDirectMembershipRule -CollectionId $_.CollectionID | Where-Object {$_.ResourceID -eq $device.ResourceID})
-        }
-
-        if ($collectionsList.Count -gt 0) {
-            # Display collections in the output list box
-            $outputListBox.Items.Clear()
-            $collectionsList | ForEach-Object { $outputListBox.Items.Add("Found Collection: $($_.Name)") }
-            $checkDeviceButton.IsEnabled = $true # Enable "Check Device" button
+    # Run in a job to keep UI responsive
+    Start-Job -ScriptBlock {
+        param ($oldDeviceName)
+        
+        # Check if the device exists
+        $device = Get-CMDevice -Name $oldDeviceName -ErrorAction SilentlyContinue
+        if ($null -ne $device) {
+            Update-Output "Device '$oldDeviceName' found in SCCM."
+            
+            # Retrieve collections containing "Discovery" and with this device as a member
+            $collectionsList = Get-CMDeviceCollection | Where-Object {
+                $_.Name -match 'Discovery' -and (Get-CMDeviceCollectionDirectMembershipRule -CollectionId $_.CollectionID | Where-Object {$_.ResourceID -eq $device.ResourceID})
+            }
+            
+            if ($collectionsList.Count -gt 0) {
+                Update-Output "Collections retrieved for device '$oldDeviceName':"
+                $collectionsList | ForEach-Object { Update-Output " - $($_.Name)" }
+                
+                # Enable "Check Device" button on main thread
+                $window.Dispatcher.Invoke([action]{ $checkDeviceButton.IsEnabled = $true })
+            } else {
+                Update-Output "No discovery collections found for device '$oldDeviceName'."
+            }
         } else {
-            [System.Windows.MessageBox]::Show("No discovery collections found for the device.", "Info", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Information)
+            Update-Output "Device '$oldDeviceName' not found in SCCM."
         }
-    } else {
-        [System.Windows.MessageBox]::Show("Old device not found in SCCM.", "Device Not Found", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-    }
+    } -ArgumentList $oldDeviceName
 })
 
 # Event Handler for Check Device button
@@ -91,13 +104,18 @@ $checkDeviceButton.Add_Click({
         return
     }
 
-    # Check if new device exists in SCCM
-    $newDevice = Get-CMDevice -Name $newDeviceName -ErrorAction SilentlyContinue
-    if ($null -ne $newDevice) {
-        $outputListBox.Items.Add("New device '$newDeviceName' found in SCCM.")
-    } else {
-        $outputListBox.Items.Add("New device '$newDeviceName' NOT found in SCCM.")
-    }
+    # Run in a job to keep UI responsive
+    Start-Job -ScriptBlock {
+        param ($newDeviceName)
+
+        # Check if the new device exists
+        $newDevice = Get-CMDevice -Name $newDeviceName -ErrorAction SilentlyContinue
+        if ($null -ne $newDevice) {
+            Update-Output "New device '$newDeviceName' found in SCCM."
+        } else {
+            Update-Output "New device '$newDeviceName' NOT found in SCCM."
+        }
+    } -ArgumentList $newDeviceName
 })
 
 # Event Handler for Add New Device to Collections button
@@ -113,18 +131,23 @@ $addNewDeviceButton.Add_Click({
         return
     }
 
-    # Retrieve the new device object to add to collections
-    $newDevice = Get-CMDevice -Name $newDeviceName -ErrorAction SilentlyContinue
-    if ($null -eq $newDevice) {
-        [System.Windows.MessageBox]::Show("New device not found in SCCM.", "Error", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
+    # Run in a job to keep UI responsive
+    Start-Job -ScriptBlock {
+        param ($newDeviceName, $collectionsList)
 
-    # Add the new device to each retrieved collection
-    $collectionsList | ForEach-Object {
-        Add-CMDeviceCollectionDirectMembershipRule -CollectionId $_.CollectionID -ResourceId $newDevice.ResourceID
-        $outputListBox.Items.Add("Added '$newDeviceName' to collection '$($_.Name)'")
-    }
+        # Retrieve the new device object
+        $newDevice = Get-CMDevice -Name $newDeviceName -ErrorAction SilentlyContinue
+        if ($null -eq $newDevice) {
+            Update-Output "New device '$newDeviceName' not found in SCCM."
+            return
+        }
+
+        # Add the new device to each retrieved collection
+        foreach ($collection in $collectionsList) {
+            Add-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID -ResourceId $newDevice.ResourceID
+            Update-Output "Added '$newDeviceName' to collection '$($collection.Name)'"
+        }
+    } -ArgumentList $newDeviceName, $collectionsList
 })
 
 # Show the Window
