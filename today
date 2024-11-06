@@ -236,3 +236,69 @@ function Get-AllCollections {
     }
 }
 
+
+
+
+
+
+
+function Get-SCCMDeviceCollectionsByName {
+    param (
+        [string]$DeviceName,
+        [string]$SiteCode,
+        [string]$SCCMServer
+    )
+
+    # Validate input
+    if (-not $DeviceName) {
+        Write-Error "Device name is required."
+        return
+    }
+    if (-not $SiteCode) {
+        Write-Error "Site code is required."
+        return
+    }
+    if (-not $SCCMServer) {
+        Write-Error "SCCM server name is required."
+        return
+    }
+
+    # WMI namespace for SCCM
+    $namespace = "root\SMS\site_$SiteCode"
+
+    try {
+        # Retrieve device information based on the given device name
+        $device = Get-WmiObject -Namespace $namespace -Class SMS_R_System -ComputerName $SCCMServer `
+                    -Filter "Name LIKE '%$DeviceName%'"
+
+        if (-not $device) {
+            Write-Error "Device with name '$DeviceName' not found in SCCM."
+            return
+        }
+
+        # Get all dynamic collections that contain "discovery" in their name
+        $collections = Get-WmiObject -Namespace $namespace -Class SMS_Collection -ComputerName $SCCMServer `
+                       | Where-Object { $_.Name -match 'discovery' -and $_.CollectionType -eq 2 }
+
+        # Filter collections to see if the device is a member of them
+        $deviceCollections = foreach ($collection in $collections) {
+            $membership = Get-WmiObject -Namespace $namespace -Class SMS_FullCollectionMembership -ComputerName $SCCMServer `
+                          -Filter "CollectionID = '$($collection.CollectionID)' AND ResourceID = '$($device.ResourceID)'"
+            if ($membership) {
+                $collection
+            }
+        }
+
+        # Output the list of collections the device belongs to
+        if ($deviceCollections) {
+            $deviceCollections | Select-Object Name, CollectionID
+        }
+        else {
+            Write-Output "No dynamic collections with 'discovery' in the name found for the device '$DeviceName'."
+        }
+
+    } catch {
+        Write-Error "An error occurred: $_"
+    }
+}
+
