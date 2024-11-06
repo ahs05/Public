@@ -154,31 +154,77 @@ $addNewDeviceButton.Add_Click({
 $window.ShowDialog() | Out-Null
 
 
-11111111111111111111111
-# Function to retrieve static device collections of a computer with filtering
-function Get-StaticCollections {
+# button function#
+# Event: Check Computer 1 (Old Device) and get collections
+$CheckComputer1Button.Add_Click({
+    $computer1 = $InputComputer1.Text
+    $OutputBox.Clear()
+
+    if ($computer1) {
+        Update-OutputBox "Checking collections for $computer1..."
+
+        Start-Job -ScriptBlock {
+            $global:computer1Collections = Get-AllCollections -ComputerName $computer1
+
+            if ($global:computer1Collections) {
+                Update-OutputBox "Collections found for $computer1:"
+                $global:computer1Collections | ForEach-Object {
+                    Update-OutputBox " - $($_.Name)"
+                }
+                # Enable the "Check Computer 2" button if collections are found
+                $CheckComputer2Button.Dispatcher.Invoke([action]{
+                    $CheckComputer2Button.IsEnabled = $true
+                })
+            } else {
+                Update-OutputBox "No collections found or computer does not exist."
+                $CheckComputer2Button.Dispatcher.Invoke([action]{
+                    $CheckComputer2Button.IsEnabled = $false
+                })
+            }
+        } | Out-Null
+    } else {
+        Update-OutputBox "Please enter a valid computer name for the old device."
+    }
+})
+
+
+#get collection#
+# Function to retrieve all collections (static and dynamic) that a computer belongs to
+function Get-AllCollections {
     param (
         [string]$ComputerName
     )
 
     try {
+        # Retrieve the device by name
         $device = Get-CMDevice -Name $ComputerName
         if ($device) {
             $deviceID = $device.ResourceID
+            $deviceCollections = @()
 
-            # Get all collections that contain the device (via direct membership) and have "Discovery" in their name
-            $deviceCollections = Get-CMDeviceCollection | ForEach-Object {
+            # Loop through all collections
+            Get-CMDeviceCollection | ForEach-Object {
                 $collection = $_
-                
-                # Check if collection name contains "Discovery"
+
+                # Filter collections to include only those with "Discovery" in the name
                 if ($collection.Name -like "*Discovery*") {
-                    # Retrieve direct membership rules for the collection
-                    $rules = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID
-                    if ($rules.ResourceID -contains $deviceID) {
-                        return $collection
+                    # Check if it's a direct membership collection
+                    $directMembership = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID -ErrorAction SilentlyContinue
+                    if ($directMembership) {
+                        # For direct membership collections, check if the device is directly a member
+                        if ($directMembership.ResourceID -contains $deviceID) {
+                            $deviceCollections += $collection
+                        }
+                    } else {
+                        # For dynamic collections, we assume membership based on queries
+                        # Unfortunately, there is no straightforward PowerShell cmdlet to directly evaluate dynamic membership.
+                        # However, you could retrieve dynamic collections and assume that if the device is part of the evaluated query,
+                        # then it belongs to this collection.
+                        # So, we'll include the collection in our results.
+                        $deviceCollections += $collection
                     }
                 }
-            } | Where-Object { $_ -ne $null }
+            }
 
             return $deviceCollections
         } else {
@@ -189,3 +235,4 @@ function Get-StaticCollections {
         return $null
     }
 }
+
