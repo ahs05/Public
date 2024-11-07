@@ -488,3 +488,62 @@ $AddDeviceButton.Add_Click({
 
 # Show the WPF Window
 $window.ShowDialog() | Out-Null
+##Fetch Collections of a device##
+
+function Get-CMCollectionOfDevice {
+    Param (
+        # Computer name (e.g., "Client01")
+        [Parameter(Mandatory=$true)]
+        [string]$Computer
+    )
+
+    # Set the SiteCode and SiteServer directly within the function
+    $SiteCode = "PRI"         # Replace with your Configuration Manager Site Code
+    $SiteServer = "contoso-01.corp.com"  # Replace with the Site Server name
+
+    # Set up the WMI namespace using the SiteCode
+    $Namespace = "root\SMS\site_$SiteCode"
+
+    # Initialize an empty array to store the filtered device collections
+    $devicecollections = @()
+
+    # Begin retrieving the ResourceID for the specified computer
+    Write-Progress -Activity "Retrieving ResourceID for computer $Computer" -Status "Retrieving data"
+    $ResIDQuery = Get-WmiObject -ComputerName $SiteServer -Namespace $Namespace -Class "SMS_R_SYSTEM" -Filter "Name='$Computer'"
+
+    # Check if the computer exists
+    if ([string]::IsNullOrEmpty($ResIDQuery)) {
+        Write-Output "System $Computer does not exist in Site $SiteCode"
+    } else {
+        # Get all collections where the computer is a member
+        $Collections = Get-WmiObject -ComputerName $SiteServer -Class sms_fullcollectionmembership -Namespace $Namespace -Filter "ResourceID = '$($ResIDQuery.ResourceId)'"
+        $colcount = $Collections.Count
+
+        # Loop through each collection and retrieve its details if it contains "Discovery" in the name
+        $si = 1
+        foreach ($res in $Collections) {
+            $colid = $res.CollectionID
+            Write-Progress -Activity "Processing $si / $colcount" -Status "Retrieving Collection data" -PercentComplete (($si / $colcount) * 100)
+
+            # Get detailed information for each collection and filter by "Discovery" in the name
+            $collectioninfo = Get-WmiObject -ComputerName $SiteServer -Namespace $Namespace -Class "SMS_Collection" -Filter "CollectionID='$colid'"
+
+            # Only add collections with "Discovery" in the Name property
+            if ($collectioninfo.Name -match "Discovery") {
+                $object = New-Object -TypeName PSObject
+                $object | Add-Member -MemberType NoteProperty -Name "CollectionID" -Value $collectioninfo.CollectionID
+                $object | Add-Member -MemberType NoteProperty -Name "Name" -Value $collectioninfo.Name
+                $object | Add-Member -MemberType NoteProperty -Name "Comment" -Value $collectioninfo.Comment
+                $object | Add-Member -MemberType NoteProperty -Name "LastRefreshTime" -Value ([Management.ManagementDateTimeConverter]::ToDateTime($collectioninfo.LastRefreshTime))
+                $devicecollections += $object
+            }
+            $si++
+        }
+    }
+
+    # Output the filtered device collections array
+    $devicecollections
+}
+
+# Example of how to call the function with a computer name
+Get-CMCollectionOfDevice -Computer "Client01"
