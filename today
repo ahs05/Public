@@ -743,3 +743,8 @@ $AddDeviceButton.Add_Click({
 
 # Show the WPF Window
 $window.ShowDialog() | Out-Null
+
+
+# Extract the names of the collections into a new array and join them for output
+$collectionNames = $retrievedCollections | ForEach-Object { $_.Name }
+Log-Activity "Collections retrieved: $($collectionNames -join ', ')"
