@@ -115,3 +115,24 @@ $form.Controls.Add($btnAdd)
 
 # Show the Form
 $form.ShowDialog()
+
+
+##HARISH
+# Array of Collection IDs
+$CollectionIDs = @(
+    "AGU00225", "AGU00226", "AGU00227", "AGU00228", "AGU00229",
+    "AGU00230", "AGU00231", "AGU00232", "AGU00233", "AGU00234",
+    "AGU00235", "AGU00236", "AGU00237", "AGU00238", "AGU00239",
+    "AGU00240", "AGU00241", "AGU00242", "AGU00243", "AGU00244"
+    # Add more Collection IDs as needed
+)
+
+# Loop through each Collection ID
+foreach ($ColID in $CollectionIDs) {
+    # Use Get-CMDeviceCollection to get the collection name by ID
+    $collection = Get-CMDeviceCollection -Id $ColID | Select-Object -Property Name
+    
+    # Display the Collection Name
+    Write-Output "Collection ID: $ColID - Collection Name: $($collection.Name)"
+}
+
