@@ -612,3 +612,8 @@ $AddDeviceButton.Add_Click({
 
 # Show the WPF Window
 $window.ShowDialog() | Out-Null
+
+
+# Create a comma-separated list of trimmed collection names
+$collectionNames = ($global:trimmedCollectionIDs | ForEach-Object { $_.TrimmedName }) -join ', '
+Log-Activity "Collections retrieved: $collectionNames"
