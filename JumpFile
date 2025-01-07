@@ -1,1 +1,15 @@
 
+As part of our internal Q1 2025 goals, we are planning updates to several key packages. Azul is expected to release their latest builds around January 21, 2025. Once available, we will leverage these builds to update the following packages within SCCM:  
+
+- Existing ECM Package  
+- Existing Teradata Packages  
+- Existing Squirrel SQL Client Packages  
+
+Additionally, we will ensure that the Azul JRE is upgraded to the most recent version to maintain compatibility and security.  
+
+I will keep the team informed and provide updates as soon as the new builds from Azul are released.  
+
+Please feel free to reach out if you have any questions or need further clarification.  
+
+Best regards,  
+[Your Name]  
