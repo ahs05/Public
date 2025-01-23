@@ -1,62 +1,46 @@
- High-Level Recommendations for Enhancing Value to the End Client  
+#Uninstall Java
+$uninstallapplist = @(Get-ChildItem HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall | 
+    foreach-object {get-itemproperty $_.PSPath} |
+    select-object DisplayName,InstallLocation,uninstallstring |
+    Where-Object {$_.DisplayName -ne $null -and $_.uninstallstring -ne $null -and $_.InstallLocation -ne $null})
 
-Dear [
+$uninstallapplist += @(Get-ChildItem HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall | 
+    foreach-object {get-itemproperty $_.PSPath} |
+    select-object DisplayName,InstallLocation,uninstallstring |
+    Where-Object {$_.DisplayName -ne $null -and $_.uninstallstring -ne $null -and $_.InstallLocation -ne $null})
 
-I hope this email finds you well. As requested, I’ve compiled a high-level list of recommendations where our team, as a vendor, can deliver additional value to the end client. These suggestions focus on improving efficiency, security, and overall process management:  
+if (test-path HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall) {
+	$uninstallapplist += @(Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall | 
+	    ForEach-Object {get-itemproperty $_.PSPath} |
+	    select-object DisplayName,InstallLocation,uninstallstring |
+	    Where-Object {$_.DisplayName -ne $null -and $_.uninstallstring -ne $null -and $_.InstallLocation -ne $null})
+}
 
-1. **Centralized Script Repository**:  
-   Each team member creates scripts (PowerShell, SQL, Batch, Wise, etc.), but there is no centralized repository. Implementing one would improve collaboration and streamline access to these resources for the entire team.  
+# You can add additional uninstalls by copying and pasting the {$_.DisplayName -like "*Ask*" -or {$_.DisplayName -like "*Ask*" -or...
+$uninstallapplist = $uninstallapplist | Where-Object {$_.InstallLocation -like "*jre*" } |
+                                             sort-object DisplayName -Unique
 
-2. **Updating Outdated Software**:  
-   Addressing outdated applications will significantly improve the organization’s vulnerability scores and reduce security risks.  
 
-3. **Mitigating Log4J Risks**:  
-   Identify developer tools or applications that generate Log4J files. A focused effort is required to update or remove such offending applications across the organization.  
+# Now that we have the list - let's go through each one and uninstall it
 
-4. **Third-Party Application Management**:  
-   Establish a robust mechanism and process to ensure third-party applications are consistently kept up to date to mitigate risks and maintain compliance.  
-
-5. **Reducing Application Footprint**:  
-   Review and rationalize applications with overlapping functionality. Reducing redundancy will minimize support efforts and enhance overall efficiency.  
-
-6. **Standardized Documentation**:  
-   Improve internal documentation by implementing a centralized repository with standardized formatting. This should include updates to knowledge base (KB) articles for certain applications to reflect current processes.  
-
-7. **Software Asset Management**:  
-   Develop a solid procedure for software asset management. This includes creating a robust interface to monitor licensed applications, showing available vs. consumed licenses.  
-
-8. **Application Migration Tool**:  
-   Build a tool to migrate installed applications from one device to another. This will alleviate the burden on users during device swaps by the VDI or deployment teams.  
-
-9. **Application Metering and Decommissioning**:  
-   Implement software metering to monitor usage and establish a process for decommissioning unused applications. This will help maintain a clean and manageable application environment.  
-
-10. **Enhancing the 'Computer Name Creator' Tool**:  
-    The deployment team currently pre-creates computer names before reimaging devices. Enhancing or updating the 'Computer Name Creator' tool or embedding its logic into task sequences can simplify this process for the teams involved.  
-
-11. **SCCM Process and Infrastructure Improvements**:  
-    Explore opportunities for improvements in patching, SCCM infrastructure management, and SCCM client health. This may require input from other team members to identify specific areas for enhancement.  
-
-12. **IT Application Portfolio Management**:  
-    Establish a robust IT Application Portfolio Management system to maintain comprehensive information about each application in the organization. This would include details such as:  
-    - Application type (desktop or web-based)  
-    - Licensing status (licensed or non-licensed)  
-    - Architecture (client-server or desktop-based)  
-    - Installation scope (per machine or per user)  
-    - Application owner, power users, and subject matter experts  
-    - Other critical metadata for operational transparency and better decision-making.  
-
-13. **Power BI Dashboard Implementation**:  
-    The team lacks the necessary skills to implement a comprehensive Power BI dashboard, which has been a long-overdue requirement. Despite previous investments of time and effort, the team has not succeeded in developing a functional dashboard. A Power BI dashboard would provide valuable insights and reporting on:  
-    - Software metering and usage  
-    - Vulnerability management  
-    - Patching compliance  
-    - Weekly application deployment compliance  
-    - And other key operational metrics  
-
-    Developing such a dashboard would improve visibility, enable better decision-making, and streamline reporting processes across various areas.  
-
-These recommendations aim to improve operational efficiency, strengthen security, and enhance user experience across the organization. I’m happy to discuss these points further or collaborate on prioritizing these initiatives based on the end client’s immediate needs.  
-
-Thank you, and I look forward to your feedback.  
-
+foreach ($app in $uninstallapplist) {
+	write-host "Uninstalling $($app.displayname) ...."
+	if ($app.uninstallstring -like "msiexec.exe*") { 
+    	$app.uninstallstring = $app.uninstallstring -replace "/I","/X"  
+    	$app.uninstallstring = $app.uninstallstring -replace "msiexec.exe ","" 
+    	$app.uninstallstring = "$($app.uninstallstring) /qn"
+		
+		$retcode = (start-process -filepath "msiexec.exe" -ArgumentList "$($app.uninstallstring)" -wait -passthru).exitcode
+		
+	}
+	# If the uninstall command is not an msiexec program then we do things differently - Note: I have included the following code but not tested it yet - It should work :-)
+	else {
+		# If the uninstall command itself has double quotes around it because it has spaces in the path, then we have to use the "&" prefix
+		if ($app.UninstallString[0] -eq '"') {Invoke-Expression "& $('$app.uninstallstring')"}
+		# Otherwise we just invoke the uninstall string 
+		else {Invoke-Expression "& $('$app.uninstallstring') /S"}
+		# and get the exit code
+		$retcode = $LASTEXITCODE
+	}
+	write-host "$($app.displayname) uninstalled - Return code: $retcode"
+}
