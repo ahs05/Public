@@ -1,3 +1,19 @@
+I hope this email finds you well.
+
+We are currently in the process of ensuring that the Java Discovery Tool complies with our internal policies before obtaining TAP approval for use. As part of this process, our procurement team has requested written confirmation from Azul stating that:
+
+The Java Discovery Tool is included in our current Java subscription contract agreement.
+Its usage is provided at no additional cost.
+Could you please provide us with an updated contract or a formal document explicitly confirming these details? This would help expedite the approval process on our end.
+
+If you need any further information or documentation from our side, please let me know.
+
+Thank you for your assistance, and I look forward to your response.
+
+
+
+
+
 #Uninstall Java
 $uninstallapplist = @(Get-ChildItem HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall | 
     foreach-object {get-itemproperty $_.PSPath} |
