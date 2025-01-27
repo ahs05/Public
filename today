@@ -1,758 +1,88 @@
-Add-Type -AssemblyName PresentationFramework
-
-# Define XAML for WPF Layout
-[xml]$xaml = @"
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Device Collection Management" Height="400" Width="600" WindowStartupLocation="CenterScreen">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
-        <TextBlock Grid.Row="0" FontSize="18" FontWeight="Bold" Text="Device Collection Management" HorizontalAlignment="Center" Margin="0,0,0,10"/>
-        
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,5">
-            <TextBlock Text="Old Device Name:" VerticalAlignment="Center" Width="120"/>
-            <TextBox x:Name="OldDeviceNameTextBox" Width="200" Margin="10,0"/>
-            <Button x:Name="GetCollectionsButton" Content="Get Collections" Width="100" Margin="10,0"/>
-        </StackPanel>
-        
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,5">
-            <TextBlock Text="New Device Name:" VerticalAlignment="Center" Width="120"/>
-            <TextBox x:Name="NewDeviceNameTextBox" Width="200" Margin="10,0"/>
-            <Button x:Name="CheckDeviceButton" Content="Check Device" Width="100" Margin="10,0" IsEnabled="False"/>
-        </StackPanel>
-        
-        <Button Grid.Row="3" x:Name="AddNewDeviceButton" Content="Add New Device to Collections" Background="Red" Foreground="White" Width="300" Height="30" HorizontalAlignment="Center" Margin="0,10"/>
-        
-        <ListBox Grid.Row="4" x:Name="OutputListBox" Margin="0,10,0,0" />
-    </Grid>
-</Window>
-"@
-
-# Load XAML
-$reader = (New-Object System.Xml.XmlNodeReader $xaml)
-$window = [System.Windows.Markup.XamlReader]::Load($reader)
-
-# Define Controls
-$oldDeviceNameTextBox = $window.FindName("OldDeviceNameTextBox")
-$newDeviceNameTextBox = $window.FindName("NewDeviceNameTextBox")
-$getCollectionsButton = $window.FindName("GetCollectionsButton")
-$checkDeviceButton = $window.FindName("CheckDeviceButton")
-$addNewDeviceButton = $window.FindName("AddNewDeviceButton")
-$outputListBox = $window.FindName("OutputListBox")
-
-# Placeholder for collections retrieved
-$collectionsList = @()
-
-# Helper function to update output
-function Update-Output {
+# Function to uninstall Java while excluding specific versions
+function Uninstall-Java {
+    [CmdletBinding(SupportsShouldProcess)]
     param (
-        [string]$message
-    )
-    # Update the OutputListBox on the main thread
-    $window.Dispatcher.Invoke([action]{ $outputListBox.Items.Add($message) })
-}
-
-# Event Handler for Get Collections button
-$getCollectionsButton.Add_Click({
-    $oldDeviceName = $oldDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($oldDeviceName)) {
-        [System.Windows.MessageBox]::Show("Please enter the old device name.", "Input Error", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
-
-    # Run in a job to keep UI responsive
-    Start-Job -ScriptBlock {
-        param ($oldDeviceName)
-        
-        # Check if the device exists
-        $device = Get-CMDevice -Name $oldDeviceName -ErrorAction SilentlyContinue
-        if ($null -ne $device) {
-            Update-Output "Device '$oldDeviceName' found in SCCM."
-            
-            # Retrieve collections containing "Discovery" and with this device as a member
-            $collectionsList = Get-CMDeviceCollection | Where-Object {
-                $_.Name -match 'Discovery' -and (Get-CMDeviceCollectionDirectMembershipRule -CollectionId $_.CollectionID | Where-Object {$_.ResourceID -eq $device.ResourceID})
-            }
-            
-            if ($collectionsList.Count -gt 0) {
-                Update-Output "Collections retrieved for device '$oldDeviceName':"
-                $collectionsList | ForEach-Object { Update-Output " - $($_.Name)" }
-                
-                # Enable "Check Device" button on main thread
-                $window.Dispatcher.Invoke([action]{ $checkDeviceButton.IsEnabled = $true })
-            } else {
-                Update-Output "No discovery collections found for device '$oldDeviceName'."
-            }
-        } else {
-            Update-Output "Device '$oldDeviceName' not found in SCCM."
-        }
-    } -ArgumentList $oldDeviceName
-})
-
-# Event Handler for Check Device button
-$checkDeviceButton.Add_Click({
-    $newDeviceName = $newDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($newDeviceName)) {
-        [System.Windows.MessageBox]::Show("Please enter the new device name.", "Input Error", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
-
-    # Run in a job to keep UI responsive
-    Start-Job -ScriptBlock {
-        param ($newDeviceName)
-
-        # Check if the new device exists
-        $newDevice = Get-CMDevice -Name $newDeviceName -ErrorAction SilentlyContinue
-        if ($null -ne $newDevice) {
-            Update-Output "New device '$newDeviceName' found in SCCM."
-        } else {
-            Update-Output "New device '$newDeviceName' NOT found in SCCM."
-        }
-    } -ArgumentList $newDeviceName
-})
-
-# Event Handler for Add New Device to Collections button
-$addNewDeviceButton.Add_Click({
-    if ($collectionsList.Count -eq 0) {
-        [System.Windows.MessageBox]::Show("No collections retrieved. Please fetch collections first.", "Action Error", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
-
-    $newDeviceName = $newDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($newDeviceName)) {
-        [System.Windows.MessageBox]::Show("Please enter the new device name.", "Input Error", [System.Windows.MessageBoxButton]::OK, [System.Windows.MessageBoxImage]::Warning)
-        return
-    }
-
-    # Run in a job to keep UI responsive
-    Start-Job -ScriptBlock {
-        param ($newDeviceName, $collectionsList)
-
-        # Retrieve the new device object
-        $newDevice = Get-CMDevice -Name $newDeviceName -ErrorAction SilentlyContinue
-        if ($null -eq $newDevice) {
-            Update-Output "New device '$newDeviceName' not found in SCCM."
-            return
-        }
-
-        # Add the new device to each retrieved collection
-        foreach ($collection in $collectionsList) {
-            Add-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID -ResourceId $newDevice.ResourceID
-            Update-Output "Added '$newDeviceName' to collection '$($collection.Name)'"
-        }
-    } -ArgumentList $newDeviceName, $collectionsList
-})
-
-# Show the Window
-$window.ShowDialog() | Out-Null
-
-
-# button function#
-# Event: Check Computer 1 (Old Device) and get collections
-$CheckComputer1Button.Add_Click({
-    $computer1 = $InputComputer1.Text
-    $OutputBox.Clear()
-
-    if ($computer1) {
-        Update-OutputBox "Checking collections for $computer1..."
-
-        Start-Job -ScriptBlock {
-            $global:computer1Collections = Get-AllCollections -ComputerName $computer1
-
-            if ($global:computer1Collections) {
-                Update-OutputBox "Collections found for $computer1:"
-                $global:computer1Collections | ForEach-Object {
-                    Update-OutputBox " - $($_.Name)"
-                }
-                # Enable the "Check Computer 2" button if collections are found
-                $CheckComputer2Button.Dispatcher.Invoke([action]{
-                    $CheckComputer2Button.IsEnabled = $true
-                })
-            } else {
-                Update-OutputBox "No collections found or computer does not exist."
-                $CheckComputer2Button.Dispatcher.Invoke([action]{
-                    $CheckComputer2Button.IsEnabled = $false
-                })
-            }
-        } | Out-Null
-    } else {
-        Update-OutputBox "Please enter a valid computer name for the old device."
-    }
-})
-
-
-#get collection#
-# Function to retrieve all collections (static and dynamic) that a computer belongs to
-function Get-AllCollections {
-    param (
-        [string]$ComputerName
+        [string]$LogPath = "C:\Logs\UninstallJava.log",
+        [string]$ExcludedVersion = "Oracle - Java 8 Update 431"
     )
 
-    try {
-        # Retrieve the device by name
-        $device = Get-CMDevice -Name $ComputerName
-        if ($device) {
-            $deviceID = $device.ResourceID
-            $deviceCollections = @()
+    # Initialize the log file
+    if (!(Test-Path $LogPath)) {
+        New-Item -ItemType File -Path $LogPath -Force | Out-Null
+    }
 
-            # Loop through all collections
-            Get-CMDeviceCollection | ForEach-Object {
-                $collection = $_
+    # Log start time
+    Add-Content -Path $LogPath -Value "`n----- Java Uninstallation Log - $(Get-Date) -----`n"
 
-                # Filter collections to include only those with "Discovery" in the name
-                if ($collection.Name -like "*Discovery*") {
-                    # Check if it's a direct membership collection
-                    $directMembership = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID -ErrorAction SilentlyContinue
-                    if ($directMembership) {
-                        # For direct membership collections, check if the device is directly a member
-                        if ($directMembership.ResourceID -contains $deviceID) {
-                            $deviceCollections += $collection
-                        }
+    Write-Host "Gathering installed programs..." -ForegroundColor Green
+    $uninstallApps = @()
+
+    # Collect uninstall entries from registry
+    $uninstallApps += @(Get-ChildItem HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall |
+        ForEach-Object { Get-ItemProperty $_.PSPath } |
+        Where-Object { $_.DisplayName -and $_.UninstallString -and ($_.DisplayName -like "*JDK*" -or $_.DisplayName -like "*JRE*") })
+    
+    $uninstallApps += @(Get-ChildItem HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall |
+        ForEach-Object { Get-ItemProperty $_.PSPath } |
+        Where-Object { $_.DisplayName -and $_.UninstallString -and ($_.DisplayName -like "*JDK*" -or $_.DisplayName -like "*JRE*") })
+
+    if (Test-Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall) {
+        $uninstallApps += @(Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall |
+            ForEach-Object { Get-ItemProperty $_.PSPath } |
+            Where-Object { $_.DisplayName -and $_.UninstallString -and ($_.DisplayName -like "*JDK*" -or $_.DisplayName -like "*JRE*") })
+    }
+
+    # Filter unique entries
+    $javaApps = $uninstallApps | Sort-Object DisplayName -Unique
+
+    # Log all found Java installations
+    Add-Content -Path $LogPath -Value "Installed JDK/JRE Applications:"
+    foreach ($app in $javaApps) {
+        Add-Content -Path $LogPath -Value " - $($app.DisplayName)"
+    }
+
+    # Process each Java application for uninstallation
+    foreach ($app in $javaApps) {
+        if ($app.DisplayName -eq $ExcludedVersion) {
+            # Log the excluded version
+            Write-Host "$($app.DisplayName) found but excluded from uninstallation." -ForegroundColor Yellow
+            Add-Content -Path $LogPath -Value "Excluded: $($app.DisplayName)"
+        } else {
+            if ($PSCmdlet.ShouldProcess("$($app.DisplayName)", "Uninstall")) {
+                try {
+                    Write-Host "Uninstalling $($app.DisplayName) ..." -ForegroundColor Yellow
+                    Add-Content -Path $LogPath -Value "Uninstalling: $($app.DisplayName)"
+
+                    # Process msiexec uninstall strings
+                    if ($app.UninstallString -like "msiexec.exe*") {
+                        $uninstallCommand = $app.UninstallString -replace "/I", "/X" -replace "msiexec.exe ", ""
+                        $uninstallCommand = "$uninstallCommand /qn"
+                        
+                        $exitCode = (Start-Process -FilePath "msiexec.exe" -ArgumentList $uninstallCommand -Wait -PassThru).ExitCode
                     } else {
-                        # For dynamic collections, we assume membership based on queries
-                        # Unfortunately, there is no straightforward PowerShell cmdlet to directly evaluate dynamic membership.
-                        # However, you could retrieve dynamic collections and assume that if the device is part of the evaluated query,
-                        # then it belongs to this collection.
-                        # So, we'll include the collection in our results.
-                        $deviceCollections += $collection
+                        # Process other uninstall strings
+                        if ($app.UninstallString.StartsWith('"')) {
+                            Invoke-Expression "& $($app.UninstallString)"
+                        } else {
+                            Invoke-Expression "& $($app.UninstallString) /S"
+                        }
+                        $exitCode = $LASTEXITCODE
                     }
+
+                    Write-Host "$($app.DisplayName) uninstalled - Return code: $exitCode" -ForegroundColor Green
+                    Add-Content -Path $LogPath -Value "Uninstalled: $($app.DisplayName) - Return code: $exitCode"
+                } catch {
+                    Write-Error "Failed to uninstall $($app.DisplayName): $_"
+                    Add-Content -Path $LogPath -Value "Failed to uninstall $($app.DisplayName): $_"
                 }
             }
-
-            return $deviceCollections
-        } else {
-            return $null
         }
-    } catch {
-        Write-Warning "Failed to retrieve collections for $ComputerName - $_"
-        return $null
     }
+
+    # Log completion
+    Add-Content -Path $LogPath -Value "`n----- Uninstallation Completed - $(Get-Date) -----`n"
+    Write-Host "Uninstallation process complete. Check log file at $LogPath" -ForegroundColor Cyan
 }
 
-
-
-
-
-
-
-function Get-SCCMDeviceCollectionsByName {
-    param (
-        [string]$DeviceName,
-        [string]$SiteCode
-    )
-
-    # Validate input
-    if (-not $DeviceName) {
-        Write-Error "Device name is required."
-        return
-    }
-    if (-not $SiteCode) {
-        Write-Error "Site code is required."
-        return
-    }
-
-    # Load the Configuration Manager module if it's not already loaded
-    if (-not (Get-Module -Name "$SiteCode:")) {
-        Import-Module "$($SiteCode):" -ErrorAction Stop
-    }
-
-    try {
-        # Connect to the SCCM site
-        cd "$SiteCode:"
-
-        # Get the device information
-        $device = Get-CMDevice -Name $DeviceName -ErrorAction SilentlyContinue
-
-        if (-not $device) {
-            Write-Error "Device with name '$DeviceName' not found in SCCM."
-            return
-        }
-
-        # Get all dynamic collections that contain "discovery" in their name
-        $collections = Get-CMDeviceCollection | Where-Object {
-            $_.Name -match 'discovery' -and $_.CollectionType -eq '2'  # CollectionType '2' is for dynamic collections
-        }
-
-        # Filter collections to see if the device is a member of them
-        $deviceCollections = foreach ($collection in $collections) {
-            $membership = Get-CMDeviceCollectionDirectMembershipRule -CollectionId $collection.CollectionID `
-                          -ResourceId $device.ResourceID -ErrorAction SilentlyContinue
-            if ($membership) {
-                $collection
-            }
-        }
-
-        # Output the list of collections the device belongs to
-        if ($deviceCollections) {
-            $deviceCollections | Select-Object Name, CollectionID
-        }
-        else {
-            Write-Output "No dynamic collections with 'discovery' in the name found for the device '$DeviceName'."
-        }
-
-    } catch {
-        Write-Error "An error occurred: $_"
-    }
-}
-# Example usage
-Get-SCCMDeviceCollectionsByName -DeviceName "MyDevice" -SiteCode "ABC"
-
-
-####FRESH#####
-# Load the XAML content
-[xml]$xaml = @"
-<Window x:Class="DeviceCollectionManagement"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Device Collection Management" Height="500" Width="500" Background="White">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
-        <!-- Title -->
-        <TextBlock Text="Device Collection Management" 
-                   FontWeight="Bold" FontSize="20" Foreground="SteelBlue" 
-                   HorizontalAlignment="Center" Margin="10"/>
-
-        <!-- Old Device Name Field -->
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,10,0,0">
-            <Label Content="Old Device Name:" VerticalAlignment="Center" Width="100"/>
-            <TextBox x:Name="OldDeviceNameTextBox" Width="200" Margin="5,0"/>
-            <Button x:Name="GetCollectionsButton" Content="Get Collections" Width="100" Background="SteelBlue" Foreground="White"/>
-        </StackPanel>
-        
-        <!-- New Device Name Field -->
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,10,0,0">
-            <Label Content="New Device Name:" VerticalAlignment="Center" Width="100"/>
-            <TextBox x:Name="NewDeviceNameTextBox" Width="200" Margin="5,0"/>
-            <Button x:Name="CheckDeviceButton" Content="Check Device" Width="100" Background="LightGray" IsEnabled="False"/>
-        </StackPanel>
-
-        <!-- Add Device to Collections Button -->
-        <Button x:Name="AddDeviceButton" Content="Add New Device to Collections" 
-                Grid.Row="3" Height="40" Background="Red" Foreground="White" 
-                HorizontalAlignment="Center" Margin="0,10,0,10" />
-
-        <!-- Activity Log List -->
-        <ListBox x:Name="ActivityLog" Grid.Row="4" Margin="0,10,0,0" BorderBrush="Gray" BorderThickness="1"/>
-    </Grid>
-</Window>
-"@
-
-# Create the WPF Window
-Add-Type -AssemblyName PresentationFramework
-$reader = New-Object System.Xml.XmlNodeReader $xaml
-$window = [System.Windows.Markup.XamlReader]::Load($reader)
-
-# Get controls from the XAML
-$OldDeviceNameTextBox = $window.FindName("OldDeviceNameTextBox")
-$NewDeviceNameTextBox = $window.FindName("NewDeviceNameTextBox")
-$GetCollectionsButton = $window.FindName("GetCollectionsButton")
-$CheckDeviceButton = $window.FindName("CheckDeviceButton")
-$AddDeviceButton = $window.FindName("AddDeviceButton")
-$ActivityLog = $window.FindName("ActivityLog")
-
-# Store retrieved collections in a variable
-$retrievedCollections = @()
-
-# Function to log messages to the Activity Log box
-function Log-Activity {
-    param ($message)
-    $ActivityLog.Items.Add((Get-Date -Format "HH:mm:ss") + " - " + $message)
-    $ActivityLog.ScrollIntoView($ActivityLog.Items[$ActivityLog.Items.Count - 1])
-}
-
-# Function to check if a device exists in SCCM
-function Check-DeviceExists {
-    param ($deviceName)
-    try {
-        # Assuming SCCM module is loaded
-        $device = Get-CMDevice -Name $deviceName -ErrorAction Stop
-        return $device -ne $null
-    } catch {
-        Log-Activity "Error: Device '$deviceName' not found in SCCM."
-        return $false
-    }
-}
-
-# Function to get collections for a device containing "Discovery" in the name
-function Get-DeviceCollections {
-    param ($deviceName)
-    $collections = @()
-    try {
-        # Check if device exists and retrieve its ResourceID
-        $device = Get-CMDevice -Name $deviceName -ErrorAction Stop
-        if ($device -eq $null) {
-            Log-Activity "Device '$deviceName' not found in SCCM."
-            return $collections
-        }
-
-        $deviceID = $device.ResourceID
-        # Retrieve all collections with "Discovery" in their names
-        $allCollections = Get-CMDeviceCollection | Where-Object { $_.Name -match "Discovery" }
-
-        foreach ($collection in $allCollections) {
-            # Check if the device is a member of the collection
-            $members = Get-CMDeviceCollectionMember -CollectionName $collection.Name
-            if ($members | Where-Object { $_.ResourceID -eq $deviceID }) {
-                $collections += $collection.Name
-            }
-        }
-
-        return $collections
-    } catch {
-        Log-Activity "Error: Unable to retrieve collections for device '$deviceName'."
-        return $collections
-    }
-}
-
-# Event handler for "Get Collections" button
-$GetCollectionsButton.Add_Click({
-    $oldDeviceName = $OldDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($oldDeviceName)) {
-        Log-Activity "Please enter an old device name."
-        return
-    }
-
-    # Check if the old device exists in SCCM
-    if (Check-DeviceExists -deviceName $oldDeviceName) {
-        Log-Activity "Old device '$oldDeviceName' found in SCCM."
-        
-        # Get collections containing the old device and with "Discovery" in the name
-        $retrievedCollections = Get-DeviceCollections -deviceName $oldDeviceName
-        if ($retrievedCollections.Count -gt 0) {
-            Log-Activity "Collections retrieved: $($retrievedCollections -join ', ')"
-            $CheckDeviceButton.IsEnabled = $true  # Enable the "Check Device" button
-        } else {
-            Log-Activity "No collections found with 'Discovery' in the name for device '$oldDeviceName'."
-            $CheckDeviceButton.IsEnabled = $false
-        }
-    } else {
-        Log-Activity "Old device '$oldDeviceName' not found in SCCM."
-        $retrievedCollections = @()  # Clear any previously retrieved collections
-        $CheckDeviceButton.IsEnabled = $false
-    }
-})
-
-# Event handler for "Check Device" button
-$CheckDeviceButton.Add_Click({
-    $newDeviceName = $NewDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($newDeviceName)) {
-        Log-Activity "Please enter a new device name."
-        return
-    }
-
-    # Check if the new device exists in SCCM
-    if (Check-DeviceExists -deviceName $newDeviceName) {
-        Log-Activity "New device '$newDeviceName' already exists in SCCM."
-    } else {
-        Log-Activity "New device '$newDeviceName' is available for addition."
-    }
-})
-
-# Event handler for "Add New Device to Collections" button
-$AddDeviceButton.Add_Click({
-    $newDeviceName = $NewDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($newDeviceName)) {
-        Log-Activity "Please enter a new device name before adding."
-        return
-    }
-
-    if ($retrievedCollections.Count -eq 0) {
-        Log-Activity "No collections to add the new device to. Use 'Get Collections' first."
-        return
-    }
-
-    # Add the new device to each retrieved collection
-    foreach ($collection in $retrievedCollections) {
-        try {
-            Add-CMDeviceToCollection -DeviceName $newDeviceName -CollectionName $collection
-            Log-Activity "Added '$newDeviceName' to collection '$collection'."
-        } catch {
-            Log-Activity "Error adding '$newDeviceName' to collection '$collection'."
-        }
-    }
-})
-
-# Show the WPF Window
-$window.ShowDialog() | Out-Null
-##Fetch Collections of a device##
-
-function Get-CMCollectionOfDevice {
-    Param (
-        # Computer name (e.g., "Client01")
-        [Parameter(Mandatory=$true)]
-        [string]$Computer
-    )
-
-    # Set the SiteCode and SiteServer directly within the function
-    $SiteCode = "PRI"         # Replace with your Configuration Manager Site Code
-    $SiteServer = "contoso-01.corp.com"  # Replace with the Site Server name
-
-    # Set up the WMI namespace using the SiteCode
-    $Namespace = "root\SMS\site_$SiteCode"
-
-    # Initialize an empty array to store the filtered device collections
-    $devicecollections = @()
-
-    # Begin retrieving the ResourceID for the specified computer
-    Write-Progress -Activity "Retrieving ResourceID for computer $Computer" -Status "Retrieving data"
-    $ResIDQuery = Get-WmiObject -ComputerName $SiteServer -Namespace $Namespace -Class "SMS_R_SYSTEM" -Filter "Name='$Computer'"
-
-    # Check if the computer exists
-    if ([string]::IsNullOrEmpty($ResIDQuery)) {
-        Write-Output "System $Computer does not exist in Site $SiteCode"
-    } else {
-        # Get all collections where the computer is a member
-        $Collections = Get-WmiObject -ComputerName $SiteServer -Class sms_fullcollectionmembership -Namespace $Namespace -Filter "ResourceID = '$($ResIDQuery.ResourceId)'"
-        $colcount = $Collections.Count
-
-        # Loop through each collection and retrieve its details if it contains "Discovery" in the name
-        $si = 1
-        foreach ($res in $Collections) {
-            $colid = $res.CollectionID
-            Write-Progress -Activity "Processing $si / $colcount" -Status "Retrieving Collection data" -PercentComplete (($si / $colcount) * 100)
-
-            # Get detailed information for each collection and filter by "Discovery" in the name
-            $collectioninfo = Get-WmiObject -ComputerName $SiteServer -Namespace $Namespace -Class "SMS_Collection" -Filter "CollectionID='$colid'"
-
-            # Only add collections with "Discovery" in the Name property
-            if ($collectioninfo.Name -match "Discovery") {
-                $object = New-Object -TypeName PSObject
-                $object | Add-Member -MemberType NoteProperty -Name "CollectionID" -Value $collectioninfo.CollectionID
-                $object | Add-Member -MemberType NoteProperty -Name "Name" -Value $collectioninfo.Name
-                $object | Add-Member -MemberType NoteProperty -Name "Comment" -Value $collectioninfo.Comment
-                $object | Add-Member -MemberType NoteProperty -Name "LastRefreshTime" -Value ([Management.ManagementDateTimeConverter]::ToDateTime($collectioninfo.LastRefreshTime))
-                $devicecollections += $object
-            }
-            $si++
-        }
-    }
-
-    # Output the filtered device collections array
-    $devicecollections
-}
-
-# Example of how to call the function with a computer name
-Get-CMCollectionOfDevice -Computer "Client01"
-
-
-# WITH GETDEVICE Function#
-# Load the XAML content
-[xml]$xaml = @"
-<Window x:Class="DeviceCollectionManagement"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Device Collection Management" Height="500" Width="500" Background="White">
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
-        <!-- Title -->
-        <TextBlock Text="Device Collection Management" 
-                   FontWeight="Bold" FontSize="20" Foreground="SteelBlue" 
-                   HorizontalAlignment="Center" Margin="10"/>
-
-        <!-- Old Device Name Field -->
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,10,0,0">
-            <Label Content="Old Device Name:" VerticalAlignment="Center" Width="100"/>
-            <TextBox x:Name="OldDeviceNameTextBox" Width="200" Margin="5,0"/>
-            <Button x:Name="GetCollectionsButton" Content="Get Collections" Width="100" Background="SteelBlue" Foreground="White"/>
-        </StackPanel>
-        
-        <!-- New Device Name Field -->
-        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,10,0,0">
-            <Label Content="New Device Name:" VerticalAlignment="Center" Width="100"/>
-            <TextBox x:Name="NewDeviceNameTextBox" Width="200" Margin="5,0"/>
-            <Button x:Name="CheckDeviceButton" Content="Check Device" Width="100" Background="LightGray" IsEnabled="False"/>
-        </StackPanel>
-
-        <!-- Add Device to Collections Button -->
-        <Button x:Name="AddDeviceButton" Content="Add New Device to Collections" 
-                Grid.Row="3" Height="40" Background="Red" Foreground="White" 
-                HorizontalAlignment="Center" Margin="0,10,0,10" />
-
-        <!-- Activity Log List -->
-        <ListBox x:Name="ActivityLog" Grid.Row="4" Margin="0,10,0,0" BorderBrush="Gray" BorderThickness="1"/>
-    </Grid>
-</Window>
-"@
-
-# Create the WPF Window
-Add-Type -AssemblyName PresentationFramework
-$reader = New-Object System.Xml.XmlNodeReader $xaml
-$window = [System.Windows.Markup.XamlReader]::Load($reader)
-
-# Get controls from the XAML
-$OldDeviceNameTextBox = $window.FindName("OldDeviceNameTextBox")
-$NewDeviceNameTextBox = $window.FindName("NewDeviceNameTextBox")
-$GetCollectionsButton = $window.FindName("GetCollectionsButton")
-$CheckDeviceButton = $window.FindName("CheckDeviceButton")
-$AddDeviceButton = $window.FindName("AddDeviceButton")
-$ActivityLog = $window.FindName("ActivityLog")
-
-# Store retrieved collections in a variable
-$retrievedCollections = @()
-
-# Function to log messages to the Activity Log box
-function Log-Activity {
-    param ($message)
-    $ActivityLog.Items.Add((Get-Date -Format "HH:mm:ss") + " - " + $message)
-    $ActivityLog.ScrollIntoView($ActivityLog.Items[$ActivityLog.Items.Count - 1])
-}
-
-# Function to check if a device exists in SCCM
-function Check-DeviceExists {
-    param ($deviceName)
-    try {
-        # Assuming SCCM module is loaded
-        $device = Get-CMDevice -Name $deviceName -ErrorAction Stop
-        return $device -ne $null
-    } catch {
-        Log-Activity "Error: Device '$deviceName' not found in SCCM."
-        return $false
-    }
-}
-
-# Function to get collections for a device containing "Discovery" in the name
-function Get-CMCollectionOfDevice {
-    Param (
-        [Parameter(Mandatory=$true)]
-        [string]$Computer
-    )
-
-    $SiteCode = "PRI"         # Replace with your Configuration Manager Site Code
-    $SiteServer = "contoso-01.corp.com"  # Replace with the Site Server name
-    $Namespace = "root\SMS\site_$SiteCode"
-    $devicecollections = @()
-
-    Write-Progress -Activity "Retrieving ResourceID for computer $Computer" -Status "Retrieving data"
-    $ResIDQuery = Get-WmiObject -ComputerName $SiteServer -Namespace $Namespace -Class "SMS_R_SYSTEM" -Filter "Name='$Computer'"
-
-    if ([string]::IsNullOrEmpty($ResIDQuery)) {
-        Log-Activity "System $Computer does not exist in Site $SiteCode"
-    } else {
-        $Collections = Get-WmiObject -ComputerName $SiteServer -Class sms_fullcollectionmembership -Namespace $Namespace -Filter "ResourceID = '$($ResIDQuery.ResourceId)'"
-        $colcount = $Collections.Count
-        $si = 1
-
-        foreach ($res in $Collections) {
-            $colid = $res.CollectionID
-            Write-Progress -Activity "Processing $si / $colcount" -Status "Retrieving Collection data" -PercentComplete (($si / $colcount) * 100)
-
-            $collectioninfo = Get-WmiObject -ComputerName $SiteServer -Namespace $Namespace -Class "SMS_Collection" -Filter "CollectionID='$colid'"
-
-            if ($collectioninfo.Name -match "Discovery") {
-                $object = New-Object -TypeName PSObject
-                $object | Add-Member -MemberType NoteProperty -Name "CollectionID" -Value $collectioninfo.CollectionID
-                $object | Add-Member -MemberType NoteProperty -Name "Name" -Value $collectioninfo.Name
-                $object | Add-Member -MemberType NoteProperty -Name "Comment" -Value $collectioninfo.Comment
-                $object | Add-Member -MemberType NoteProperty -Name "LastRefreshTime" -Value ([Management.ManagementDateTimeConverter]::ToDateTime($collectioninfo.LastRefreshTime))
-                $devicecollections += $object
-            }
-            $si++
-        }
-    }
-    return $devicecollections
-}
-
-# Event handler for "Get Collections" button
-$GetCollectionsButton.Add_Click({
-    $oldDeviceName = $OldDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($oldDeviceName)) {
-        Log-Activity "Please enter an old device name."
-        return
-    }
-
-    # Check if the old device exists in SCCM
-    if (Check-DeviceExists -deviceName $oldDeviceName) {
-        Log-Activity "Old device '$oldDeviceName' found in SCCM."
-        
-        # Get collections containing the old device and with "Discovery" in the name
-        $retrievedCollections = Get-CMCollectionOfDevice -Computer $oldDeviceName
-        if ($retrievedCollections.Count -gt 0) {
-            Log-Activity "Collections retrieved: $($retrievedCollections | ForEach-Object { $_.Name } -join ', ')"
-            $CheckDeviceButton.IsEnabled = $true  # Enable the "Check Device" button
-        } else {
-            Log-Activity "No collections found with 'Discovery' in the name for device '$oldDeviceName'."
-            $CheckDeviceButton.IsEnabled = $false
-        }
-    } else {
-        Log-Activity "Old device '$oldDeviceName' not found in SCCM."
-        $retrievedCollections = @()  # Clear any previously retrieved collections
-        $CheckDeviceButton.IsEnabled = $false
-    }
-})
-
-# Event handler for "Check Device" button
-$CheckDeviceButton.Add_Click({
-    $newDeviceName = $NewDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($newDeviceName)) {
-        Log-Activity "Please enter a new device name."
-        return
-    }
-
-    # Check if the new device exists in SCCM
-    if (Check-DeviceExists -deviceName $newDeviceName) {
-        Log-Activity "New device '$newDeviceName' already exists in SCCM."
-    } else {
-        Log-Activity "New device '$newDeviceName' is available for addition."
-    }
-})
-
-# Event handler for "Add New Device to Collections" button
-$AddDeviceButton.Add_Click({
-    $newDeviceName = $NewDeviceNameTextBox.Text
-    if ([string]::IsNullOrWhiteSpace($newDeviceName)) {
-        Log-Activity "Please enter a new device name before adding."
-        return
-    }
-
-    if ($retrievedCollections.Count -eq 0) {
-        Log-Activity "No collections to add the new device to. Use 'Get Collections' first."
-        return
-    }
-
-    # Add the new device to each retrieved collection
-    foreach ($collection in $retrievedCollections) {
-        try {
-            Add-CMDeviceToCollection -DeviceName $newDeviceName -CollectionName $collection.Name
-            Log-Activity "Added '$newDeviceName' to collection '$($collection.Name)'."
-        } catch {
-            Log-Activity "Error adding '$newDeviceName' to collection '$($collection.Name)'."
-        }
-    }
-})
-
-# Show the WPF Window
-$window.ShowDialog() | Out-Null
-
-
-# Extract the names of the collections into a new array and join them for output
-$collectionNames = $retrievedCollections | ForEach-Object { $_.Name }
-Log-Activity "Collections retrieved: $($collectionNames -join ', ')"
-
-
-# Declare $retrievedCollections as a global variable
-$global:retrievedCollections = @()
-
-
-# Import the SCCM PowerShell module
-Import-Module "$Env:SMS_ADMIN_UI_PATH\..\ConfigurationManager.psd1" -ErrorAction Stop
+# Call the function
+Uninstall-Java -LogPath "C:\Logs\UninstallJava.log" -ExcludedVersion "Oracle - Java 8 Update 431"
