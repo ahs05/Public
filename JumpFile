@@ -1,25 +1,4 @@
-**Subject:** Request for Guidance on Access Provisioning for New Team Member  
 
-Dear [Admin Team / Specific Contact Name],  
-
-I hope this email finds you well.  
-
-A new member has recently joined our team to assist with the ongoing **Oracle to Azul Migration** efforts. I would appreciate your guidance on how to grant him the necessary access to the following systems:  
-
-1. **SCCM Console**  
-   - Required to monitor and manage deployments as part of the migration.  
-
-2. **SCCM Database**  
-   - Access to run queries for reporting and troubleshooting purposes.  
-
-3. **Active Directory Users and Computers (ADUC) Console**  
-   - Needed for managing user accounts and performing directory-related tasks associated with the migration.  
-
-Please let me know the process and prerequisites for provisioning these accesses, as well as any forms or approvals required. If additional information about the new team member is needed, I can provide that promptly.  
-
-Thank you for your assistance! Please let me know if you have any questions or need further clarification.  
-
-Best regards,  
 
 
 
