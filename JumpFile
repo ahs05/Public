@@ -1,13 +1,4 @@
-Download the media for the New JDK Discovery Tool from Azul's FTP site.
-Package the tool and set the Command Line as:
-amt-liveproc-scan.exe -WmiClass=AZUL_JavaLiveInventory.
-Update the SCCM Client settings policy (Hardware Inventory Classes) to include the new WMI Class (AZUL_JavaLiveInventory) for inventory.
-Create a Device Collection in SCCM and populate it with the list of your target machines. Deploy the packaged application to the target device collections as a required deployment, with rerun behavior set to run every 2 hours for 2–3 days (based on your requirements).
-The results will now be saved on the local WMI repository and can be exported using SCCM.
-Collect a full report from the SCCM database and export the data to Excel. For verification, you can use the following SQL query:
 
-
-Send the data to Azul for further analysis.
 
 
 #Uninstall Java
