@@ -1,26 +1,99 @@
-Here’s a **Quick Reference Steps – Teams Cleanup Project Guide**, following the same structured approach as your previous migration method guide.
+# Function to uninstall Java while excluding specific versions
+function Uninstall-Java {
+    [CmdletBinding(SupportsShouldProcess)]
+    param (
+        [string]$LogPath = "C:\Windows\Logs\Software\UninstallJava.log",
+        [string]$ExcludedVersion = "Java 8 Update 431"
+    )
 
----
+    # Initialize the log file
+    if (!(Test-Path $LogPath)) {
+        New-Item -ItemType File -Path $LogPath -Force | Out-Null
+    }
 
-### **Quick Reference Steps – Teams Cleanup Project Guide**
+    # Log start time
+    Add-Content -Path $LogPath -Value "`n----- Java Uninstallation Log - $(Get-Date) -----`n"
 
-| No. | Method | Phase Input | Phase Output |
-|----|---------|-------------|--------------|
-| **1** | **Full Inventory (Target Systems) and Classification** | Identify all systems with Classic Teams, New Teams, and Teams Meeting Add-in installed. Gather details on versions and dependencies. | Fully inventoried system landscape with details on installed Teams components. |
-| **2** | **Governance and Compliance Validation** | Verify compliance requirements for Teams removal and ensure licensing implications are accounted for. | Approved plan for Teams removal and replacement with necessary Office 365 components. |
-| **3** | **Stakeholder Discussions & Application Team Roundtables** | Engage IT admins and end-user groups to discuss potential issues and dependencies of Teams removal and reinstallation. | Confirmed system requirements and dependencies for Teams installation. |
-| **4** | **Planning all the Changes** | Define automated uninstallation process, reboot cycles, SCCM deployment strategy, and fallback mechanisms. | Open Change Tickets and necessary approvals for Teams migration and cleanup. |
-| **5** | **Implementation Strategy - Teams Cleanup & Office 365 Installation** | Execute uninstallation of Classic Teams, New Teams, and Teams Meeting Add-in. Perform reboots and reinstall required Office 365 components, including new Teams and Meeting Add-in. | Successfully installed latest Office 365 with Teams and Teams Meeting Add-in verified. |
-| **6** | **Validation & Post-Cleanup Testing** | Launch Outlook, schedule meetings, and verify if Teams icons appear in the top ribbon. If missing, trigger SCCM reinstallation of the Teams Meeting Add-in. | Verified successful integration of Teams and Teams Meeting Add-in in Outlook. |
-| **7** | **Stabilization Phase & Orphaned File Cleanup** | Monitor system performance, check for issues, and remove orphaned Teams desktop icons. Ensure silent uninstallation of legacy Teams components is successful. | Confirmed removal of old Teams versions, elimination of redundant desktop icons, and documented resolutions for any encountered issues. |
+    Write-Host "Gathering installed programs..." -ForegroundColor Green
+    $uninstallApps = @()
 
----
+    # Collect uninstall entries from registry
+    $uninstallApps += @(Get-ChildItem HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall |
+        ForEach-Object { Get-ItemProperty $_.PSPath } |
+        Where-Object { $_.DisplayName -and $_.UninstallString -and ($_.DisplayName -like "Java SE Development Kit*" -or $_.DisplayName -like "Java 8 Update*") })
+    
+    $uninstallApps += @(Get-ChildItem HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall |
+        ForEach-Object { Get-ItemProperty $_.PSPath } |
+        Where-Object { $_.DisplayName -and $_.UninstallString -and ($_.DisplayName -like "Java SE Development Kit*" -or $_.DisplayName -like "Java 8 Update*") })
 
-### **End Goal:**
-1. Establish a structured and repeatable process for deploying **Office 365 with the latest Teams and Teams Meeting Add-in for Outlook** across all target systems.
-2. Implement a **silent, automated** uninstallation of Classic Teams, New Teams, and the Teams Machine-Wide Installer without disrupting users.
-3. Ensure that the transition is seamless and that **all orphaned desktop icons** and outdated files are removed.
+    if (Test-Path HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall) {
+        $uninstallApps += @(Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall |
+            ForEach-Object { Get-ItemProperty $_.PSPath } |
+            Where-Object { $_.DisplayName -and $_.UninstallString -and ($_.DisplayName -like "Java SE Development Kit*" -or $_.DisplayName -like "Java 8 Update*") })
+    }
 
----
+    # Filter unique entries
+    $javaApps = $uninstallApps | Sort-Object DisplayName -Unique
 
-Would you like me to tweak any sections or add more details? 🚀
+    # Log all found Java installations
+    Add-Content -Path $LogPath -Value "Installed JDK/JRE Applications:"
+    foreach ($app in $javaApps) {
+        Add-Content -Path $LogPath -Value " - $($app.DisplayName)"
+    }
+
+    # Process each Java application for uninstallation
+    foreach ($app in $javaApps) {
+        if ($app.DisplayName -like "$ExcludedVersion*") {
+            # Log the excluded version
+            Write-Host "$($app.DisplayName) found but excluded from uninstallation." -ForegroundColor Yellow
+            Add-Content -Path $LogPath -Value "Excluded: $($app.DisplayName)"
+        } else {
+            if ($PSCmdlet.ShouldProcess("$($app.DisplayName)", "Uninstall")) {
+                try {
+                    Write-Host "Uninstalling $($app.DisplayName) ..." -ForegroundColor Yellow
+                    Add-Content -Path $LogPath -Value "Uninstalling: $($app.DisplayName)"
+
+                    # Process msiexec uninstall strings
+                    if ($app.UninstallString -like "msiexec.exe*") {
+                        $uninstallCommand = $app.UninstallString -replace "/I", "/X" -replace "msiexec.exe ", ""
+                        $uninstallCommand = "$uninstallCommand /qn"
+                        
+                        $exitCode = (Start-Process -FilePath "msiexec.exe" -ArgumentList $uninstallCommand -Wait -PassThru).ExitCode
+                    } else {
+                        # Process other uninstall strings
+                        if ($app.UninstallString.StartsWith('"')) {
+                            Invoke-Expression "& $($app.UninstallString)"
+                        } else {
+                            Invoke-Expression "& $($app.UninstallString) /S"
+                        }
+                        $exitCode = $LASTEXITCODE
+                    }
+
+                    Write-Host "$($app.DisplayName) uninstalled - Return code: $exitCode" -ForegroundColor Green
+                    Add-Content -Path $LogPath -Value "Uninstalled: $($app.DisplayName) - Return code: $exitCode"
+                } catch {
+                    Write-Error "Failed to uninstall $($app.DisplayName): $_"
+                    Add-Content -Path $LogPath -Value "Failed to uninstall $($app.DisplayName): $_"
+                }
+            }
+        }
+    }
+
+    # Log completion
+    Add-Content -Path $LogPath -Value "`n----- Uninstallation Completed - $(Get-Date) -----`n"
+    Write-Host "Uninstallation process complete. Check log file at $LogPath" -ForegroundColor Cyan
+}
+
+# Call the function
+Uninstall-Java -LogPath "C:\Windows\Logs\Software\UninstallJava.log" -ExcludedVersion "Java 8 Update 431"
+
+    # Set variables to indicate value and key to set
+    $RegistryPath = 'HKLM:\Software\ACG\JavaUninstall'
+    $Name     	= 'Removed'
+    $Value    	= '1'
+    # Create the key if it does not exist
+    If (-NOT (Test-Path $RegistryPath)) {
+      New-Item -Path $RegistryPath -Force | Out-Null
+    }  
+    # Now set the value
+    New-ItemProperty -Path $RegistryPath -Name $Name -Value $Value -PropertyType String -Force
