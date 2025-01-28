@@ -1,50 +1,26 @@
+Here’s a **Quick Reference Steps – Teams Cleanup Project Guide**, following the same structured approach as your previous migration method guide.
 
+---
 
+### **Quick Reference Steps – Teams Cleanup Project Guide**
 
+| No. | Method | Phase Input | Phase Output |
+|----|---------|-------------|--------------|
+| **1** | **Full Inventory (Target Systems) and Classification** | Identify all systems with Classic Teams, New Teams, and Teams Meeting Add-in installed. Gather details on versions and dependencies. | Fully inventoried system landscape with details on installed Teams components. |
+| **2** | **Governance and Compliance Validation** | Verify compliance requirements for Teams removal and ensure licensing implications are accounted for. | Approved plan for Teams removal and replacement with necessary Office 365 components. |
+| **3** | **Stakeholder Discussions & Application Team Roundtables** | Engage IT admins and end-user groups to discuss potential issues and dependencies of Teams removal and reinstallation. | Confirmed system requirements and dependencies for Teams installation. |
+| **4** | **Planning all the Changes** | Define automated uninstallation process, reboot cycles, SCCM deployment strategy, and fallback mechanisms. | Open Change Tickets and necessary approvals for Teams migration and cleanup. |
+| **5** | **Implementation Strategy - Teams Cleanup & Office 365 Installation** | Execute uninstallation of Classic Teams, New Teams, and Teams Meeting Add-in. Perform reboots and reinstall required Office 365 components, including new Teams and Meeting Add-in. | Successfully installed latest Office 365 with Teams and Teams Meeting Add-in verified. |
+| **6** | **Validation & Post-Cleanup Testing** | Launch Outlook, schedule meetings, and verify if Teams icons appear in the top ribbon. If missing, trigger SCCM reinstallation of the Teams Meeting Add-in. | Verified successful integration of Teams and Teams Meeting Add-in in Outlook. |
+| **7** | **Stabilization Phase & Orphaned File Cleanup** | Monitor system performance, check for issues, and remove orphaned Teams desktop icons. Ensure silent uninstallation of legacy Teams components is successful. | Confirmed removal of old Teams versions, elimination of redundant desktop icons, and documented resolutions for any encountered issues. |
 
-#Uninstall Java
-$uninstallapplist = @(Get-ChildItem HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall | 
-    foreach-object {get-itemproperty $_.PSPath} |
-    select-object DisplayName,InstallLocation,uninstallstring |
-    Where-Object {$_.DisplayName -ne $null -and $_.uninstallstring -ne $null -and $_.InstallLocation -ne $null})
+---
 
-$uninstallapplist += @(Get-ChildItem HKLM:\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall | 
-    foreach-object {get-itemproperty $_.PSPath} |
-    select-object DisplayName,InstallLocation,uninstallstring |
-    Where-Object {$_.DisplayName -ne $null -and $_.uninstallstring -ne $null -and $_.InstallLocation -ne $null})
+### **End Goal:**
+1. Establish a structured and repeatable process for deploying **Office 365 with the latest Teams and Teams Meeting Add-in for Outlook** across all target systems.
+2. Implement a **silent, automated** uninstallation of Classic Teams, New Teams, and the Teams Machine-Wide Installer without disrupting users.
+3. Ensure that the transition is seamless and that **all orphaned desktop icons** and outdated files are removed.
 
-if (test-path HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall) {
-	$uninstallapplist += @(Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall | 
-	    ForEach-Object {get-itemproperty $_.PSPath} |
-	    select-object DisplayName,InstallLocation,uninstallstring |
-	    Where-Object {$_.DisplayName -ne $null -and $_.uninstallstring -ne $null -and $_.InstallLocation -ne $null})
-}
+---
 
-# You can add additional uninstalls by copying and pasting the {$_.DisplayName -like "*Ask*" -or {$_.DisplayName -like "*Ask*" -or...
-$uninstallapplist = $uninstallapplist | Where-Object {$_.InstallLocation -like "*jre*" } |
-                                             sort-object DisplayName -Unique
-
-
-# Now that we have the list - let's go through each one and uninstall it
-
-foreach ($app in $uninstallapplist) {
-	write-host "Uninstalling $($app.displayname) ...."
-	if ($app.uninstallstring -like "msiexec.exe*") { 
-    	$app.uninstallstring = $app.uninstallstring -replace "/I","/X"  
-    	$app.uninstallstring = $app.uninstallstring -replace "msiexec.exe ","" 
-    	$app.uninstallstring = "$($app.uninstallstring) /qn"
-		
-		$retcode = (start-process -filepath "msiexec.exe" -ArgumentList "$($app.uninstallstring)" -wait -passthru).exitcode
-		
-	}
-	# If the uninstall command is not an msiexec program then we do things differently - Note: I have included the following code but not tested it yet - It should work :-)
-	else {
-		# If the uninstall command itself has double quotes around it because it has spaces in the path, then we have to use the "&" prefix
-		if ($app.UninstallString[0] -eq '"') {Invoke-Expression "& $('$app.uninstallstring')"}
-		# Otherwise we just invoke the uninstall string 
-		else {Invoke-Expression "& $('$app.uninstallstring') /S"}
-		# and get the exit code
-		$retcode = $LASTEXITCODE
-	}
-	write-host "$($app.displayname) uninstalled - Return code: $retcode"
-}
+Would you like me to tweak any sections or add more details? 🚀
