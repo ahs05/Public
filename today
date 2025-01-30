@@ -152,3 +152,9 @@ if (-NOT (Test-Path $RegistryPath)) {
 # Set registry value
 New-ItemProperty -Path $RegistryPath -Name $Name -Value $Value -PropertyType String -Force | Out-Null
 Write-Host "Registry flag set: $RegistryPath\$Name = $Value" -ForegroundColor Green
+
+
+Where-Object { 
+    $_.DisplayName -and $_.UninstallString -and ($_.DisplayName -match "Java\s+\d+\s+Update" -or $_.DisplayName -like "Java SE Development Kit*") 
+}
+
