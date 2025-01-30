@@ -1,1 +1,1 @@
-d
+Ansible	Used for configuration management, software provisioning, and infrastructure automation. Primarily for automating patch management and system configurations.	Expanding automation scope for cloud deployments (Azure, AWS). Potential integration with SCCM and Intune for hybrid automation.	Hands-on experience in writing playbooks, automating server configurations, and managing IT infrastructure at scale.
