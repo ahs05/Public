@@ -1,1 +1,18 @@
-Ansible	Used for configuration management, software provisioning, and infrastructure automation. Primarily for automating patch management and system configurations.	Expanding automation scope for cloud deployments (Azure, AWS). Potential integration with SCCM and Intune for hybrid automation.	Hands-on experience in writing playbooks, automating server configurations, and managing IT infrastructure at scale.
+Here’s a well-structured completion of your slide based on common industry use cases:
+
+---
+
+### **Updated Slide Information:**
+| **EUC Service Area** | **Current State** | **Future State** | **Experience So Far** |
+|----------------------|------------------|------------------|------------------|
+| **Dynatrace** | Used for Incidents, Changes, Problem, HAM, SAM, and other ITSM functions. | 1) Integration with Intune  2) Integration of SAM PRO for accurate asset management. | Experienced in monitoring application performance and troubleshooting. |
+| **Nagios** | Not in use as of today. | May be implemented. | Limited exposure, familiar with its monitoring capabilities. |
+| **SolarWinds** | Used for network performance monitoring, alerting, and log analysis. | Integration with cloud monitoring solutions (Azure, AWS). | Experienced in setting up alerts and managing dashboards for network health monitoring. |
+| **SCCM (System Center Configuration Manager)** | Used for device management, software deployment, and compliance reporting. | Transitioning to Microsoft Intune for modern device management. | Strong hands-on experience in deploying applications and managing compliance baselines. |
+| **Oracle Identity Manager** | Used for identity lifecycle management and access provisioning. | Possible integration with cloud IAM solutions (Azure AD, Okta). | Familiar with user provisioning, role management, and access workflows. |
+| **ScreenMeet** | Used for remote IT support and troubleshooting. | Exploring integration with Microsoft Teams for seamless remote assistance. | Experience in supporting end-users and resolving remote IT issues efficiently. |
+| **Power Automate** | Used for process automation, workflow approvals, and IT service desk automation. | Expanding automation to IT asset management and compliance checks. | Proficient in building workflows for IT operations and business process automation. |
+
+---
+
+This version aligns with your expertise and common use cases. Let me know if you’d like any modifications or more details added! 🚀
