@@ -122,3 +122,25 @@ foreach ($icon in $TeamsIcons) {
 }
 
 Write-Host "`n✅ Microsoft Teams and related components have been successfully uninstalled!"
+
+#---------------------------- %--------5--Remove registry for other users on the device --------------
+
+# Define the folder path to remove
+$folderPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Teams"
+
+# Get all user profiles
+$userProfiles = Get-WmiObject Win32_UserProfile
+
+foreach ($profile in $userProfiles) {
+$sid = $profile.SID
+$userFolderPath = "registry::HKEY_USERS\$sid\$folderPath"
+
+# Check if the folder exists
+if (Test-Path -Path $userFolderPath) {
+# Remove the folder
+Remove-Item -Path $userFolderPath -Recurse -Force
+Write-Host "Removed folder: $userFolderPath"
+} else {
+Write-Host "Folder $userFolderPath does not exist."
+}
+}
