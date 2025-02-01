@@ -22,49 +22,49 @@ function Uninstall-TeamsClassic {
     }
 }
 
-# ----------------------- 1️⃣ Remove Teams Machine-Wide Installer -----------------------
+# Remove Teams Machine-Wide Installer
 $registryPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"
 
-Write-Host "`n🔍 Searching for Teams Machine-Wide Installer..."
+Write-Host "Searching for Teams Machine-Wide Installer..."
 
 $MachineWide = Get-ItemProperty -Path "$registryPath\*" -ErrorAction SilentlyContinue | 
                Where-Object { $_.DisplayName -eq "Teams Machine-Wide Installer" }
 
 if ($MachineWide) {
-    Write-Host "📌 Found Teams Machine-Wide Installer. Uninstalling..."
+    Write-Host "Found Teams Machine-Wide Installer. Uninstalling..."
     Start-Process -FilePath "msiexec.exe" -ArgumentList "/x $($MachineWide.PSChildName) /qn" -NoNewWindow -Wait
-    Write-Host "✅ Teams Machine-Wide Installer removed."
+    Write-Host "Teams Machine-Wide Installer removed."
 } else {
-    Write-Host "❌ Teams Machine-Wide Installer not found."
+    Write-Host "Teams Machine-Wide Installer not found."
 }
 
-# ----------------------- 2️⃣ Remove Microsoft Teams for All Users -----------------------
-Write-Host "`n🔍 Searching for Teams installations for all users..."
+# Remove Microsoft Teams for All Users
+Write-Host "Searching for Teams installations for all users..."
 
 $AllUsers = Get-ChildItem -Path "$($ENV:SystemDrive)\Users"
 
 foreach ($User in $AllUsers) {
-    Write-Host "👤 Processing user: $($User.Name)"
+    Write-Host "Processing user: $($User.Name)"
 
     # Define Installation Paths
     $localAppData = "$($ENV:SystemDrive)\Users\$($User.Name)\AppData\Local\Microsoft\Teams"
     $programData = "$($env:ProgramData)\$($User.Name)\Microsoft\Teams"
 
     if (Test-Path "$localAppData\Current\Teams.exe") {
-        Write-Host "  🚀 Uninstalling Teams for user $($User.Name) from LocalAppData"
+        Write-Host "Uninstalling Teams for user $($User.Name) from LocalAppData"
         Uninstall-TeamsClassic -TeamsPath $localAppData
     }
     elseif (Test-Path "$programData\Current\Teams.exe") {
-        Write-Host "  🚀 Uninstalling Teams for user $($User.Name) from ProgramData"
+        Write-Host "Uninstalling Teams for user $($User.Name) from ProgramData"
         Uninstall-TeamsClassic -TeamsPath $programData
     }
     else {
-        Write-Host "  ✅ No Teams installation found for user $($User.Name)."
+        Write-Host "No Teams installation found for user $($User.Name)."
     }
 }
 
-# ----------------------- 3️⃣ Uninstall Microsoft Teams Meeting Add-in for Office -----------------------
-Write-Host "`n🔍 Searching for Microsoft Teams Meeting Add-in for Microsoft Office..."
+# Uninstall Microsoft Teams Meeting Add-in for Microsoft Office
+Write-Host "Searching for Microsoft Teams Meeting Add-in for Microsoft Office..."
 
 $registryPaths = @(
     "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
@@ -79,12 +79,19 @@ foreach ($regPath in $registryPaths) {
 
     foreach ($app in $installedApps) {
         if ($app) {
-            Write-Host "📌 Found $addInName. Checking install location..."
+            Write-Host "Found $addInName. Checking install location..."
 
-            $installedSource = $app.InstalledLocation ?? $app.InstallSource
+            # Get InstalledLocation or InstallSource (PowerShell 5.1 Compatible)
+            $installedSource = if ($app.PSObject.Properties['InstalledLocation']) { 
+                $app.InstalledLocation 
+            } elseif ($app.PSObject.Properties['InstallSource']) { 
+                $app.InstallSource 
+            } else { 
+                $null 
+            }
 
             if ($installedSource -and ($installedSource -notlike "C:\Program Files\WindowsApps*")) {
-                Write-Host "🗑️ Uninstalling $addInName from $installedSource"
+                Write-Host "Uninstalling $addInName from $installedSource"
 
                 if ($app.PSChildName -match "^{.*}$") {
                     # MSI-based uninstall
@@ -97,50 +104,28 @@ foreach ($regPath in $registryPaths) {
                     Start-Process -FilePath "cmd.exe" -ArgumentList "/c $uninstallCmd" -NoNewWindow -Wait
                 }
 
-                Write-Host "✅ $addInName successfully uninstalled."
+                Write-Host "$addInName successfully uninstalled."
             } else {
-                Write-Host "❌ $addInName is installed in WindowsApps and will not be removed."
+                Write-Host "$addInName is installed in WindowsApps and will not be removed."
             }
         }
     }
 }
 
-# ----------------------- 4️⃣ Remove Leftover Teams Folders & Icons -----------------------
-Write-Host "`n🗑️ Removing old Teams folders and shortcuts..."
+# Remove Leftover Teams Folders & Icons
+Write-Host "Removing old Teams folders and shortcuts..."
 
 $TeamsFolders = Get-ChildItem -Path "$($ENV:SystemDrive)\Users\*\AppData\Local\Microsoft\Teams" -ErrorAction SilentlyContinue
 $TeamsIcons = Get-ChildItem -Path "$($ENV:SystemDrive)\Users\*\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\" -Filter "Microsoft Teams*.lnk" -Recurse -ErrorAction SilentlyContinue
 
 foreach ($folder in $TeamsFolders) {
-    Write-Host "🗑️ Removing: $($folder.FullName)"
+    Write-Host "Removing: $($folder.FullName)"
     Remove-Item -Path $folder.FullName -Force -Recurse -ErrorAction SilentlyContinue
 }
 
 foreach ($icon in $TeamsIcons) {
-    Write-Host "🗑️ Removing: $($icon.FullName)"
+    Write-Host "Removing: $($icon.FullName)"
     Remove-Item -Path $icon.FullName -Force -ErrorAction SilentlyContinue
 }
 
-Write-Host "`n✅ Microsoft Teams and related components have been successfully uninstalled!"
-
-#---------------------------- %--------5--Remove registry for other users on the device --------------
-
-# Define the folder path to remove
-$folderPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Teams"
-
-# Get all user profiles
-$userProfiles = Get-WmiObject Win32_UserProfile
-
-foreach ($profile in $userProfiles) {
-$sid = $profile.SID
-$userFolderPath = "registry::HKEY_USERS\$sid\$folderPath"
-
-# Check if the folder exists
-if (Test-Path -Path $userFolderPath) {
-# Remove the folder
-Remove-Item -Path $userFolderPath -Recurse -Force
-Write-Host "Removed folder: $userFolderPath"
-} else {
-Write-Host "Folder $userFolderPath does not exist."
-}
-}
+Write-Host "Microsoft Teams and related components have been successfully uninstalled!"
