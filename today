@@ -263,3 +263,66 @@ foreach ($icon in $TeamsIcons) {
 }
 
 Write-Host "Teams uninstallation process completed."
+
+
+
+
+
+###########################################
+# Define the registry paths for installed applications
+$uninstallPaths = @(
+    "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall",
+    "HKLM:\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
+    "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall"
+)
+
+# Application name pattern (Modify as needed)
+$appNamePattern = "Teams Meeting Add-in for Microsoft Office"
+
+# Function to find installed application
+function Get-InstalledApplication {
+    param ([string]$path)
+
+    if (Test-Path $path) {
+        Get-ChildItem -Path $path | ForEach-Object {
+            $app = Get-ItemProperty -Path $_.PsPath -ErrorAction SilentlyContinue
+            if ($app.DisplayName -match $appNamePattern) {
+                return $app
+            }
+        }
+    }
+    return $null
+}
+
+# Check all uninstall locations
+$foundApp = $null
+foreach ($path in $uninstallPaths) {
+    $foundApp = Get-InstalledApplication -path $path
+    if ($foundApp) { break }
+}
+
+if ($foundApp) {
+    Write-Output "Found: $($foundApp.DisplayName)"
+
+    # Check InstallSource for WindowsApps
+    if ($foundApp.PSObject.Properties.Name -contains "InstallSource") {
+        if ($foundApp.InstallSource -match "WindowsApps") {
+            Write-Output "InstallSource contains 'WindowsApps'. This is a Microsoft Store app. Skipping uninstallation."
+            exit
+        }
+    }
+
+    Write-Output "Uninstalling Teams Add-in..."
+
+    # Attempt to uninstall if an uninstall string is available
+    if ($foundApp.UninstallString) {
+        Write-Output "Running: $($foundApp.UninstallString)"
+        Start-Process -FilePath "cmd.exe" -ArgumentList "/c $($foundApp.UninstallString) /quiet /norestart" -NoNewWindow -Wait
+        Write-Output "Teams Add-in has been uninstalled."
+    } else {
+        Write-Output "Uninstall string not found. Cannot remove automatically."
+    }
+} else {
+    Write-Output "Teams Add-in is not installed or already removed."
+}
+
