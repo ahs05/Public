@@ -1,3 +1,50 @@
+
+Here are your meeting notes:
+
+---
+
+### **Meeting Notes**  
+**Date:** [Insert Date]  
+**Attendees:** [Insert Attendee Names]  
+**Topic:** Windows 11 24H2 Deployment Readiness  
+
+#### **Blockers & Action Items**  
+
+1. **Reimaging Support**  
+   - Winston mentioned the need for a dedicated **on-site resource** to handle machine reimaging.  
+   - Alternatively, about **5-6 VDIs** should be provisioned to facilitate Windows 11 reimaging.  
+
+2. **GPO Readiness & Security Sign-Off**  
+   - The team requires **sign-off from Security and GPO Admin** confirming that the GPOs are ready for **Windows 11 24H2**.  
+
+3. **GPO Issues & Required Updates**  
+   - Shaun highlighted **issues with Windows 11 24H2 GPOs**, specifically:  
+     - USB settings  
+     - Remote Desktop settings  
+     - Security policies to block Bluetooth connections  
+   - Shaun also requested an **inventory of scanner and printer connections** along with **USB hardware IDs** to ensure compatibility with the new policies.  
+
+4. **ISO & WIM Download Access**  
+   - The team requires **access to the Volume Licensing website** to download **Windows 11 ISOs and WIMs** for Task Sequences.  
+
+5. **Potential 'Netjoin' Domain Join Issues**  
+   - Shaun raised concerns that the **'Netjoin' domain join issue** encountered in **Windows 10 Task Sequences** may persist in **Windows 11 24H2**.  
+
+6. **Application Testing & Business Approval**  
+   - Each department under **ACG** needs to assign dedicated **testers** to validate their **Line of Business Applications** for compatibility with Windows 11 24H2.  
+
+#### **Next Steps**  
+- Assign an on-site resource or provision VDIs for reimaging.  
+- Obtain security and GPO approval for Windows 11 24H2 policies.  
+- Collect inventory of USB devices, scanners, and printers.  
+- Secure access to the Volume Licensing website for downloads.  
+- Investigate potential domain join issues.  
+- Identify testers from each department for application validation.  
+
+---
+
+Let me know if you’d like any refinements!
+--------------
 https://learn.microsoft.com/en-us/answers/questions/1694131/windows-11-upgrade-compatibility-assessment
 https://learn.microsoft.com/en-us/microsoft-365/test-base/test-application-with-in-place-upgrade?view=o365-worldwide
 https://techcommunity.microsoft.com/blog/windows-itpro-blog/tools-to-support-windows-11-deployment/2810264
