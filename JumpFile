@@ -1,3 +1,41 @@
+Here are the refined meeting notes based on your raw notes:  
+
+---
+
+# **Meeting Notes: Future State of Endpoint Management**  
+**Date:** [Insert Date]  
+**Attendees:** [Your Name], [Manager's Name]  
+
+## **Key Discussion Points:**  
+
+### **Long-Term Vision: Transition to Entra-Only & Cloud-Based Management**  
+- The future strategy involves moving towards an **Entra-only** environment, eliminating reliance on traditional **on-premises solutions** like Active Directory (AD) and **SCCM**.  
+- The current infrastructure was built for an on-premises workforce, but the modern work environment is now **predominantly remote (50-60% or more)**, necessitating a shift to cloud-based management.  
+- **Autopilot deployment** will replace **task sequences**, with devices receiving configurations dynamically based on **tags (user/device group tags)** instead of predefined images.  
+
+### **Personas & Application Management Strategy**  
+- **Defining and identifying Personas** is critical to ensuring that the right applications and configurations are deployed efficiently.  
+- Personas will not be **shrunk** but rather **expanded** based on business needs, including categories like **Contact Center (Insurance, Claims, Membership, Travel) and Back Office roles**.  
+- Applications will be delivered **dynamically**, ideally reducing the footprint on devices by shifting to **browser-based applications** where possible.  
+
+### **Automation & Integration Strategy**  
+- The goal is to automate **onboarding and offboarding** processes.  
+- Future-state workflow vision:  
+  1. **HR system (Workday)** triggers API calls to **ServiceNow**.  
+  2. **ServiceNow** provisions the device, assigns groups, and manages user access.  
+  3. **Orchestrator** feeds the necessary configurations into **Intune**, ensuring seamless policy and application deployment.  
+- SCCM will still be fine-tuned where necessary, but **Intune is the primary direction forward**.  
+
+### **Next Steps & Action Items**  
+1. **Start defining Personas** and mapping application needs in **Intune**.  
+2. Begin testing **an Entra-only build** with available resources.  
+3. Explore **automation options** for provisioning and device management workflows.  
+4. Evaluate **Workday → ServiceNow → Intune integration** for user provisioning.  
+
+---
+
+This version keeps it structured, concise, and actionable while capturing all key points from your discussion. Let me know if you’d like any modifications!
+---------
 To ensure a **structured and impactful slide deck** for your **Monday presentation**, here’s what you should include. Your deck should be **concise, visually engaging, and action-oriented**. Below is an outline with relevant details for each section:
 
 ---
