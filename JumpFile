@@ -1,142 +1,106 @@
-Scope Document: Persona-Based IT Deployment at ACG
+Here’s a structured **Scope (In/Out) Document** for your approval process with the End Client Manager.
 
-1. Project Overview
+---
 
-Project Name: Persona-Based IT Deployment at ACGProject Sponsor: ACG IT LeadershipProject Lead: [Your Name], TCSApproval Required By: [End Client Manager’s Name]
+# **Scope Document: Persona Definition & Implementation at ACG**  
 
-Objective:The purpose of this project is to define and implement a Persona-driven IT deployment model at ACG to support a cloud-first strategy leveraging Entra-only and Intune for endpoint management. The goal is to ensure efficient provisioning, application deployment, and security enforcement tailored to various workforce needs.
+**Date:** [Insert Date]  
+**Prepared by:** [Your Name]  
+**Reviewed by:** [End Client Manager’s Name]  
 
-2. Scope Definition
+---
 
-2.1 In-Scope
+## **1. Project Overview**  
+As part of ACG’s cloud-first strategy, TCS will lead the initiative to define and implement **Persona-based endpoint management** using **Intune and Entra-only** deployment. This project will standardize IT provisioning, automate onboarding/offboarding, and enhance security while supporting ACG’s transition away from on-premises solutions (Active Directory, SCCM).  
 
-The following items will be covered within the scope of this project:
+---
 
-✅ Persona Definition & Classification:
+## **2. Scope Definition**  
 
-Identification of key Persona groups (e.g., Frontline Workers, Corporate Office, Developers, Remote Workforce).
+### **2.1 In-Scope (What’s Included?)**  
 
-Mapping of device, application, and security needs for each Persona.
+✅ **Persona Identification & Classification**  
+- Conduct workshops with ACG stakeholders (Joe, Mike, Dave) to define **Persona categories**.  
+- Align Personas with **business functions and IT requirements** (devices, apps, security policies).  
 
-✅ Intune & Entra Deployment:
+✅ **Device & Application Deployment Strategy**  
+- Define **Persona-based device provisioning** using **Intune & Autopilot**.  
+- Map applications to Personas and establish **dynamic software deployment policies**.  
+- Assess feasibility of shifting **on-prem apps to cloud/browser-based alternatives**.  
 
-Configuration of Persona-based device provisioning using Autopilot & Intune.
+✅ **Automation & Integration**  
+- Workday → ServiceNow → Intune integration for **automated onboarding & offboarding**.  
+- Define workflows for **automating Persona-based group assignment** in Entra & Intune.  
 
-Creation of group-based policies for application deployment and access management.
+✅ **Security & Compliance Alignment**  
+- Implement **Conditional Access policies** based on Persona security levels.  
+- Ensure compliance with ACG’s IT governance, including **role-based access controls**.  
 
-✅ Automation & Integration:
+✅ **Pilot Deployment & Refinement**  
+- Test **Persona-based provisioning in a pilot environment** before full rollout.  
+- Collect feedback and optimize Personas, deployment workflows, and security controls.  
 
-Workday → ServiceNow → Intune automated onboarding process.
+✅ **Documentation & Knowledge Transfer**  
+- Develop a **Persona framework document** with standard guidelines for future scalability.  
+- Provide training sessions for ACG IT teams to **maintain and refine Personas** post-implementation.  
 
-Implementation of self-service IT for application management.
+---
 
-Conditional Access policies based on Persona risk assessment.
+### **2.2 Out-of-Scope (What’s Not Included?)**  
 
-✅ Pilot & Testing:
+🚫 **Custom Software Development**  
+- This initiative will focus on **configuring existing tools (Intune, Entra, ServiceNow)**, not developing custom applications.  
 
-Deployment of Persona-based profiles in a pilot environment.
+🚫 **Infrastructure & Network Overhaul**  
+- The project does **not** include changes to **network infrastructure, VPN setup, or physical hardware procurement**.  
 
-Testing application provisioning and security compliance validation.
+🚫 **Full SCCM Decommissioning**  
+- SCCM will continue to be fine-tuned, but this project **does not include a full SCCM decommission plan** at this stage.  
 
-Collecting user feedback and iterating based on insights.
+🚫 **Company-Wide Software Licensing Changes**  
+- Any major licensing shifts (e.g., Microsoft 365, ServiceNow API changes) are outside this project's scope.  
 
-✅ Documentation & Knowledge Transfer:
+🚫 **HR Policy or Organizational Restructuring**  
+- While Workday integration will be explored, changes to **HR policies or roles** are not part of this project.  
 
-Creation of Persona definition guidelines.
+---
 
-Establishing Intune best practices and governance policies.
+## **3. Project Deliverables**  
 
-Training IT teams on Persona-based endpoint management.
+🔹 **Persona Mapping Document** – Categorized Personas with associated IT requirements.  
+🔹 **Persona-Based Deployment Strategy** – Defined provisioning workflows for each Persona.  
+🔹 **Pilot Test Results & Recommendations** – Findings from the initial Persona-based deployment.  
+🔹 **Automation Blueprint** – Workflow for Workday → ServiceNow → Intune integration.  
+🔹 **Final Implementation Plan** – Approved roadmap for scaling the Persona-based model across ACG.  
 
-2.2 Out-of-Scope
+---
 
-The following items are NOT included in this project:
+## **4. Dependencies & Assumptions**  
 
-❌ Migration of Legacy SCCM Policies & Configurations:
+- ACG stakeholders (Joe, Mike, Dave) will **provide business insights** to refine Personas.  
+- Access to **ServiceNow, Workday, and Intune APIs** is available for automation efforts.  
+- Approval of security policies for **Conditional Access and role-based provisioning**.  
+- The scope may be adjusted based on feedback from the **pilot phase**.  
 
-This project will focus on Intune & cloud-based provisioning and will not involve migration of legacy SCCM configurations.
+---
 
-❌ Custom Software Development:
+## **5. Approval & Next Steps**  
 
-The project does not include the development of new applications but focuses on leveraging existing tools.
+Please review the outlined scope. Upon approval, we will proceed with:  
+📌 **Task Planning & Engineering Execution** – Breaking down tasks based on the approved scope.  
+📌 **Stakeholder Working Sessions** – Engaging ACG teams to gather insights.  
+📌 **Pilot Testing & Feedback Collection** – Ensuring alignment with ACG’s strategic direction.  
 
-❌ Company-Wide Hardware Refresh:
+**Approval Sign-Off:**  
 
-Hardware procurement and upgrades are outside the project scope; however, Persona-based recommendations for hardware will be provided.
+| Name  | Designation | Approval Status | Date |
+|-------|------------|----------------|------|
+| [Your Name] | TCS Lead | ✅ Approved / ❌ Not Approved | [Date] |
+| [End Client Manager] | ACG Manager | ✅ Approved / ❌ Not Approved | [Date] |
 
-❌ Non-IT Business Process Changes:
+---
 
-This project does not impact business workflows or HR policies beyond the scope of IT provisioning.
-
-3. Deliverables & Milestones
-
-Milestone
-
-Target Date
-
-Deliverable
-
-Persona Identification
-
-[Week 1-2]
-
-Persona definitions & IT needs mapping
-
-Intune Policy Creation
-
-[Week 3-4]
-
-Persona-based Intune & Autopilot policies
-
-Automation Strategy
-
-[Week 5]
-
-Workday → ServiceNow → Intune workflow design
-
-Pilot Deployment
-
-[Week 6-8]
-
-Pilot test with sample user groups
-
-Full Deployment Plan
-
-[Week 9-12]
-
-Rollout plan & documentation
-
-Knowledge Transfer
-
-[Final Phase]
-
-IT training & governance documents
-
-4. Approval & Sign-Off
-
-Approver
-
-Role
-
-Approval Status
-
-[End Client Manager’s Name]
-
-ACG IT Manager
-
-☐ Pending
-
-[Your Name]
-
-TCS Project Lead
-
-☐ Pending
-
-5. Next Steps
-
-📌 Approval from ACG IT Manager📌 Define & finalize Persona requirements with business & IT teams📌 Develop & test Intune-based Persona profiles📌 Plan engineering tasks & deployment roadmap
-
-Prepared By: [Your Name]Date: [Insert Date]
+This document ensures **clarity on scope boundaries** and provides a **structured roadmap for approval**. Let me know if you'd like any modifications! 🚀
 --------------
 https://learn.microsoft.com/en-us/answers/questions/1694131/windows-11-upgrade-compatibility-assessment
 https://learn.microsoft.com/en-us/microsoft-365/test-base/test-application-with-in-place-upgrade?view=o365-worldwide
