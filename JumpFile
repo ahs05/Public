@@ -1,3 +1,142 @@
+Scope Document: Persona-Based IT Deployment at ACG
+
+1. Project Overview
+
+Project Name: Persona-Based IT Deployment at ACGProject Sponsor: ACG IT LeadershipProject Lead: [Your Name], TCSApproval Required By: [End Client Manager’s Name]
+
+Objective:The purpose of this project is to define and implement a Persona-driven IT deployment model at ACG to support a cloud-first strategy leveraging Entra-only and Intune for endpoint management. The goal is to ensure efficient provisioning, application deployment, and security enforcement tailored to various workforce needs.
+
+2. Scope Definition
+
+2.1 In-Scope
+
+The following items will be covered within the scope of this project:
+
+✅ Persona Definition & Classification:
+
+Identification of key Persona groups (e.g., Frontline Workers, Corporate Office, Developers, Remote Workforce).
+
+Mapping of device, application, and security needs for each Persona.
+
+✅ Intune & Entra Deployment:
+
+Configuration of Persona-based device provisioning using Autopilot & Intune.
+
+Creation of group-based policies for application deployment and access management.
+
+✅ Automation & Integration:
+
+Workday → ServiceNow → Intune automated onboarding process.
+
+Implementation of self-service IT for application management.
+
+Conditional Access policies based on Persona risk assessment.
+
+✅ Pilot & Testing:
+
+Deployment of Persona-based profiles in a pilot environment.
+
+Testing application provisioning and security compliance validation.
+
+Collecting user feedback and iterating based on insights.
+
+✅ Documentation & Knowledge Transfer:
+
+Creation of Persona definition guidelines.
+
+Establishing Intune best practices and governance policies.
+
+Training IT teams on Persona-based endpoint management.
+
+2.2 Out-of-Scope
+
+The following items are NOT included in this project:
+
+❌ Migration of Legacy SCCM Policies & Configurations:
+
+This project will focus on Intune & cloud-based provisioning and will not involve migration of legacy SCCM configurations.
+
+❌ Custom Software Development:
+
+The project does not include the development of new applications but focuses on leveraging existing tools.
+
+❌ Company-Wide Hardware Refresh:
+
+Hardware procurement and upgrades are outside the project scope; however, Persona-based recommendations for hardware will be provided.
+
+❌ Non-IT Business Process Changes:
+
+This project does not impact business workflows or HR policies beyond the scope of IT provisioning.
+
+3. Deliverables & Milestones
+
+Milestone
+
+Target Date
+
+Deliverable
+
+Persona Identification
+
+[Week 1-2]
+
+Persona definitions & IT needs mapping
+
+Intune Policy Creation
+
+[Week 3-4]
+
+Persona-based Intune & Autopilot policies
+
+Automation Strategy
+
+[Week 5]
+
+Workday → ServiceNow → Intune workflow design
+
+Pilot Deployment
+
+[Week 6-8]
+
+Pilot test with sample user groups
+
+Full Deployment Plan
+
+[Week 9-12]
+
+Rollout plan & documentation
+
+Knowledge Transfer
+
+[Final Phase]
+
+IT training & governance documents
+
+4. Approval & Sign-Off
+
+Approver
+
+Role
+
+Approval Status
+
+[End Client Manager’s Name]
+
+ACG IT Manager
+
+☐ Pending
+
+[Your Name]
+
+TCS Project Lead
+
+☐ Pending
+
+5. Next Steps
+
+📌 Approval from ACG IT Manager📌 Define & finalize Persona requirements with business & IT teams📌 Develop & test Intune-based Persona profiles📌 Plan engineering tasks & deployment roadmap
+
+Prepared By: [Your Name]Date: [Insert Date]
 --------------
 https://learn.microsoft.com/en-us/answers/questions/1694131/windows-11-upgrade-compatibility-assessment
 https://learn.microsoft.com/en-us/microsoft-365/test-base/test-application-with-in-place-upgrade?view=o365-worldwide
