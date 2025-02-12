@@ -1,13 +1,129 @@
-The long term solution for that is where this is where Personas is going to come into. Because once we truly identify the Personas and the groups, we can start getting creative even from a build process. Because one day saying all our task sequences and stuff are going to go away. Right when we go to Entra only, which is the direction we want to go. We want to get into the cloud Okay. What we're doing today is predicated on a solution that was for an on-premise workforce. All this active directory, even SCCM. it's old, it's old school, it works. But our work environment has changed, the world has changed and the work environment we have now is probably 50, or 60, 40, maybe even more remote. And we need a solution that can get us to a remote work to better serve a remote workforce. And that would be obviously Entra Only in the cloud it flattens out. You don't need the naming convention issue we have today. We flatten everything out and we start. Now is the time to start building the Personas. This is where it becomes important so that I go to autopilot. I'm not going to have the luxury of just, you know, having predefined images. You're going to have devices that come down based on whatever tag, whatever the device is tagged at or if the user is tagged at. Those apps will follow the user or follow whatever group tag that that device is a part of. So everything just kind of comes down naturally. That's kind of where we want to go. That's the direction and Personas will be. Applications will be delivered ideally through. Ideally we either get rid of the applications like a lot of these frontline applications and some will be browser base that will lighten the footprint on a device. so that gives you an idea. We need to identify Personas and it's going to be a Lot like it's not, you're not going to shrink the Personas necessarily. You may have like contact center, but it branches out to, you know, insurance, claims, membership, travel, and the same with back office is going to even get bigger. You're going to have a lot of persons, that’s okey as long as you identify them and identify the need.
-And then once we've done that, we will have to start looking at things like how we automate getting to onboard and off boarding. Like this is a longer view, right. I would start leaning more on the Intune area. You're always going to fine tune SCCM, but the direction is Intune. Intune is where we're going. Okay, how do we get, how do we get these Personas built up in Intune and things delivered that way?
-That's the future state because this is coming out of the gate. Start defining Personas and start building them up in Intune and be able to leverage, leverage the apps that way. Think about this. I'm going to put something into maybe Workday. I think Everything starts in HR and Workday that should have an API called into ServiceNow. ServiceNow can then start putting all the provisioning of the device, the groups and all that and that should feed into Intune. Orchestrator should then feed that into Intune and all the groups, and this is 10,000ft. | don't have that in tandem. Let's start doing an entra only build. And I, I had limited resources.
+To ensure a **structured and impactful slide deck** for your **Monday presentation**, here’s what you should include. Your deck should be **concise, visually engaging, and action-oriented**. Below is an outline with relevant details for each section:
 
--------------
-During our meeting yesterday morning, I asked that you work closely with the ACG team (Joe, Mike, and Dave) regarding personas and drive/lead working sessions with them to understand their perspective and leverage their knowledge about the business and IT specifics.
- 
-As I mentioned, please note that this coming Monday you will be presenting TCS’ approach to defining and leading change around personas.  I asked that you conduct working sessions this week the team and by Friday we have a meeting to review that slide deck that demonstrates the approach for personas.  Have you scheduled that Friday meeting?  Have you started meeting with the team as a group to gather insight and perspective needed?
- 
-That Monday meeting is critical to ensure we are defining and paving the way for personas at ACG.  
+---
+
+### **Slide Deck Outline: TCS' Approach to Defining and Implementing Personas at ACG**  
+
+---
+
+## **1. Title Slide**  
+- **Title:** *Defining and Implementing Personas at ACG*  
+- **Subtitle:** *TCS’ Approach to Driving Change and Enabling a Cloud-First Strategy*  
+- **Presented by:** [Your Name]  
+- **Date:** [Monday’s Date]  
+
+---
+
+## **2. Introduction & Objective**  
+### **Why Personas Matter?**  
+- Shift towards **Entra-only, cloud-first** IT strategy.  
+- Need to tailor **device provisioning, access, and applications** to different employee groups.  
+- **Business & IT Alignment:** Understanding workforce needs for efficient IT delivery.  
+
+**Objective of this Presentation:**  
+- Define a structured approach for **building and implementing Personas**.  
+- Outline how Personas will **streamline IT processes** and enhance user experience.  
+- Align with ACG’s **strategic vision** and ensure a seamless transition.  
+
+---
+
+## **3. Current State & Challenges**  
+### **Current Endpoint Management Landscape at ACG**  
+- **On-Prem Legacy Model:** Dependency on **Active Directory (AD), SCCM**, and task sequences.  
+- **Remote Work Challenges:** 50-60% of employees work remotely, requiring **cloud-based solutions**.  
+- **Application Delivery Complexity:** Traditional **predefined images** vs. dynamic persona-based deployment.  
+- **Manual Onboarding/Offboarding:** Lack of automation, leading to inefficiencies.  
+
+**Key Challenge:** How do we transition from a static, on-prem model to a **dynamic, cloud-first** model with **Personas-based provisioning**?  
+
+---
+
+## **4. TCS’ Approach to Defining Personas**  
+### **Step 1: Identifying Personas at ACG**  
+- **Personas are role-based classifications** that determine IT requirements (devices, apps, access).  
+- TCS proposes a **structured framework** for defining Personas:  
+
+| **Persona Category** | **Sub-Categories** | **Device Needs** | **Application Needs** | **Access & Security** |  
+|---------------------|------------------|------------------|----------------------|---------------------|  
+| **Frontline Workers** | Call Center, Claims, Membership, Travel | Lightweight devices | Cloud-based apps, VDI | Restricted access |  
+| **Corporate Office** | Finance, HR, IT, Legal | Standard laptops | Microsoft 365, ERP | Role-based security |  
+| **Developers & Engineers** | IT, Cloud, DevOps | High-performance devices | Dev tools, cloud environments | Elevated permissions |  
+| **Field & Remote Workers** | Insurance Agents, Sales | Mobile-first devices | Secure VPN, CRM | Conditional access |  
+
+---
+
+### **Step 2: Aligning Personas with IT Deployment Strategy**  
+- **Autopilot & Intune for Zero-Touch Deployment:** Devices configured based on **Persona tags**.  
+- **Application Packaging Strategy:**  
+  - Cloud-first applications → **Web-based where possible**.  
+  - **Device-specific apps** delivered dynamically via **Intune & Entra groups**.  
+- **Security Considerations:**  
+  - Conditional access based on **Persona risk profile**.  
+  - Least privilege model: **Restrict admin rights by Persona needs**.  
+
+---
+
+## **5. Implementation Strategy & Roadmap**  
+### **Phase 1: Discovery & Persona Definition (Week 1-4)**  
+✅ Conduct **working sessions** with ACG SMEs (Joe, Mike, Dave) to finalize Personas.  
+✅ Define **Persona-based IT needs** (devices, apps, security).  
+✅ Identify **automation opportunities** (onboarding, offboarding).  
+
+### **Phase 2: Pilot & Testing (Week 5-8)**  
+✅ **Build Persona profiles in Intune**.  
+✅ Conduct **pilot deployment for select groups**.  
+✅ Gather feedback and **refine deployment process**.  
+
+### **Phase 3: Full-Scale Rollout (Week 9-12)**  
+✅ **Scale Personas-based deployment** across ACG.  
+✅ Establish **monitoring & governance**.  
+✅ Measure **efficiency gains & user satisfaction**.  
+
+---
+
+## **6. Automation & Integration Strategy**  
+- **Workday → ServiceNow → Intune Integration**  
+  - **HR triggers onboarding** in Workday → API call to ServiceNow.  
+  - **ServiceNow provisions user/device** → Feeds into **Intune/Entra**.  
+  - **Automation reduces IT overhead** & ensures seamless provisioning.  
+
+- **Self-Service IT Approach**  
+  - Employees use **Company Portal for app requests**.  
+  - Intune **pushes approved apps automatically** based on Persona.  
+
+---
+
+## **7. Key Benefits & Expected Outcomes**  
+✅ **Faster, automated onboarding/offboarding**.  
+✅ **Cloud-native device provisioning** via **Autopilot & Intune**.  
+✅ **Personalized IT experience** – Apps follow users, reducing manual installations.  
+✅ **Reduced IT workload** – Eliminates repetitive image-based deployments.  
+✅ **Stronger security & compliance** – Enforced via Entra & Conditional Access.  
+
+---
+
+## **8. Next Steps & Call to Action**  
+📌 Conduct remaining **working sessions this week**.  
+📌 Schedule **Friday review meeting** to finalize the approach.  
+📌 Prepare final **slide deck & recommendations for Monday’s meeting**.  
+📌 Align with ACG leadership for **approval & pilot launch**.  
+
+---
+
+### **9. Closing Slide – Q&A**  
+"Shaping the Future of IT at ACG with Persona-Driven Management"  
+
+---
+
+### **Additional Tips for Your Slide Deck:**  
+✅ Use **diagrams & visuals** (e.g., persona categorization, automation workflow).  
+✅ Keep slides **clean & concise** (limit text, use bullet points).  
+✅ Highlight **key data points & expected benefits** for business impact.  
+✅ Ensure **alignment with ACG leadership goals** to gain buy-in.  
+
+---
+
+This outline ensures your **slide deck is structured, engaging, and aligned with ACG’s expectations**. Let me know if you need any **refinements or additional details**! 🚀
 --------------
 https://learn.microsoft.com/en-us/answers/questions/1694131/windows-11-upgrade-compatibility-assessment
 https://learn.microsoft.com/en-us/microsoft-365/test-base/test-application-with-in-place-upgrade?view=o365-worldwide
