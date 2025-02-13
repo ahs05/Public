@@ -227,7 +227,7 @@ How to Enroll a Mac to Intune: https://www.youtube.com/watch?v=84kwUXKdOFc
 
 Import CIS Benchmark Baselines to Intune: https://www.youtube.com/watch?v=FUYQ7gWFWDc
 
-The way I do this:
+The way I do this(If you have a CIS SecureSuite Membership(Paid)):
 1. Login to CIS Workbench and download CIS Build Pack for given benchmark eg Windows 11... (https://workbench.cisecurity.org/)
 2. Unzip the build pack 
 3. Import whatever you need to Intune GPO Analyser
