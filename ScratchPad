@@ -1,6 +1,15 @@
 --------------------
 Entered on 02/13/2025
 --------------------
+CIS Benchmark for Win11 Stuff: 
+CIS Intune Baselines - What do they break?: https://deploymentshare.com/articles/bp-cis/
+Keeping Windows Store Apps Updated with Microsoft Intune: https://www.oddsandendpoints.co.uk/posts/windows-updating-store-apps/ 
+Creating and Assigning App Categories the Smart Way in Intune: https://www.oddsandendpoints.co.uk/posts/creating-assigning-app-categories/ 
+Win 11 CIS Baselines as Jsons (But individual settings Thou): https://github.com/ennnbeee/oddsandendpoints-scripts/tree/main/Intune/Configuration/CIS/Windows
+Win 11 CIS Baselines as Jsons (But individual settings Thou) Blog Post: https://www.everything365.online/2023/09/18/cis-microsoft-intune-for-windows-11-benchmark-in-settings-catalog-json/ 
+--------------------
+Entered on 02/12/2025
+--------------------
 Winget Infor From Sumi: 
 
 Winget-AutoUpdate-aaS: https://apps.microsoft.com/detail/xp89bsk82w9j28?launch=true&mode=full&hl=en-us&gl=us&ocid=bingwebsearch
