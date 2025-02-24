@@ -1,11 +1,53 @@
-
-
-9nblggh4vnz7
-
-9NBLGGH4QGHW
-
+Here's a polished version of the meeting minutes based on your notes:
 
 ---
- Teams Classic Clean up Scripts:
-https://lazyadmin.nl/powershell/microsoft-teams-uninstall-reinstall-and-cleanup-guide-scripts/
-https://scloud.work/new-teams-client-and-cleanup-the-classic-intune/
+
+## **Meeting Minutes**
+
+### **Date:** [Insert Date]  
+### **Attendees:** Jeff, Shaun, [Add other attendees if applicable]  
+### **Topic:** Windows 11 24H2 Baseline and Hardening Policies  
+
+---
+
+### **Discussion Points:**
+
+1. **Microsoft Rep Meeting:**  
+   - Jeff informed the team that he has a scheduled meeting with a Microsoft representative on Friday, February 28, to discuss Windows 11 24H2-related settings and best practices.  
+   - Jeff will forward the meeting invite to Shaun, who will attend and listen in on the discussion.  
+
+2. **Current Baseline and Hardening Settings:**  
+   - The existing baseline and hardening settings in Group Policy Objects (GPOs) have been crafted using Windows 11 23H2 templates.  
+   - Jeff mentioned that while the baseline settings for Windows 11 24H2 are mostly ready, there are challenges with the hardening policies that EIS wants to implement. These challenges primarily involve settings related to Bluetooth, USB peripherals, Remote Desktop, and printers.  
+
+3. **Peripheral Whitelisting:**  
+   - Jeff highlighted that certain peripherals may need to be whitelisted according to EIS requirements, and thorough testing will be necessary to ensure compatibility.  
+
+4. **Testing and Troubleshooting:**  
+   - Shaun mentioned that an Active Directory (AD) group has been created, targeting Windows 11 24H2 policies. This group can be used to test devices, identify breakages and conflicts, and provide feedback for further investigation by the EDM team.  
+
+5. **Next Steps:**  
+   - Jeff suggested spinning up a couple of freshly reimaged, PXE-booted Windows 11 24H2 devices.  
+   - Both the baseline and hardening GPOs should be applied to these devices.  
+   - The CIM Track tool will be used to scan the devices against Windows 11 24H2 policies to identify any missing settings.  
+
+---
+
+### **Action Items:**
+
+1. **Jeff:**  
+   - Forward the Microsoft rep meeting invite to Shaun.  
+   - Coordinate the testing of freshly reimaged devices with applied GPOs.  
+
+2. **Shaun:**  
+   - Use the AD group created for Windows 11 24H2 policies to test devices and identify any conflicts.  
+   - Provide findings to the EDM team for further troubleshooting.  
+
+---
+
+**Meeting Adjourned:** [Insert Time]  
+**Next Meeting:** [Insert Date and Time, if scheduled]
+
+---
+
+Let me know if you'd like me to refine or expand any section further.
