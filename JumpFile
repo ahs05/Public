@@ -1,1 +1,59 @@
 
+### **Meeting Minutes**  
+**Date:** [Insert Date]  
+**Attendees:** [List of Attendees]  
+**Facilitator:** [Meeting Lead]  
+**Meeting Purpose:** Windows 11 24H2 GPO & Application Testing Discussion  
+
+---
+
+### **Discussion Points & Updates**  
+
+1. **Windows 11 24H2 GPO Discussion**  
+   - Jeff met with the Microsoft representative regarding GPO topics for Windows 11 24H2.  
+   - He is still encountering challenges related to DeviceIDs for USB devices.  
+
+2. **23H2 vs. 24H2 Decision**  
+   - The ACG team reviewed the differences between Windows 11 23H2 and 24H2.  
+   - The team decided to proceed with 24H2 as the NetDomain join issue appears to be resolvable.  
+   - GPO settings will remain a challenge for both versions.  
+   - Given Windows 10’s upcoming end-of-support, Microsoft may release Windows 11 25H1, making 24H2 a more viable option.  
+
+3. **Application Owner Testing**  
+   - Jeff provided the EDM team with a go-ahead (not a formal sign-off) to begin application owner testing.  
+   - The plan includes imaging a few training lab PCs post-Phase 1 testing.  
+   - Application owners will be requested to RDP into these machines to perform functionality testing.  
+   - A formalized plan for app owner testing needs to be drafted.  
+
+4. **CIM Track Application Compliance**  
+   - Jeff informed the team that the CIM Track Application currently lacks the functionality to scan Windows devices against the 24H2 CIS Benchmark baseline settings.  
+   - The team is actively working on addressing this gap.  
+
+5. **Corner Case Documentation**  
+   - All identified corner cases need to be documented and reviewed at a later stage.  
+
+6. **GPO Issue Tracking**  
+   - Any GPO settings causing functional issues with Windows 11 24H2 should be documented.  
+   - Issues should be forwarded to Shaun & Jeff for review and resolution.  
+
+---
+
+### **Action Items**  
+
+| **Task** | **Owner** | **Deadline** | **Notes** |
+|----------|----------|-------------|-----------|
+| Resolve USB DeviceID challenges | Jeff | TBD | Follow up with Microsoft if needed |
+| Formalize app owner testing plan | EDM Team | TBD | Document and circulate for approval |
+| Develop CIM Track Application CIS Benchmark scanning functionality | Development Team | TBD | Ensure compatibility with 24H2 baseline |
+| Document all corner cases for later review | Team Members | Ongoing | Maintain a shared repository |
+| Track and report GPO issues for Windows 11 24H2 | All Team Members | Ongoing | Submit findings to Shaun & Jeff |
+
+---
+
+**Next Steps:**  
+- Follow up on action items in the next meeting.  
+- Monitor the impact of GPO settings on Windows 11 24H2.  
+- Ensure app testing proceeds as planned with documented results.  
+
+**Next Meeting:** [Insert Date]  
+**Meeting Adjourned.**
