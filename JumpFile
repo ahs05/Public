@@ -1,1 +1,85 @@
 
+### **Meeting Notes**  
+**Date:** [Insert Date]  
+**Attendees:** Harish, David Duncan, Joe, Sujith, Shaun, Jeff, Eric, EDM Team  
+
+---
+
+#### **1. Training Lab Device Utilization**  
+- The EDM team questioned whether all **120 devices (9020 Models)** in the Training Lab are necessary.  
+- **Harish** will schedule a call on **Thursday** with **David Duncan, Joe, and Sujith** to discuss this further.  
+
+---
+
+#### **2. Windows 11 Upgrade & Testing Approach**  
+- The EDM team agreed to **utilize Training Lab devices** for Windows 11 upgrades.  
+- App Owners will be asked to **RDP into these devices** for functionality testing.  
+- Alternatively, the EDM team requested the **VDI team** to explore spinning up a few **Windows 11 VDI instances** when needed.  
+
+---
+
+#### **3. Application & SME Tracking**  
+- EDM will maintain a **spreadsheet** tracking:  
+  - **App Owners, SMEs, and Business Leaders** related to the Windows 11 upgrade project.  
+  - While this may not serve as a full **IT Portfolio Management (ITPM) report**, it will provide insights into frequently used applications.  
+
+---
+
+#### **4. RDP Access & Windows 11 Lockdown Concerns**  
+- EDM raised a concern that **Windows 11 lockdown settings** may prevent **RDP access**.  
+- **Shaun and Jeff** will be the **Points of Contact (POCs)** to address and resolve this issue.  
+
+---
+
+#### **5. Application Compatibility & Packaging Requests**  
+- Microsoft has indicated that **97% of Windows 10 apps** should work on Windows 11.  
+- Based on this, EDM assumes most of the **application estate** will be compatible.  
+- **New App Packaging Requests** will be handled as they arise.  
+
+---
+
+#### **6. Core & Departmental Application Testing**  
+- EDM agreed to have **core and departmental apps** tested by their respective **App Owners** included in the **Imaging Task Sequence**.  
+- Due to the challenge of gathering details for all App Owners, EDM will focus on known applications that require testing.  
+
+##### **Additional Applications Identified for Testing on Windows 11:**  
+- **TM1 with Office 2016**  
+- **Bots Waylands**  
+- **Travel Apps** (especially those with launchers)  
+- **Applications with Active Setup configurations**  
+
+---
+
+#### **7. Peripheral-Dependent Applications & CIS Security Concerns**  
+- **CIS security settings** may impact functionality in Windows 11.  
+- **Eric** suggested **additional validation** for applications dependent on **scanners, printers, and peripherals**.  
+- The following applications will require thorough **functionality testing:**  
+  - **PPS – Kevin Dean**  
+  - **Car Care Apps (RO Writer) – Mitchell Peters**  
+  - **Card Reader-dependent applications**  
+  - **Receipt Printers**  
+  - **POS Devices in South region**  
+  - **Scanner-dependent applications (Image Right Apps)**  
+
+---
+
+#### **8. Potential Introduction of Saber for Travel Apps**  
+- EDM team inquired about the possibility of **introducing Saber** with the Windows 11 upgrade.  
+- This could potentially **eliminate the need for Travelport Smart Point Apps**.  
+
+---
+
+### **Action Items:**  
+| **Task** | **Owner(s)** | **Deadline** |  
+|-------------------------------|----------------|--------------|  
+| Schedule a meeting to discuss Training Lab device necessity | Harish | Thursday |  
+| Investigate RDP access issues on Windows 11 | Shaun, Jeff | TBD |  
+| Maintain a spreadsheet tracking App Owners, SMEs, and Business Leaders | EDM Team | Ongoing |  
+| Coordinate with VDI team for Windows 11 VDI setup | EDM Team | TBD |  
+| Ensure core and departmental apps are tested on Windows 11 | EDM Team, App Owners | Ongoing |  
+| Validate peripheral-dependent applications for compatibility issues | Eric, App Owners | Ongoing |  
+| Explore feasibility of Saber integration | EDM Team | TBD |  
+
+---
+
+Let me know if you need any modifications! 🚀
