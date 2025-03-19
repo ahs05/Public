@@ -1,45 +1,15 @@
+Here’s the extracted text from the image:
 
+---
 
+**Hardware Compatibility Assessment**
+
+**Create Organisational Hardware Compatibility List**
+- List Compatible / Incompatible Desktops
+- List Compatible / Incompatible Laptops
+- List Compatible / Incompatible Virtual Machines / Thin Clients
+- List Compatible / Incompatible Peripherals
 
 ---
 
-**Discovery**
-
-**Infrastructure Discovery & Assessment**
-
-**Technical Architecture / Discovery**
-- Identify Current State Desktop Management Infrastructure & Tooling (Physical & Virtual)
-- Identify Existing Authoritative Hardware Inventory Source
-- Identify Existing Authoritative Software Inventory Source
-- Identify Existing Software Usage Source (If Applicable)
-- Identify Existing User List Source
-- Identify User To Department Mapping Source
-- Identify User To Location Mapping Source
-- Identify Software License Information (Where Available)
-- Identify Other Critical Information Repositories (e.g. Warranty dates)
-
-**Milestone:** Build Initial Discovery Feed Diagram
-
-**Data Gathering**
-
-**Infrastructure**
-- Gather current network topology / capacity data
-- Gather storage data / capacity
-- Gather current desktop management infrastructure topology / capacity data
-- Document Virtual Infrastructure & Usage
-
-**Software & Hardware**
-- Determine What Is An Application (MECM Application / Package / Installed Binary / Executable)
-- Procure Software Inventory / Usage Tracking Tools (if required)
-- Build Supporting Server Infrastructure For Inventory / Usage Tool
-- Install Inventory / Application Usage Tool To Server Infrastructure
-- Deploy Desktop Agent For Hardware & Software Discovery
-- Deploy Desktop Agent For Software Usage Metering (if required)
-- Gather Hardware Inventory Data
-- Gather Software Inventory Data
-- Identify Application Owners & Document
-- Gather Software Usage Data (if applicable)
-- Gather Software License Data (if applicable)
-- Gather Peripheral Data
-
----
+Want me to integrate this into the previous section as well?
