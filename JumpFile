@@ -1,7 +1,1 @@
 
-https://ashsccm.wordpress.com/2017/03/08/sql-query-to-get-list-of-applications-and-packages-in-a-task-sequcence/
-
-select app.DisplayName [Application],TS.Name [TS Name],TS.Description [TSDescription] From dbo.fn_ListLatestApplicationCIs(1033) app
-inner join v_TaskSequenceAppReferencesInfo TSApp on app.ModelName=TSApp.RefAppModelName
-inner join v_TaskSequencePackage TS on TS.PackageID=TSApp.PackageID
-order by [Application]
