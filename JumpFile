@@ -1,15 +1,9 @@
-Here’s the extracted text from the image:
+For now, we don’t want these VDIs to be assigned to anyone just yet.
 
----
+Below is the process we would like to implement moving forward:  
 
-**Hardware Compatibility Assessment**
+Teja will submit a formal request or email to a designated team member (to be identified by you) to assign a specific VDI to the appropriate App Owner.  
 
-**Create Organisational Hardware Compatibility List**
-- List Compatible / Incompatible Desktops
-- List Compatible / Incompatible Laptops
-- List Compatible / Incompatible Virtual Machines / Thin Clients
-- List Compatible / Incompatible Peripherals
+Teja will also be responsible for coordinating all necessary UAT testing activities with the App Owner, Power User, or SME. As part of this process, he will request the assignment of a VDI to the individual responsible for completing the essential UAT testing.  
 
----
-
-Want me to integrate this into the previous section as well?
+Given the project timeline, we are aiming for all UAT testing efforts to be completed within 3 to 4 weeks. 
