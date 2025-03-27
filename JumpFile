@@ -1,3 +1,73 @@
+UAT Guidelines by Application Type:
+For Web Applications:
+Confirm the application loads correctly in supported browsers (Edge, Chrome, etc.)
+
+Validate login and authentication flows (SSO, MFA, etc.)
+
+Test primary user workflows and transactions (e.g., form submissions, search, reporting)
+
+Ensure browser-based file uploads/downloads function properly
+
+Check compatibility with browser plugins/extensions (if required)
+
+For Thick Client/Desktop Applications:
+Launch the application successfully from the Start menu or desktop shortcut
+
+Ensure the application installs, updates, and uninstalls cleanly (if applicable)
+
+Validate login functionality and authentication mechanisms
+
+Test core workflows, features, and data interactions
+
+Check file associations and drag-and-drop behavior (if applicable)
+
+Confirm printing, scanning, or peripheral access works as expected
+
+For Internal/Custom Tools:
+Verify connectivity to internal systems, shared drives, databases, or services
+
+Confirm the application loads data, forms, or dashboards accurately
+
+Test data entry, editing, saving, and reporting functionality
+
+Check any integration points (e.g., SAP, Oracle, internal APIs)
+
+Validate security roles and permissions
+
+Report any unusual errors or behavioral changes
+---
+
+**Subject:** Request to Perform UAT Testing on Windows 11 VDI
+
+Dear [App Owner Name],
+
+As part of our upcoming IT initiative, we are preparing to roll out the Windows 11 operating system across all Windows 10 devices within our organization. This rollout is scheduled for completion by the end of October 2025.
+
+According to our records, you are listed as the Application Owner for the following application(s):
+
+**[Insert Apps List]**
+
+To support this initiative, we have coordinated with the VDI team to provision a Windows 11 VDI instance for your use. Please find the attached instructions to access your assigned VDI.
+
+We kindly request you to perform User Acceptance Testing (UAT) to validate the core functionality of the application(s) listed above on the Windows 11 VDI environment. Your feedback is critical to ensuring compatibility and a smooth transition.
+
+To guide you through the testing process, we’ve included a **PDF attachment** with UAT guidelines tailored by application type (Web Apps, Thick Clients, and Internal Tools). Please review the relevant section based on your application and complete the outlined test scenarios.
+
+If you believe you are not the correct App Owner, Subject Matter Expert (SME), or Power User, please let us know and, if possible, provide the appropriate contact so we can update our records accordingly.
+
+Thank you in advance for your support and cooperation.
+
+Best regards,  
+[Your Name]  
+[Your Team/Department]  
+[Contact Info]
+
+---
+
+
+
+
+---------------------------------
 
 
 **Subject:** Request to Perform UAT Testing on Windows 11 VDI
