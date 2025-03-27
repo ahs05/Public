@@ -1,31 +1,31 @@
 
-Suggested Throttle Group Names
-Pilot Team
 
-Early Access Group
+**Subject:** Request to Perform UAT Testing on Windows 11 VDI
 
-Core Business Units
+Dear [App Owner Name],
 
-Headquarters Staff
+As part of our upcoming IT initiative, we are preparing to roll out the Windows 11 operating system across all Windows 10 devices within our organization. This rollout is scheduled for completion by the end of October 2025.
 
-Office Users
+According to our records, you are listed as the Application Owner for the following application(s):
 
-Remote Users
+**[Insert Apps List]**
 
-Field Ops Team
+To support this initiative, we have coordinated with the VDI team to provision a Windows 11 VDI instance for your use. Please find the attached instructions to access your assigned VDI.
 
-Support Teams
+We kindly request you to perform User Acceptance Testing (UAT) to validate the core functionality of the application(s) listed above on the Windows 11 VDI environment. Your feedback is critical to ensuring compatibility and a smooth transition.
 
-Standard Rollout Group
+### Please perform the following basic tests as part of your UAT:
 
-Executive Devices
+- **Launch and Login:** Ensure the application launches successfully and that login/authentication works as expected.
+- **Core Functionality:** Validate key features and workflows commonly used in your daily operations.
+- **Data Access & Connectivity:** Verify access to backend systems, databases, file shares, or APIs that the app relies on.
+- **File Handling:** Test opening, saving, importing, and exporting files (if applicable).
+- **Printing (if applicable):** Confirm printing functionality works as intended.
+- **Performance:** Check for any unusual slowness, lag, or performance degradation.
+- **Error Messages:** Report any unexpected errors, pop-ups, or crashes.
 
-Wave 1 – IT & Champions
+If you believe you are not the correct App Owner, Subject Matter Expert (SME), or Power User, please let us know and, if possible, provide the appropriate contact so we can update our records accordingly.
 
-Wave 2 – Early Departments
+Thank you in advance for your support and cooperation.
 
-Wave 3 – General Rollout
-
-Wave 4 – Critical Users
-
-Wave 5 – Final Catch-up
+Best regards,  
