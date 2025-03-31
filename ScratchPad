@@ -1,4 +1,23 @@
 --------------------
+Entered on 03/31/2025
+--------------------
+Very basic on: How to apply drivers via Dism Method during Task Seq OSD via package Object Model: https://www.recastsoftware.com/resources/configmgr-docs/task-sequence-basics/task-sequence-steps/drivers/apply-driver-package/
+
+Very Exgressive High Level on: How to apply drivers via Dism Method during Task Seq OSD without even creating package Objects: 
+https://garytown.com/dism-apply-drivers-tsprogressui-subbar
+
+Some guy postd how to create WIM file and & How to apply drivers via Dism Method during Task Seq OSD via package Object Model: https://www.reddit.com/r/SCCM/comments/1jeulx0/dell_pro_pro_plus_driver_automation_tool/
+
+Installing Driver Packs during In-place upgrade: https://garytown.com/driver-pack-mapping-and-pre-cache
+
+Some Reddit Blog Post about installing Driver during Iamging: https://www.reddit.com/r/SCCM/comments/1j80rv2/how_are_you_doing_osd_drivers/
+
+OSD Task seq installing Drivers for Dell via Dell Command Update – Offline Repo – TS Integration: https://garytown.com/dell-command-update-offline-repo-ts-integration
+
+Video on How to manage Drivers during Imaging: https://www.youtube.com/watch?v=HqnU7wGXuuU
+
+
+--------------------
 Entered on 02/13/2025
 --------------------
 CIS Benchmark for Win11 Stuff: 
