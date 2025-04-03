@@ -1,1 +1,42 @@
-Once your testing is complete, please fill out the attached Sign-Off.docx to confirm successful UAT. This is required for documentation purposes.
+Got it! Based on your PM’s suggestion, the email should start with an acknowledgment of the App Owner's previous confirmation to test, followed by the background. Here's the updated version, incorporating that feedback and keeping everything else intact:
+
+---
+
+**Subject:** UAT Required: Windows 11 VDI Testing for Your Application(s)
+
+Hi [Insert App Owner Name],
+
+**Thank you for confirming your availability to perform UAT.** Based on your confirmation in the previous email, please find the attached resources to begin testing:  
+- **UAT_Guidelines.pdf** (instructions based on app type)  
+- **Sign-Off.docx** (for UAT completion confirmation)
+
+**Background / Why:**  
+As part of our IT initiative, we are upgrading all Windows 10 devices to **Windows 11** by **October 2025**. To ensure a smooth transition, it is essential to verify that all business-critical applications are fully compatible with the new operating system.
+
+**What:**  
+You are listed as the Application Owner for the following application(s):  
+[Insert Apps List]  
+We are requesting your support to perform **User Acceptance Testing (UAT)** to validate the core functionality of these applications on a Windows 11 environment.
+
+**Where:**  
+To support this, a **temporary Windows 11 VDI** has been provisioned specifically for your testing purposes.  
+> **Note:** This VDI will be **deprovisioned after successful completion** of your testing.
+
+**How:**  
+- Please follow the **UAT_Guidelines.pdf** for step-by-step instructions, organized by application type (Web Apps, Thick Clients, Internal Tools).  
+- Access your **assigned VDI** using the included instructions and complete the relevant test scenarios.  
+- **Given the project timelines, we kindly request you to complete your UAT testing within 5–6 business days of receiving this communication or by March 15th, whichever is earlier.**  
+- Once your testing is complete, please fill out the attached **Sign-Off.docx** to confirm successful UAT. This is required for **documentation purposes**.  
+- If you encounter any issues or observe abnormal behavior, please document and report them to us promptly.
+
+If you are not the correct App Owner, SME, or Power User for the listed application(s), please let us know and help identify the appropriate contact so we can update our records.
+
+We appreciate your support and cooperation in this important initiative.
+
+Best regards,  
+[Your Name]  
+[Your Title/Team Name]
+
+---
+
+Let me know if you'd like to add a table format for app names and owners, or tailor the greeting for a more formal or casual tone!
