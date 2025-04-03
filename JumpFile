@@ -1,1 +1,19 @@
 
+Hi [Insert App Owner Name],
+
+As part of our upcoming IT initiative, we are preparing to roll out the Windows 11 operating system across all Windows 10 devices within our organization. This rollout is scheduled for completion by the end of October 2025.
+
+According to our records, you are listed as the Application Owner for the following application(s):
+
+[Insert Apps List]
+
+To support this initiative, we have coordinated with the VDI team to provision a Temporary Windows 11 VDI Device for your use. Please find the attached instructions to access your assigned VDI.
+
+We kindly request you to perform User Acceptance Testing (UAT) to validate the core functionality of the application(s) listed above on your Assigned Windows 11 VDI Device. Your feedback is critical to ensuring compatibility and a smooth transition to Windows 11.
+
+To guide you through the testing process, we’ve included a PDF attachment with UAT guidelines tailored by application type (Web Apps, Thick Clients, and Internal Tools). Please review the relevant section based on your application type and complete the outlined test scenarios.
+
+If you believe you are not the correct App Owner, Subject Matter Expert (SME), or Power User, please let us know and, if possible, provide the appropriate contact so we can update our records accordingly.
+
+Thank you in advance for your support and cooperation.
+
