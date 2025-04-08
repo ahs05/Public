@@ -1,1 +1,24 @@
-•	Full Command line to install Drivers via Package Model: “DISM.exe /Image:%OSDTargetSystemDrive%\ /Add-Driver /Driver:.\ /Recurse /Forceunsigned /Logpath:%_SMSTSLogpath%\Dism.log”
+Subject: Proposal to Transition Driver Management to SCCM Package Objects
+
+Hi Team,
+
+I hope this message finds you well.
+
+I wanted to share a recent update regarding driver management during OSD. Last week, we successfully applied drivers during deployment on a Dell Latitude 5420 using Package Objects in SCCM, moving away from the traditional 'Driver Packages' approach.
+
+To support this, I’ve put together a detailed step-by-step guide on applying Windows OS drivers during Task Sequence imaging using Package Objects in SCCM. This documentation is now available for internal reference.
+
+A brief walkthrough was shared with David Holmes, who is currently reviewing the process. Pending his feedback, we plan to test the approach on additional Dell models to further validate its effectiveness.
+
+This method has been widely recognized in the SCCM community and recommended by several industry MVPs. I previously leveraged it between 2018 and 2020 across 25 Dell models for an environment of over 60,000 devices. Notably, this model significantly reduces driver import times—from 40–50 minutes (Driver Packages) to 10–15 minutes (Package Objects, with OEM media).
+
+As a next step, I propose we follow a Crawl-Walk-Run model and implement this approach across at least 10 Dell models on our Win11 Task Sequence. Upon successful evaluation, we can consider this our primary method and gradually phase out our use of Driver Packages.
+
+If needed, we can present this to Joe and Sujith for formal approval.
+
+Please don’t hesitate to reach out with any questions or feedback.
+
+Best regards,
+
+
+New Driver Management Process via Package Objects in SCCM
