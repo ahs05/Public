@@ -129,112 +129,131 @@ LEFT JOIN v_GS_Firmware FW ON CS.ResourceID = FW.ResourceID
 
 
 
-DECLARE @CollectionID AS VARCHAR(8) = 'SMS00001';
-DECLARE @ProjectName AS VARCHAR(25) = 'ACG';
+DECLARE @CollectionID AS VARCHAR(8)
+DECLARE @ProjectName AS VARCHAR(25)
+SET @CollectionID = 'SMS00001'
+SET @ProjectName = 'ACG'
 
-;WITH RankedNetwork AS (
-    SELECT 
-        ResourceID,
-        IPAddress0,
-        MACAddress0,
-        ROW_NUMBER() OVER (PARTITION BY ResourceID ORDER BY IPAddress0) AS RN
-    FROM v_GS_NETWORK_ADAPTER_CONFIGUR
-    WHERE IPAddress0 IS NOT NULL AND LEN(IPAddress0) > 0
-),
-RankedDisk AS (
-    SELECT 
-        ResourceID,
-        Size0,
-        ROW_NUMBER() OVER (PARTITION BY ResourceID ORDER BY Size0 DESC) AS RN
-    FROM v_GS_LOGICAL_DISK
-    WHERE DriveType0 = 3
-)
-SELECT
-    DISTINCT VRS.Netbios_Name0 AS 'Name',
+SELECT DISTINCT
+    VRS.Netbios_Name0 AS 'Name',
     CASE WHEN VRS.Client0 = 1 THEN 'Yes' ELSE 'No' END AS 'Client',
     CASE WHEN VRS.Active0 = 1 THEN 'Yes' ELSE 'No' END AS 'Active',
     CASE 
-        WHEN ENC.ChassisTypes0 = 1 THEN 'VMWare'
-        WHEN ENC.ChassisTypes0 IN (3,4) THEN 'Desktop'
-        WHEN ENC.ChassisTypes0 IN (8,9,10,11,12,14) THEN 'Laptop'
-        WHEN ENC.ChassisTypes0 = 6 THEN 'Mini Tower'
-        WHEN ENC.ChassisTypes0 = 7 THEN 'Tower'
-        WHEN ENC.ChassisTypes0 = 13 THEN 'All in One'
-        WHEN ENC.ChassisTypes0 = 15 THEN 'Space-Saving'
-        WHEN ENC.ChassisTypes0 = 17 THEN 'Main System Chassis'
-        WHEN ENC.ChassisTypes0 = 21 THEN 'Peripheral Chassis'
-        WHEN ENC.ChassisTypes0 = 22 THEN 'Storage Chassis'
-        WHEN ENC.ChassisTypes0 = 23 THEN 'Rack Mount Chassis'
-        WHEN ENC.ChassisTypes0 = 24 THEN 'Sealed-Case PC'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 1 THEN 'VMWare'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 IN ('3','4') THEN 'Desktop'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 IN ('8','9','10','11','12','14') THEN 'Laptop'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 6 THEN 'Mini Tower'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 7 THEN 'Tower'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 13 THEN 'All in One'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 15 THEN 'Space-Saving'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 17 THEN 'Main System Chassis'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 21 THEN 'Peripheral Chassis'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 22 THEN 'Storage Chassis'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 23 THEN 'Rack Mount Chassis'
+        WHEN v_GS_SYSTEM_ENCLOSURE.ChassisTypes0 = 24 THEN 'Sealed-Case PC'
         ELSE 'Others'
     END AS 'CaseType',
-    RN.IPAddress0 AS 'IPAddress',
-    RN.MACAddress0 AS 'MACAddress',
-    ASSIGN.SMS_Assigned_Sites0 AS 'AssignedSite',
+    LEFT(MAX(v_GS_NETWORK_ADAPTER_CONFIGUR.IPAddress0),
+        ISNULL(NULLIF(CHARINDEX(',',MAX(v_GS_NETWORK_ADAPTER_CONFIGUR.IPAddress0)) - 1, -1),
+        LEN(MAX(v_GS_NETWORK_ADAPTER_CONFIGUR.IPAddress0)))) AS 'IPAddress',
+    MAX(v_GS_NETWORK_ADAPTER_CONFIGUR.MACAddress0) AS 'MACAddress',
+    v_RA_System_SMSAssignedSites.SMS_Assigned_Sites0 AS 'AssignedSite',
     VRS.Client_Version0 AS 'ClientVersion',
     VRS.Creation_Date0 AS 'ClientCreationDate',
     VRS.AD_Site_Name0 AS 'ADSiteName',
-    OS.InstallDate0 AS 'OSInstallDate',
-    DATEDIFF(DAY, OS.InstallDate0, GETDATE()) AS 'OSInstallDateAge',
-    CONVERT(VARCHAR, OS.LastBootUpTime0, 100) AS 'LastBootDate',
-    DATEDIFF(DAY, OS.LastBootUpTime0, GETDATE()) AS 'LastBootDateAge',
-    BIOS.SerialNumber00 AS 'SerialNumber',
-    ENC.SMBIOSAssetTag0 AS 'AssetTag',
-    BIOS.ReleaseDate00 AS 'ReleaseDate',
-    BIOS.Name00 AS 'BiosName',
-    BIOS.SMBIOSBIOSVersion00 AS 'BiosVersion',
-    CPU.Name0 AS 'ProcessorName',
+    dbo.v_GS_OPERATING_SYSTEM.InstallDate0 AS 'OSInstallDate',
+    DATEDIFF(D, dbo.v_GS_OPERATING_SYSTEM.InstallDate0, GETDATE()) AS 'OSInstallDateAge',
+    CONVERT(VARCHAR, v_Gs_Operating_System.LastBootUpTime0, 100) AS 'LastBootDate',
+    DATEDIFF(D, CONVERT(VARCHAR, v_Gs_Operating_System.LastBootUpTime0, 100), GETDATE()) AS 'LastBootDateAge',
+    PC_BIOS_DATA.SerialNumber00 AS 'SerialNumber',
+    v_GS_SYSTEM_ENCLOSURE.SMBIOSAssetTag0 AS 'AssetTag',
+    PC_BIOS_DATA.ReleaseDate00 AS 'ReleaseDate',
+    PC_BIOS_DATA.Name00 AS 'BiosName',
+    PC_BIOS_DATA.SMBIOSBIOSVersion00 AS 'BiosVersion',
+    v_GS_PROCESSOR.Name0 AS 'ProcessorName',
     CASE 
-        WHEN SYS.Manufacturer00 LIKE 'VMware%' THEN 'VMWare'
-        WHEN SYS.Manufacturer00 LIKE 'Gigabyte%' THEN 'Gigabyte'
-        WHEN SYS.Manufacturer00 LIKE 'VIA Technologies%' THEN 'VIA Technologies'
-        WHEN SYS.Manufacturer00 LIKE 'MICRO-STAR%' THEN 'MICRO-STAR'
-        ELSE SYS.Manufacturer00 
+        WHEN Computer_System_DATA.Manufacturer00 LIKE 'VMware%' THEN 'VMWare'
+        WHEN Computer_System_DATA.Manufacturer00 LIKE 'Gigabyte%' THEN 'Gigabyte'
+        WHEN Computer_System_DATA.Manufacturer00 LIKE 'VIA Technologies%' THEN 'VIA Technologies'
+        WHEN Computer_System_DATA.Manufacturer00 LIKE 'MICRO-STAR%' THEN 'MICRO-STAR'
+        ELSE Computer_System_DATA.Manufacturer00 
     END AS 'Manufacturer',
-    SYS.Model00 AS 'Model',
-    SYS.SystemType00 AS 'OSType',
-    COMP.Domain0 AS 'DomainName',
+    Computer_System_DATA.Model00 AS 'Model',
+    Computer_System_DATA.SystemType00 AS 'OSType',
+    v_GS_COMPUTER_SYSTEM.Domain0 AS 'DomainName',
     VRS.User_Domain0 + '\' + VRS.User_Name0 AS 'UserName',
-    USER.Mail0 AS 'EMailID',
+    v_R_User.Mail0 AS 'EMailID',
     CASE 
-        WHEN COMP.domainrole0 = 0 THEN 'Standalone Workstation'
-        WHEN COMP.domainrole0 = 1 THEN 'Member Workstation'
-        WHEN COMP.domainrole0 = 2 THEN 'Standalone Server'
-        WHEN COMP.domainrole0 = 3 THEN 'Member Server'
-        WHEN COMP.domainrole0 = 4 THEN 'Backup Domain Controller'
-        WHEN COMP.domainrole0 = 5 THEN 'Primary Domain Controller'
+        WHEN v_GS_COMPUTER_SYSTEM.domainrole0 = 0 THEN 'Standalone Workstation'
+        WHEN v_GS_COMPUTER_SYSTEM.domainrole0 = 1 THEN 'Member Workstation'
+        WHEN v_GS_COMPUTER_SYSTEM.domainrole0 = 2 THEN 'Standalone Server'
+        WHEN v_GS_COMPUTER_SYSTEM.domainrole0 = 3 THEN 'Member Server'
+        WHEN v_GS_COMPUTER_SYSTEM.domainrole0 = 4 THEN 'Backup Domain Controller'
+        WHEN v_GS_COMPUTER_SYSTEM.domainrole0 = 5 THEN 'Primary Domain Controller'
     END AS 'Role',
     CASE 
-        WHEN OS_FULL.Caption00 = 'Microsoft(R) Windows(R) Server 2003, Enterprise Edition' THEN 'Microsoft(R) Windows(R) Server 2003 Enterprise Edition'
-        WHEN OS_FULL.Caption00 = 'Microsoft(R) Windows(R) Server 2003, Standard Edition' THEN 'Microsoft(R) Windows(R) Server 2003 Standard Edition'
-        WHEN OS_FULL.Caption00 = 'Microsoft(R) Windows(R) Server 2003, Web Edition' THEN 'Microsoft(R) Windows(R) Server 2003 Web Edition'
-        WHEN OS_FULL.Caption00 = 'Microsoft Windows NT Workstation 6.1' THEN 'Microsoft Windows NT Workstation 6.1'
-        ELSE OS_FULL.Caption00
+        WHEN Operating_System_DATA.Caption00 = 'Microsoft(R) Windows(R) Server 2003, Enterprise Edition' THEN 'Microsoft(R) Windows(R) Server 2003 Enterprise Edition'
+        WHEN Operating_System_DATA.Caption00 = 'Microsoft(R) Windows(R) Server 2003, Standard Edition' THEN 'Microsoft(R) Windows(R) Server 2003 Standard Edition'
+        WHEN Operating_System_DATA.Caption00 = 'Microsoft(R) Windows(R) Server 2003, Web Edition' THEN 'Microsoft(R) Windows(R) Server 2003 Web Edition'
+        WHEN Operating_System_DATA.Caption00 = 'Microsoft Windows NT Workstation 6.1' THEN 'Microsoft Windows NT Workstation 6.1'
+        ELSE Operating_System_DATA.Caption00 
     END AS 'OSName',
-    OS_FULL.CSDVersion00 AS 'ServicePack',
-    OS_FULL.Version00 AS 'Version',
-    (MEM.TotalPhysicalMemory0 / 1024) / 1000 AS 'TotalRAMSize(GB)',
-    DISK.Size0 / 1024 AS 'TotalHDDSize(GB)',
-    STATUS.LastHWScan AS 'LastHWScan',
-    DATEDIFF(DAY, STATUS.LastHwScan, GETDATE()) AS 'LastHWScanAge',
-    @ProjectName AS 'AccountName'
+    Operating_System_DATA.CSDVersion00 AS 'ServicePack',
+    Operating_System_DATA.Version00 AS 'Version',
+    ((v_GS_X86_PC_MEMORY.TotalPhysicalMemory0 / 1024) / 1000) AS 'TotalRAMSize(GB)',
+    MAX(v_GS_LOGICAL_DISK.Size0 / 1024) AS 'TotalHDDSize(GB)',
+    v_GS_WORKSTATION_STATUS.LastHWScan AS 'LastHWScan',
+    DATEDIFF(D, v_GS_WORKSTATION_STATUS.LastHwScan, GETDATE()) AS 'LastHWScanAge',
+    @ProjectName AS 'AccountName',
+
+    -- TPM and Secure Boot additions
+    TPM.SpecVersion0 AS TPMVersion,
+    TPM.IsEnabled_InitialValue0 AS TPM_Enabled,
+    TPM.IsActivated_InitialValue0 AS TPM_Activated,
+    TPM.IsOwned_InitialValue0 AS TPM_Owned,
+    FW.SecureBoot0 AS SecureBoot,
+    FW.UEFI0 AS UEFIMode
+
 FROM v_R_System VRS
-LEFT JOIN v_GS_PC_BIOS BIOS ON BIOS.ResourceID = VRS.ResourceID
-LEFT JOIN v_Gs_Operating_System OS ON OS.ResourceID = VRS.ResourceID
-LEFT JOIN v_GS_OPERATING_SYSTEM OS_FULL ON OS_FULL.ResourceID = VRS.ResourceID
-LEFT JOIN v_GS_WORKSTATION_STATUS STATUS ON STATUS.ResourceID = VRS.ResourceID
-LEFT JOIN v_GS_COMPUTER_SYSTEM COMP ON COMP.ResourceID = VRS.ResourceID
-LEFT JOIN v_GS_X86_PC_MEMORY MEM ON MEM.ResourceID = VRS.ResourceID
-LEFT JOIN v_GS_PROCESSOR CPU ON CPU.ResourceID = VRS.ResourceID
-LEFT JOIN v_GS_SYSTEM_ENCLOSURE ENC ON ENC.ResourceID = VRS.ResourceID
-LEFT JOIN v_RA_System_SMSAssignedSites ASSIGN ON ASSIGN.ResourceID = VRS.ResourceID
-LEFT JOIN v_FullCollectionMembership COLL ON COLL.ResourceID = VRS.ResourceID
-LEFT JOIN v_R_User USER ON USER.User_Name0 = VRS.User_Name0
-LEFT JOIN Computer_System_DATA SYS ON SYS.MachineID = VRS.ResourceID
-LEFT JOIN RankedNetwork RN ON RN.ResourceID = VRS.ResourceID AND RN.RN = 1
-LEFT JOIN RankedDisk DISK ON DISK.ResourceID = VRS.ResourceID AND DISK.RN = 1
+LEFT JOIN PC_BIOS_DATA ON PC_BIOS_DATA.MachineID = VRS.ResourceId
+LEFT JOIN Operating_System_DATA ON Operating_System_DATA.MachineID = VRS.ResourceId
+LEFT JOIN v_GS_WORKSTATION_STATUS ON v_GS_WORKSTATION_STATUS.ResourceID = VRS.ResourceId
+LEFT JOIN Computer_System_DATA ON Computer_System_DATA.MachineID = VRS.ResourceId
+LEFT JOIN v_GS_X86_PC_MEMORY ON v_GS_X86_PC_MEMORY.ResourceID = VRS.ResourceId
+LEFT JOIN v_GS_PROCESSOR ON v_GS_PROCESSOR.ResourceID = VRS.ResourceId
+LEFT JOIN v_GS_SYSTEM_ENCLOSURE ON v_GS_SYSTEM_ENCLOSURE.ResourceID = VRS.ResourceId
+LEFT JOIN v_Gs_Operating_System ON v_Gs_Operating_System.ResourceID = VRS.ResourceId
+LEFT JOIN v_RA_System_SMSAssignedSites ON v_RA_System_SMSAssignedSites.ResourceID = VRS.ResourceId
+LEFT JOIN v_GS_COMPUTER_SYSTEM ON v_GS_COMPUTER_SYSTEM.ResourceID = VRS.ResourceId
+LEFT JOIN v_FullCollectionMembership ON v_FullCollectionMembership.ResourceID = VRS.ResourceId
+LEFT JOIN v_GS_NETWORK_ADAPTER_CONFIGUR ON v_GS_NETWORK_ADAPTER_CONFIGUR.ResourceID = VRS.ResourceId
+LEFT JOIN v_GS_LOGICAL_DISK ON v_GS_LOGICAL_DISK.ResourceID = VRS.ResourceId AND v_GS_LOGICAL_DISK.DriveType0 = 3
+LEFT JOIN v_R_User ON VRS.User_Name0 = v_R_User.User_Name0
+
+-- TPM and Secure Boot joins
+LEFT JOIN v_GS_PC_BIOS BIOS ON VRS.ResourceID = BIOS.ResourceID
+LEFT JOIN v_GS_TPM TPM ON VRS.ResourceID = TPM.ResourceID
+LEFT JOIN v_GS_Secure_Boot_State0 SB ON VRS.ResourceID = SB.ResourceID
+LEFT JOIN v_GS_Firmware FW ON VRS.ResourceID = FW.ResourceID
+
 WHERE 
     VRS.Operating_System_Name_and0 LIKE '%Workstation%' AND
     (VRS.Obsolete0 = 0 OR VRS.Obsolete0 IS NULL) AND
-    COLL.CollectionID = @CollectionID
+    v_FullCollectionMembership.CollectionID = @CollectionID
+
+GROUP BY 
+    VRS.Netbios_Name0, VRS.Client0, VRS.Active0, v_GS_SYSTEM_ENCLOSURE.ChassisTypes0,
+    v_RA_System_SMSAssignedSites.SMS_Assigned_Sites0, VRS.Client_Version0, VRS.Creation_Date0,
+    VRS.AD_Site_Name0, v_Gs_Operating_System.InstallDate0, v_Gs_Operating_System.LastBootUpTime0,
+    PC_BIOS_DATA.SerialNumber00, v_GS_SYSTEM_ENCLOSURE.SMBIOSAssetTag0, PC_BIOS_DATA.ReleaseDate00,
+    PC_BIOS_DATA.Name00, PC_BIOS_DATA.SMBIOSBIOSVersion00, v_GS_PROCESSOR.Name0,
+    Computer_System_DATA.Manufacturer00, Computer_System_DATA.Model00, Computer_System_DATA.SystemType00,
+    v_GS_COMPUTER_SYSTEM.Domain0, VRS.User_Domain0, VRS.User_Name0, v_R_User.Mail0,
+    v_GS_COMPUTER_SYSTEM.DomainRole0, Operating_System_DATA.Caption00,
+    Operating_System_DATA.CSDVersion00, Operating_System_DATA.Version00,
+    v_GS_X86_PC_MEMORY.TotalPhysicalMemory0, v_GS_WORKSTATION_STATUS.LastHWScan,
+    TPM.SpecVersion0, TPM.IsEnabled_InitialValue0, TPM.IsActivated_InitialValue0, TPM.IsOwned_InitialValue0,
+    FW.SecureBoot0, FW.UEFI0
+
 ORDER BY VRS.Netbios_Name0;
+
