@@ -1,1 +1,19 @@
 
+SELECT 
+    CS.Name0 AS ComputerName,
+    BIOS.SerialNumber0,
+    BIOS.SMBIOSBIOSVersion0 AS BIOSVersion,
+    TPM.SpecVersion,
+    TPM.IsEnabled_InitialValue AS TPM_Enabled,
+    TPM.IsActivated_InitialValue AS TPM_Activated,
+    TPM.IsOwned_InitialValue AS TPM_Owned,
+    SB.SecureBootCapable0 AS SecureBootCapable,
+    SB.SecureBootEnabled0 AS SecureBootEnabled
+FROM 
+    v_R_System CS
+LEFT JOIN v_GS_PC_BIOS BIOS ON CS.ResourceID = BIOS.ResourceID
+LEFT JOIN v_GS_TPM TPM ON CS.ResourceID = TPM.ResourceID
+LEFT JOIN v_GS_SECURE_BOOT SB ON CS.ResourceID = SB.ResourceID
+WHERE 
+    TPM.SpecVersion LIKE '2.0%' AND
+    SB.SecureBootEnabled0 = 1
