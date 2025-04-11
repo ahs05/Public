@@ -17,3 +17,30 @@ LEFT JOIN v_GS_SECURE_BOOT SB ON CS.ResourceID = SB.ResourceID
 WHERE 
     TPM.SpecVersion LIKE '2.0%' AND
     SB.SecureBootEnabled0 = 1
+--------------------
+
+
+SELECT 
+    CS.Name0 AS ComputerName,
+    BIOS.SerialNumber0,
+    BIOS.SMBIOSBIOSVersion0 AS BIOSVersion,
+    TPM.SpecVersion,
+    TPM.IsEnabled_InitialValue AS TPM_Enabled,
+    TPM.IsActivated_InitialValue AS TPM_Activated,
+    TPM.IsOwned_InitialValue AS TPM_Owned,
+    SB.UEFISecureBootEnabled0 AS SecureBoot_Inv1,
+    FW.SecureBoot0 AS SecureBoot_Inv2,
+    FW.UEFI0 AS UEFIMode
+FROM 
+    v_R_System CS
+LEFT JOIN v_GS_PC_BIOS BIOS ON CS.ResourceID = BIOS.ResourceID
+LEFT JOIN v_GS_TPM TPM ON CS.ResourceID = TPM.ResourceID
+LEFT JOIN v_GS_Secure_Boot_State0 SB ON CS.ResourceID = SB.ResourceID
+LEFT JOIN v_GS_Firmware FW ON CS.ResourceID = FW.ResourceID
+WHERE 
+    TPM.SpecVersion LIKE '2.0%' AND
+    (
+        SB.UEFISecureBootEnabled0 = 1 OR 
+        FW.SecureBoot0 = 1
+    ) AND
+    FW.UEFI0 = 1
