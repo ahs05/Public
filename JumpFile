@@ -1,1 +1,21 @@
 
+SELECT DISTINCT 
+    s.ResourceID,
+    s.ResourceType,
+    s.Name,
+    s.SMSUniqueIdentifier,
+    s.ResourceDomainORWorkgroup,
+    s.Client
+FROM 
+    v_R_System s
+INNER JOIN 
+    v_GS_UPGRADE_EXPERIENCE_INDICATORS uei 
+    ON s.ResourceID = uei.ResourceID
+INNER JOIN 
+    v_FullCollectionMembership fcm 
+    ON s.ResourceID = fcm.ResourceID
+WHERE 
+    fcm.CollectionID = 'XYZ00001'  -- Replace with your actual Collection ID
+    AND uei.UpgExProp IN ('Green', 'Orange', 'Yellow')
+    AND uei.UpgExU IN ('Green', 'Orange', 'Yellow')
+    AND uei.Version = 'GE24H2';
