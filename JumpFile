@@ -1,27 +1,5 @@
-Sure! Here’s a revised communication that aligns with the tone and style of your original message but is tailored for end users who have the app installed but no App Owner or Power User is assigned in your records:
+Here are two clean and professional line items you can include in your project plan:
 
----
+Draft High-Level Visual Rollout Matrix – Develop a high-level matrix categorized by Business Units/Departments and populate it with the associated Windows 11 compatible asset counts.
 
-**Subject:** Request for UAT Testing on Windows 11 for Installed Application
-
-Greetings for the day!
-
-As part of our upcoming IT initiative, we are preparing to roll out the Windows 11 operating system across all Windows 10 devices within our organization. This rollout is scheduled for completion by the end of October 2025.
-
-According to our records, the following application is currently installed on your device:
-
-▶️ **[App Name Here]**
-
-At this time, we do not have an assigned Application Owner, Subject Matter Expert (SME), or Power User for this application in our IT database.
-
-To support this initiative, we are reaching out to check if you would be able to assist by performing UAT (User Acceptance Testing) on a Temporary Windows 11 VDI Device. If you are available to help, please let us know and we will coordinate with the VDI team to provision access for you.
-
-Post your confirmation, we will assign you the temporary VDI device and provide all the necessary instructions/next steps for completing the testing.
-
-If you are not the right person to perform this testing but know someone who might be, we would greatly appreciate it if you could share their contact information so we can update our records accordingly.
-
-Thank you for your support!
-
----
-
-Let me know if you'd like to plug in a dynamic field for the app name or tweak the message further.
+Draft Detailed Visual Rollout Matrix – Create a detailed matrix including Business Units/Departments, the throttled deployment plan, associated target devices, and deployment timelines.
