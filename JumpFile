@@ -1,5 +1,18 @@
-Here are two clean and professional line items you can include in your project plan:
-
-Draft High-Level Visual Rollout Matrix – Develop a high-level matrix categorized by Business Units/Departments and populate it with the associated Windows 11 compatible asset counts.
-
-Draft Detailed Visual Rollout Matrix – Create a detailed matrix including Business Units/Departments, the throttled deployment plan, associated target devices, and deployment timelines.
+SELECT
+    arp.ResourceID,
+    vrs.Name0 AS ComputerName,
+    vrs.User_Name0 AS PrimaryUser,
+    arp.DisplayName0 AS ApplicationName,
+    arp.InstallDate0,
+    arp.InstallUser0
+FROM
+    v_GS_ADD_REMOVE_PROGRAMS_64 AS arp
+INNER JOIN
+    v_R_System AS vrs
+ON
+    arp.ResourceID = vrs.ResourceID
+WHERE
+    arp.DisplayName0 LIKE '%Postman%'
+    AND arp.InstallUser0 IS NOT NULL
+ORDER BY
+    vrs.Name0;
