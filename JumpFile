@@ -1,33 +1,32 @@
-A **Visual Rollout Matrix** for your Windows 10 to Windows 11 deployment is needed to provide **clear visibility**, **structured planning**, and **stakeholder alignment** during the transition. Here’s why it's important:
+
 
 ---
 
-### ✅ Why a Visual Rollout Matrix is Needed:
+**Subject:** Action Plan for PSM GPO Removal and W11 In-Place Upgrade Rollout
 
-1. **Communication & Clarity**
-   - Helps communicate the deployment plan to leadership, IT teams, support staff, and end users.
-   - Offers an at-a-glance view of *who* is being upgraded *when*.
+Hi Team,
 
-2. **Tracking Progress**
-   - Provides a visual representation of current vs. completed deployment phases.
-   - Helps identify any bottlenecks, delays, or unresponsive user groups.
+As discussed, regarding the removal of Push Start Menu (PSM) GPO policies:
 
-3. **Risk Mitigation**
-   - Organizes deployment in logical waves (e.g., pilot → IT → business-critical → general users).
-   - Ensures testing and feedback loops before scaling broadly.
+Please find attached the spreadsheet we’ve prepared to support the Windows 11 In-Place Upgrade (IPU) rollout. You may need to customize it to fit your specific requirements.
 
-4. **Dependency Management**
-   - Aligns deployment with readiness of apps, devices, security configurations, and support staff.
-   - Shows dependencies like VPN clients, BIOS readiness, or app compatibility.
+Currently, the PSM GPO policies are user-based. Shaun can provide the list of users who have active PSMs.
 
-5. **Stakeholder Confidence**
-   - Builds trust by showing that the deployment is well-structured and measured.
-   - Can be shared in steering committee meetings, PMO reports, and with business units.
+Per Jeff’s recommendation, we will follow a **Crawl > Walk > Run** approach.  
+Kindly coordinate with Shaun to define a comprehensive **Test Plan** and document any findings, issues, or lessons learned. Also, maintain a **Daily Work Tracker** (similar to the attached) to monitor progress and tasks across the team.
 
-6. **Issue Isolation**
-   - Isolates issues to a smaller group before broader rollout.
-   - Helps identify whether a problem is isolated to a wave, region, or device type.
+Please collaborate with Shanthi to draft the **End User Communications**. Once the draft is ready, we will conduct an internal TCS review call, followed by a final review with the ACG team.
+
+Agni – please ensure the **contact details** for individuals supporting the EDM TCS team during this mini-hypercare phase are shared. I recommend setting up a call with Sujith and George Hammelman to confirm the representatives.
+
+**Top Priority:** All activities must be completed before we begin the Windows 11 IPU Production Rollout.
+
+Our **tentative go-live date** is **June 20, 2025**, or **June 13, 2025**, based on readiness.
+
+I will schedule a dedicated call tomorrow with just the involved TCS engineers to walk through all of this in more detail.
+
+Best regards,  
+[Your Name]
 
 ---
 
-Would you like me to create a sample rollout matrix template for you in a chart format?
