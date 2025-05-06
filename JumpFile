@@ -1,32 +1,4 @@
+allenges
+The PrintNightmare vulnerability needs to be validated to determine if it has any dependency on Group Policy Objects (GPO), as it requires registry modifications to be applied.
 
-
----
-
-**Subject:** Action Plan for PSM GPO Removal and W11 In-Place Upgrade Rollout
-
-Hi Team,
-
-As discussed, regarding the removal of Push Start Menu (PSM) GPO policies:
-
-Please find attached the spreadsheet we’ve prepared to support the Windows 11 In-Place Upgrade (IPU) rollout. You may need to customize it to fit your specific requirements.
-
-Currently, the PSM GPO policies are user-based. Shaun can provide the list of users who have active PSMs.
-
-Per Jeff’s recommendation, we will follow a **Crawl > Walk > Run** approach.  
-Kindly coordinate with Shaun to define a comprehensive **Test Plan** and document any findings, issues, or lessons learned. Also, maintain a **Daily Work Tracker** (similar to the attached) to monitor progress and tasks across the team.
-
-Please collaborate with Shanthi to draft the **End User Communications**. Once the draft is ready, we will conduct an internal TCS review call, followed by a final review with the ACG team.
-
-Agni – please ensure the **contact details** for individuals supporting the EDM TCS team during this mini-hypercare phase are shared. I recommend setting up a call with Sujith and George Hammelman to confirm the representatives.
-
-**Top Priority:** All activities must be completed before we begin the Windows 11 IPU Production Rollout.
-
-Our **tentative go-live date** is **June 20, 2025**, or **June 13, 2025**, based on readiness.
-
-I will schedule a dedicated call tomorrow with just the involved TCS engineers to walk through all of this in more detail.
-
-Best regards,  
-[Your Name]
-
----
-
+The Apache Tomcat vulnerability is located in multiple areas within the system. A script needs to be developed to remediate the issue, and coordination with developers is required for resolution.
