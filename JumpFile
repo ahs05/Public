@@ -1,85 +1,16 @@
-Here’s your updated email with the **4th Key Blocker**—**Removal of Push Start Menu Policies**—added and refined for clarity and professionalism:
+Certainly! Here's the revised version with that included:
 
 ---
 
-**Subject:** Key Roadblocks Hindering Windows 11 Upgrade Progress
+Team,
+As discussed on yesterday’s call, Shathi has sent out the finalized comms to:
+• BU/Department Leads – requesting volunteers to test out W11
+• App Owners/SMEs/Power Users – also requesting volunteers to test W11
 
-Dear \[Leader's Name / Team],
+We’ve already started receiving some requests to have users and a few of their team members added to the volunteer list.
 
-I hope you're doing well.
-
-I wanted to take a moment to highlight a few critical items that are currently impeding our ability to successfully achieve our end goal: **Upgrading all compatible Windows 10 devices to Windows 11**.
-
-Please don’t take this as a rant or an attempt to point fingers—my intent is simply to voice the challenges the team is facing on the ground so that we can collectively find a path forward.
-
----
-
-### 🔹 **Key Blockers:**
-
-**1. CIS-Level GPO Security Hardening Requirements**
-ACG's request to implement CIS-level security hardening GPOs as part of the Windows 11 upgrade project has become one of the biggest roadblocks.
-
-* These policies risk breaking critical peripherals connected to end-user devices.
-* Even though the GPOs are technically ready, identifying all peripherals in use, validating them, and configuring hardware/class ID exclusions is a significant undertaking.
-* This requires close coordination with L1 and L2 support teams, adding substantial operational overhead.
-* For deeper technical context, please reach out to the engineer assigned to this task.
-
-**2. RDP/Workspot VDI Access Issues**
-Another major issue stemming from the GPO hardening policies is the inconsistent blocking of RDP services, which in turn impacts user access to Workspot VDIs.
-
-* This has been an intermittent but critical blocker for affected users.
-* Further details can be obtained from the engineer directly working on this item.
-
-**3. Deviation from Prior Migration Strategy**
-During the Windows 7 to Windows 10 migration, ACG implemented the GPOs *after* the OS upgrade was complete. Had we followed a similar phased approach this time, many of the current blockers could have been avoided.
-
-**4. Removal of Push Start Menu (PSM) Policies**
-This task—originally a carryover from the Windows 7 project—has now been added to the Windows 11 migration scope.
-
-* Approximately 2,000–3,000 devices currently have custom PSM policies that override the default Start Menu experience.
-* The request is to remove these PSM policies so users can view the full Start Menu, rather than the restricted, customized layout previously enforced (the reasoning behind which dates back to earlier ACG decisions).
-* We’ve been asked to draft and review a plan to complete this task immediately following the Win11 pilot deployment but **before** production rollout begins.
-* Given its complexity, this effort should be treated as a **standalone mini-project**, involving:
-
-  * A communication plan to inform impacted users.
-  * A mini hypercare period to support and resolve any arising issues.
+Just wanted to keep everyone in the loop.
 
 ---
 
-### 🔹 **Application Compatibility Testing Challenges**
-
-While Microsoft assures that 95% of Win10 desktop apps are compatible with Win11, ACG’s security GPO requirements force us to perform end-to-end application compatibility validation. This has been further complicated by:
-
-* The lack of a centralized Application Portfolio maintained by ACG.
-* Incomplete ownership details for core and line-of-business apps.
-
-To streamline, the EDM team has categorized apps into three priorities:
-
-* **Priority 1** – Apps with complete ownership details (Owner, Power User, SME).
-* **Priority 2** – Apps with partial ownership data.
-* **Priority 3** – Apps with no ownership data. In these cases, we run SCCM queries to identify users and then reach out to their managers in hopes of finding testers.
-
-Note: This user acceptance testing is largely limited to regression testing on Win11 VDIs. The ideal test—upgrading the user’s production device and applying the GPOs—has not been feasible due to delays in GPO readiness.
-
----
-
-### 🔹 **Other Outstanding Items**
-
-* A final decision is still pending on how non-compatible devices will be handled.
-* Hypercare staffing details are still unclear.
-* With only **6 engineers** on the EDM team managing daily incidents, requests, problem tickets, and engineering work—this Win11 initiative is stretching our capacity significantly.
-
-The team remains highly committed to supporting real Win11-related technical issues. However, the current workload—especially the amount of administrative and peripheral-heavy tasks—is taking a serious toll.
-
----
-
-I kindly request leadership to review these blockers and help us address them so that we can move forward effectively with the Windows 11 rollout.
-
-Sincerely,
-\[Your Full Name]
-\[Your Role]
-Tata Consultancy Services
-
----
-
-Let me know if you'd like a condensed version of this for a slide deck or leadership meeting.
+Let me know if you want it even shorter or more informal.
