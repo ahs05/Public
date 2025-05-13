@@ -1,6 +1,18 @@
-SELECT *
+SELECT 
+    usr.Full_User_Name0 AS [User Full Name],
+    usr.User_Name0 AS [UserName],
+    usr.ResourceID AS [User ResourceID],
+    s.Name0 AS [Primary Device Name],
+    s.ResourceID AS [Machine ResourceID],
+    s.User_Name0 AS [Last Logged On User],
+    s.Operating_System_Name_and0 AS [OS Name],
+    s.Client_Version0 AS [Client Version],
+    vumr.IsUserPrimary AS [Is Primary Device]
 FROM v_FullCollectionMembership fcm
-JOIN v_R_System s ON fcm.ResourceID = s.ResourceID
-JOIN v_R_User usr ON s.User_Name0 = usr.User_Name0
-LEFT JOIN v_UserMachineRelationship vumr ON s.ResourceID = vumr.MachineResourceID
+JOIN v_R_User usr 
+    ON fcm.ResourceID = usr.ResourceID
+LEFT JOIN v_UserMachineRelationship vumr 
+    ON usr.ResourceID = vumr.UserResourceID AND vumr.IsUserPrimary = 1
+LEFT JOIN v_R_System s 
+    ON vumr.MachineResourceID = s.ResourceID
 WHERE fcm.CollectionID = 'ACG00EAF'
