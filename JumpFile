@@ -1,20 +1,6 @@
-Here's a professional response you can use to acknowledge the incoming responses:
-
----
-
-Hi \[Name/Team],
-
-Thank you for your interest in participating in the Windows 11 early testing program!
-We’ve started receiving responses, including a few that also mention additional team members interested in joining. That’s great to see.
-
-We’re currently compiling the list of volunteers and will follow up with next steps soon. In the meantime, feel free to continue sharing names if there are others from your team who would like to be included.
-
-Appreciate your support in helping us make this transition a success!
-
-Best regards,
-\[Your Name]
-Enterprise Desktop Management Team
-
----
-
-Would you like a shorter or more informal version for Teams chat?
+SELECT *
+FROM v_FullCollectionMembership fcm
+JOIN v_R_System s ON fcm.ResourceID = s.ResourceID
+JOIN v_R_User usr ON s.User_Name0 = usr.User_Name0
+LEFT JOIN v_UserMachineRelationship vumr ON s.ResourceID = vumr.MachineResourceID
+WHERE fcm.CollectionID = 'ACG00EAF'
