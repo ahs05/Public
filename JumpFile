@@ -1,18 +1,20 @@
-SELECT 
-    usr.Full_User_Name0 AS [User Full Name],
-    usr.User_Name0 AS [UserName],
-    usr.ResourceID AS [User ResourceID],
-    s.Name0 AS [Primary Device Name],
-    s.ResourceID AS [Machine ResourceID],
-    s.User_Name0 AS [Last Logged On User],
-    s.Operating_System_Name_and0 AS [OS Name],
-    s.Client_Version0 AS [Client Version],
-    vumr.IsUserPrimary AS [Is Primary Device]
-FROM v_FullCollectionMembership fcm
-JOIN v_R_User usr 
-    ON fcm.ResourceID = usr.ResourceID
-LEFT JOIN v_UserMachineRelationship vumr 
-    ON usr.ResourceID = vumr.UserResourceID AND vumr.IsUserPrimary = 1
-LEFT JOIN v_R_System s 
-    ON vumr.MachineResourceID = s.ResourceID
-WHERE fcm.CollectionID = 'ACG00EAF'
+Here's a professionally worded and respectful response you can send to your boss's boss:
+
+---
+
+**Subject:** Re: Appreciation Note
+
+Hi Kamal,
+
+Thank you so much for your kind words and appreciation. It truly means a lot coming from you.
+
+I’m grateful for the opportunity to contribute to the Windows 11 project and to be a part of such a dedicated and driven team. Your encouragement motivates me to continue pushing forward and striving for excellence.
+
+Looking forward to continuing the momentum and delivering great results together.
+
+Best regards,
+Harish
+
+---
+
+Let me know if you'd like it to sound more formal or casual.
