@@ -1,25 +1,26 @@
-Certainly! Here's a professionally written email you can send to the manager, incorporating all the relevant information from both screenshots:
+Certainly! Here's a refined version of the email with improved clarity, tone, and professionalism:
 
 ---
 
-**Subject:** Request for Volunteers to Support Windows 11 App Testing – ImageRight Issue Tracking
+**Subject:** Request for Review & Sign-Off on UAT Comms and Target List
 
-Hi Michael,
+Hi @Zoch II, Joseph P.,
 
-We were informed that our Hypercare and EDM team members have successfully resolved the issue mentioned below. Please let us know if you’re still experiencing any challenges on your end.
+As discussed, as part of our tactical approach, we’d like to send the attached communications to the Reporting/Line Managers from the Legacy ACG branches.
 
-To ensure your team is fully prepared for a successful transition to Windows 11, we’d like to confirm that all your critical departmental apps are properly tested and vetted for compatibility. With that in mind, could you kindly provide 5–8 volunteers from your team to help us validate key applications in a Windows 11 environment? Our goal is to run through a few test scenarios and ensure that everything functions as expected before the production rollout.
+We’re aiming to align these Reporting/Line Managers as UAT testers for our May 30th weekend deployment. Additionally, we’re requesting their support in nominating a few users who could serve as Pilot Testers for the June 6th weekend deployment. This approach will better position our EDM team for a successful production deployment on June 13th.
 
-As an example, ImageRight is one of the apps we’re tracking closely. While we were unable to reproduce the reported issue on our Surface device, it did occur for an ACICF user. We’d like to test with another ACICF user—preferably with your team’s involvement—to witness the app launch and behavior firsthand. We’re specifically trying to determine whether the problem stems from a missing .NET assembly, UAC restrictions, or something else.
+Looking ahead, we plan to apply a similar approach across other business units and departments as well.
 
-Your support in identifying a few testers will help us build a well-rounded test set and ensure readiness.
+From the Master List, I’ve cherry-picked the top reporting managers with the highest number of users under them.
 
-Appreciate your help as always. Let me know if you have any questions or need more details.
+Could you please review the attached \[**Comms**] and the **Target User-Device List**, and provide your sign-off?
+
+Please feel free to update or modify the comms as needed.
 
 Best regards,
 \[Your Name]
-\[Your Title / Team Name]
 
 ---
 
-Let me know if you'd like to include a deadline, add a file attachment note, or personalize further.
+Let me know if you'd like a version with additional formality or changes to tone.
