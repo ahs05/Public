@@ -1,3 +1,26 @@
-Thank you for sending us the list of users. We will ensure all necessary communications are shared and the deployment timeline is provided accordingly.
+Thanks! Based on the content in the screenshot and your provided draft, here’s an updated version of your email that incorporates the more technical and detailed tone from the screenshot, while keeping your structure:
 
-If there are any updates or additional information required from our side, please don't hesitate to let us know. We’ll keep you informed throughout the process.
+---
+
+**Subject:** Request for Production Testers for Windows 11 Upgrade Validation
+
+Dear \[Team/Users],
+
+Thank you again for your time and participation in the successful testing of ImageRight and Sagitta Suite in the temporary Windows 11 VDI environment. Your feedback has been instrumental as we move closer to full Windows 11 readiness.
+
+As we transition to the next phase, the Engineering team is requesting a few volunteers from your group to serve as production testers. Specifically, we’re seeking users who are open to upgrading their primary Windows 10 devices to Windows 11, so we can validate critical departmental applications in a real-world setting.
+
+One area we are tracking closely is the performance of ACG ImageRight. While the issue previously reported could not be reproduced on our Surface test device, it was observed in your environment. To help isolate the root cause—whether related to a missing .NET assembly, UAC restrictions, or something else—we’d like to test with another ACICF user, ideally from your team, to observe behavior directly on upgraded hardware.
+
+Your participation will help us ensure application compatibility and smooth the path for a broader rollout. If you’re interested in participating, or would like to nominate team members, please reply by \[insert deadline].
+
+Thanks again for your continued partnership and support.
+
+Best regards,
+\[Your Name]
+\[Your Title]
+\[Your Organization]
+
+---
+
+Let me know if you'd like it to be shortened, more formal, or tailored to a specific department.
