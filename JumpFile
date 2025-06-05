@@ -1,27 +1,28 @@
 
-Here's a cleaned-up and professional version of the email you can send to your managers:
 
 ---
 
-**Subject:** Windows 11 Migration – Communication Summary and Follow-Up
+**Subject:** Request for Additional Users for Windows 11 Upgrade Testing
 
-Hi \[Manager's Name],
+Hi Marge,
 
-As discussed during our Windows 11 Migration weekly meeting on June 4th, please find attached the list of initial and follow-up emails that were sent to the Business Unit/Department Heads and Line Managers.
+Hope you're doing well.
 
-**Key Details:**
+Would it be possible to provide us with 3 additional users who can go through the Windows 11 upgrade early next week?
 
-* The Business Unit Heads/Leads information was provided by Dcan and is included in the attached document.
-* Refer to the file **"Tactical Approach.msg"** for details on how we gathered the Line Managers’ information.
-* The attached spreadsheet **("Responded vs Non-Responded.xls")** summarizes who has responded to our emails and who has not, along with the dates for each initial and follow-up communication.
+We’d like to cover a few more test cases before we can confidently move forward with having users access ACG ImageRight on Windows 11. So far, we’ve successfully upgraded both *Rebecca Brisby* and *Ryan Rubin* to Windows 11, and we did not encounter the issue we were expecting.
 
-I’ll also be sending out a meeting invite shortly so we can discuss this further.
-Please let me know if you have any questions or need additional information.
+From the list you previously shared, we are considering the following users for the next round of testing:
+
+* Lauregett
+
+Additionally, we were able to complete the installation test successfully. However, we could not test the functionality or first-launch behavior of the app, as ACG ImageRight appears to require a user login or license to access.
+
+Would it be possible for you to provide a test user account, or temporarily assign a license to one of our engineers so we can perform a full test? The license can be reclaimed once our testing is complete.
+
+Please let us know your thoughts or if there are any concerns.
 
 Best regards,
 \[Your Name]
 \[Your Position]
 
----
-
-Let me know if you'd like this tailored to a specific tone or if you're adding CCs/attachments.
