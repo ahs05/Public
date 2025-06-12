@@ -1,2 +1,115 @@
+Sure! Here's a list of **20 user-friendly FAQs about the “New Outlook”** that you can post on your HUB intranet site to guide employees and reduce IT support requests:
 
-To ensure a smooth Windows 11 upgrade, please keep your device connected to a strong and stable internet connection throughout the process. Avoid using public Wi-Fi (such as in hotels or cafés), as it may interrupt the upgrade. Since the update downloads around 6 GB of data, we recommend using a wired ethernet connection if possible. This helps maintain a secure and reliable connection with our servers during the upgrade.
+---
+
+### 📌 **FAQs: New Outlook on Windows 11**
+
+1. **What is the “New Outlook” app?**
+   It’s a redesigned email and calendar app from Microsoft, included with Windows 11 and available via Microsoft Store.
+
+2. **How is New Outlook different from Classic Outlook?**
+   It’s web-based (similar to Outlook.com), with a modern UI and faster updates—but it lacks some enterprise features found in the classic desktop version.
+
+3. **Is New Outlook replacing the Mail & Calendar apps?**
+   Yes. Microsoft is retiring the built-in Mail & Calendar apps, and New Outlook is the replacement.
+
+4. **Can I use both New Outlook and Classic Outlook?**
+   Yes, but we recommend using **Outlook (Classic)** for full functionality and support in our environment.
+
+5. **Where do I find the toggle to switch to New Outlook?**
+   In the top-right corner of the Outlook desktop app, you'll see a **“Try the New Outlook”** toggle. You can turn it on or off.
+
+6. **What happens when I switch to New Outlook?**
+   Your account and settings are imported, but certain features (like PST files and plug-ins) might not work properly.
+
+7. **Why is IT recommending Classic Outlook instead?**
+   Classic Outlook supports all required enterprise features like COM add-ins, full offline mode, PST/POP support, and advanced mail rules.
+
+8. **Can I access my Gmail, Yahoo, or IMAP email in New Outlook?**
+   Yes, but New Outlook routes all third-party mail accounts through Microsoft servers, which may raise privacy concerns.
+
+9. **Does New Outlook support PST files and archives?**
+   Partial support exists, but it’s limited. We recommend using Classic Outlook for managing PSTs.
+
+10. **Will my add-ins work in New Outlook?**
+    Most legacy COM add-ins will not work. Only modern web-based add-ins are supported.
+
+11. **Can I work offline in New Outlook?**
+    Limited offline support is available, but Classic Outlook is better suited for full offline access.
+
+12. **Is New Outlook mandatory?**
+    Not at this time. Microsoft promotes it, but users in our organization are advised to **continue using Classic Outlook**.
+
+13. **What features are missing in New Outlook?**
+    Drag-and-drop to folders, Quick Steps, advanced rules, and some Trust Center settings are not available.
+
+14. **Can I access shared mailboxes in New Outlook?**
+    Yes, but support is not as robust as in Classic Outlook—especially for complex delegation scenarios.
+
+15. **Is New Outlook available on Windows 10?**
+    Yes, but only for versions 17763 and above (October 2018 update or later).
+
+16. **Will New Outlook eventually replace Classic Outlook?**
+    Microsoft hasn’t officially confirmed a retirement date for Classic Outlook, but long-term direction points toward New Outlook.
+
+17. **Does New Outlook support S/MIME encryption?**
+    Yes, S/MIME is supported in the New Outlook app.
+
+18. **Is New Outlook available for Mac?**
+    A different version of New Outlook for Mac exists, but it’s separate from the Windows 11 version.
+
+19. **Can I uninstall New Outlook?**
+    If it was installed via Microsoft Store, yes. If it’s built into Windows, it cannot be removed—but it can be disabled.
+
+20. **How do I switch back to Classic Outlook?**
+    Open the New Outlook app and turn off the **“New Outlook” toggle** in the upper right corner. You’ll be returned to Classic Outlook.
+
+---
+
+
+------------
+
+
+Here’s a clear and professional advisory you can post on your internal SharePoint (HUB) site:
+
+---
+
+### ⚠️ Advisory: Use Outlook (Classic) Instead of “New Outlook” on Windows 11
+
+Dear Team,
+
+Microsoft has introduced a **“New Outlook”** app as part of Windows 11 updates and via Microsoft Store. While it features a modern look and integration with Microsoft 365, it currently lacks many key functionalities that are critical in our environment.
+
+#### 🛑 What You Should Do:
+
+**Please continue using the Outlook (Classic) desktop application** wherever possible.
+
+#### ❗ Why We Recommend This:
+
+* The *New Outlook* does **not support** certain enterprise features like:
+
+  * COM add-ins and certain plug-ins
+  * PST files and archived mail (limited support)
+  * POP accounts
+  * Full offline access
+  * Advanced rules and Quick Steps
+  * Trusted email/security settings
+* It also routes all mail accounts (including Gmail, Yahoo, etc.) through Microsoft’s servers.
+
+#### ✅ What We Support:
+
+* Outlook (Classic) from the Microsoft 365 Apps suite remains the recommended and fully supported email client in our environment.
+
+#### ℹ️ If You've Already Switched:
+
+If you've already enabled the *New Outlook*, you can switch back by turning off the **“Try the new Outlook”** toggle at the top-right corner of the window.
+
+---
+
+For questions or help reverting back, please contact the IT Support Team.
+
+Thank you,
+**IT Admin Team**
+
+---
+
