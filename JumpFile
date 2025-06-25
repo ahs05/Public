@@ -1,6 +1,7 @@
 https://www.kb.ischool.uw.edu/2022/02/04/set-up-ischool-issued-windows-computer/
 
-
+This approach is aligned with our goal to deliver a stable and performant W11 environment."
+Happy to connect if you have any thoughts or concern
 Hi team – just a quick heads-up:
 
 As part of our W11 Prod schedule, we’ve decided to exclude devices with 8GB RAM or less from the upgrade deployment (Prod & Pilot). A comms draft is in progress to notify impacted users and guide them to submit a PC Accessory Request via ServiceNow for RAM upgrades.
