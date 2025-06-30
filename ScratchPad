@@ -1,4 +1,13 @@
 --------------------
+Entered on 06/3/2025
+--------------------
+
+Block / Allow Hardware Device installation via Intune for USB by device identifiers : https://call4cloud.nl/device-control-removable-storage/#part5
+Configure Policies in Intune to Allow users to Install Printer Drivers: https://call4cloud.nl/allow-users-to-install-printer-drivers/
+
+Mapping Network Printers on Windows Devices with Intune: Setup and Requirementshttps://tunemdm.com/2024/06/10/mapping-network-printers-on-windows-devices-with-intune-setup-and-requirements/
+Bulk Creation of Network Printers with Intune Win32 App: https://tunemdm.com/2024/06/10/bulk-creation-of-network-printers-with-intune-win32-app/
+--------------------
 Entered on 03/31/2025
 --------------------
 Very basic on: How to apply drivers via Dism Method during Task Seq OSD via package Object Model: https://www.recastsoftware.com/resources/configmgr-docs/task-sequence-basics/task-sequence-steps/drivers/apply-driver-package/
