@@ -24,3 +24,8 @@ foreach ($UserProfile in $UserProfiles) {
     Write-Output "$Username last logged in $DaysSinceLastLogon days ago"
 }
 
+
+
+$DaysSinceLastLogon = [math]::Round(((Get-Date) - $LastLogonDate).TotalDays)
+
+
