@@ -3,3 +3,6 @@ https://www.kb.ischool.uw.edu/2022/02/04/set-up-ischool-issued-windows-computer/
 https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-print-to-pdf-feature-broken-by-windows-update/
 
 https://www.catalog.update.microsoft.com/Search.aspx?q=KB5060829
+
+$escapedProfileDir = [regex]::Escape($ProfilesDirectory)
+$Username = $UserProfile.LocalPath -replace "^$escapedProfileDir\\", ''
