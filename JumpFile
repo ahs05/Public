@@ -6,3 +6,21 @@ https://www.catalog.update.microsoft.com/Search.aspx?q=KB5060829
 
 $escapedProfileDir = [regex]::Escape($ProfilesDirectory)
 $Username = $UserProfile.LocalPath -replace "^$escapedProfileDir\\", ''
+
+
+foreach ($UserProfile in $UserProfiles) {
+    $LastLogonDate = $UserProfile.LastUseTime
+
+    if ($LastLogonDate) {
+        $LastLogonDate = [datetime]$LastLogonDate
+        $DaysSinceLastLogon = ((Get-Date) - $LastLogonDate).Days
+    } else {
+        $DaysSinceLastLogon = "Never Logged In"
+    }
+
+    $escapedProfileDir = [regex]::Escape($ProfilesDirectory)
+    $Username = $UserProfile.LocalPath -replace "^$escapedProfileDir\\", ''
+
+    Write-Output "$Username last logged in $DaysSinceLastLogon days ago"
+}
+
