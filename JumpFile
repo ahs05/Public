@@ -52,3 +52,7 @@ foreach ($UserProfile in $UserProfiles) {
     Write-Output "$Username last logged in $DaysSinceLastLogon"
 }
 
+
+To ensure a smooth Windows 11 upgrade, please log off from your VDI session and avoid reconnecting until notified that the upgrade is complete.
+
+Since this is a backend upgrade, no action is required from your end once the process begins. If you experience any issues post-upgrade, please contact the IT Service Desk.
