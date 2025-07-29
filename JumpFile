@@ -52,39 +52,3 @@ foreach ($UserProfile in $UserProfiles) {
     Write-Output "$Username last logged in $DaysSinceLastLogon"
 }
 
-
-Here’s a rewritten and polished version of your email with the missing gaps filled in for clarity and professionalism:
-
----
-
-**Subject:** Performance Analysis – Impact of RAM Upgrade on Device Performance
-
-Hi Kim,
-
-As requested, regarding the Performance Analysis for a device with 8GB RAM or less:
-
-I performed the test using a Dell Latitude 7490 running Windows 10. The process was as follows:
-
-1. Baseline: Captured performance metrics (Percentage of RAM usage, Free GB, and Total GB) on the Windows 10 device with 8GB RAM.
-2. OS Upgrade: Upgraded the device to Windows 11 and captured the same performance metrics.
-3. Hardware Upgrade: Increased the RAM to 16GB on the Windows 11 device and captured performance metrics again.
-
-**Attached Screenshots:**
-
-* Windows 10 device (8GB RAM) – RAM usage, Free GB, Total GB.
-* Windows 11 device (8GB RAM) – RAM usage, Free GB, Total GB.
-* Windows 11 device (16GB RAM) – RAM usage, Free GB, Total GB.
-
-For more detailed analysis, please refer to the attached document.
-
-**Conclusion:**
-Upgrading the RAM significantly improved performance, reducing the slowness and sluggishness observed. However, this is not a full “apples-to-apples” comparison of the end-user environment. End users may have additional productivity tools or line-of-business (LOB) applications running, which could require more computing power and impact results.
-
-Let me know if you’d like me to run similar tests on additional hardware models or configurations.
-
-Best regards,
-\[Your Name]
-
----
-
-If you want, I can also make you a **shorter, punchier version** that’s more like an SCCM testing note instead of a full email. Do you want me to prepare that too?
