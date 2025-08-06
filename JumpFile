@@ -52,3 +52,16 @@ foreach ($UserProfile in $UserProfiles) {
     Write-Output "$Username last logged in $DaysSinceLastLogon"
 }
 
+------------
+$excludeUsers = @("P7832", "Admin", "PCadmin")
+
+Get-WmiObject Win32_UserProfile |
+Where-Object {
+    $_.LastUseTime -lt (Get-Date).AddDays(-30) -and
+    $_.Special -eq $false -and
+    ($excludeUsers -notcontains ($_.LocalPath.Split('\')[-1]))
+} |
+ForEach-Object {
+    Write-Host "Deleting profile for $($_.LocalPath)" -ForegroundColor Yellow
+    $_.Delete()
+}
