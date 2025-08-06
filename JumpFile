@@ -59,7 +59,9 @@ Get-WmiObject Win32_UserProfile |
 Where-Object {
     $_.LastUseTime -lt (Get-Date).AddDays(-30) -and
     $_.Special -eq $false -and
-    ($excludeUsers -notcontains ($_.LocalPath.Split('\')[-1]))
+    $_.LocalPath -and
+    ($_.LocalPath -like "C:\Users\*") -and
+    ($excludeUsers -notcontains ([System.IO.Path]::GetFileName($_.LocalPath)))
 } |
 ForEach-Object {
     Write-Host "Deleting profile for $($_.LocalPath)" -ForegroundColor Yellow
