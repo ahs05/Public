@@ -4,4 +4,20 @@ https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-print-to-pdf-fea
 
 https://www.catalog.update.microsoft.com/Search.aspx?q=KB5060829
 
+SELECT 
+    sys.Name0 AS [ComputerName],
+    ui.Title AS [UpdateTitle],
+    ui.ArticleID AS [KB],
+    ui.Description AS [Description],
+    ui.DatePosted AS [ReleaseDate],
+    ucs.Status AS [UpdateStatus],
+    ucs.LastStatusTime AS [LastReportedTime]
+FROM v_UpdateComplianceStatus ucs
+INNER JOIN v_UpdateInfo ui
+    ON ucs.CI_ID = ui.CI_ID
+INNER JOIN v_R_System sys
+    ON ucs.ResourceID = sys.ResourceID
+WHERE sys.Name0 = 'DeviceName'
+  AND ucs.Status = 1 -- 1 = Installed
+ORDER BY ui.DatePosted DESC;
 
