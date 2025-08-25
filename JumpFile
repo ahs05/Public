@@ -21,3 +21,48 @@ WHERE sys.Name0 = 'DeviceName'
   AND ucs.Status = 1 -- 1 = Installed
 ORDER BY ui.DatePosted DESC;
 
+-------------
+
+DECLARE @Device NVARCHAR(128) = N'DeviceName';  -- <-- change this
+
+SELECT
+    rs.Name0                    AS ComputerName,
+    qfe.HotFixID0              AS KB,
+    qfe.Caption0               AS Title,
+    qfe.Description0           AS Description,
+    qfe.InstalledBy0           AS InstalledBy,
+    qfe.InstalledOn0           AS InstalledOnRaw,
+    TRY_CONVERT(datetime, qfe.InstalledOn0) AS InstalledOn
+FROM v_R_System AS rs
+JOIN v_GS_QUICK_FIX_ENGINEERING AS qfe
+  ON rs.ResourceID = qfe.ResourceID
+WHERE rs.Name0 = @Device
+ORDER BY TRY_CONVERT(datetime, qfe.InstalledOn0) DESC, qfe.HotFixID0;
+
+
+-------------
+DECLARE @Device NVARCHAR(128) = N'DeviceName';  -- <-- change this
+
+SELECT
+    rs.Name0                                   AS ComputerName,
+    ui.ArticleID                               AS KB,
+    ui.Title                                   AS UpdateTitle,
+    ui.DatePosted                              AS ReleaseDate,
+    CASE ucs.Status
+        WHEN 3 THEN 'Installed'
+        WHEN 2 THEN 'Required'
+        WHEN 1 THEN 'Not Required'
+        WHEN 0 THEN 'Unknown'
+        ELSE CONCAT('Status ', ucs.Status)
+    END                                         AS UpdateStatus,
+    ucs.LastStatusChangeTime                    AS LastStatusChange
+FROM v_R_System AS rs
+JOIN v_Update_ComplianceStatusAll AS ucs
+  ON rs.ResourceID = ucs.ResourceID
+JOIN v_UpdateInfo AS ui
+  ON ucs.CI_ID = ui.CI_ID
+WHERE rs.Name0 = @Device
+  AND ucs.Status = 3            -- Installed
+ORDER BY ui.DatePosted DESC, ui.ArticleID;
+
+
