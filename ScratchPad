@@ -1,4 +1,34 @@
 --------------------
+Entered on 09/08/2025
+--------------------
+Refer all these Articles for Clean up Hard Drive (C:\): 
+
+https://prosystech.nl/powershell-clean-up-hard-drive-c/
+https://level.io/library/script-windows-disk-cleanup
+https://roheed.com/free-up-disk-space-using-powershell/
+https://darwinsdata.com/how-do-i-run-a-disk-cleanup-in-powershell/
+https://www.geeksforgeeks.org/linux-unix/disk-cleanup-using-powershell-scripts/(Less intrusive Way)
+
+Assign Intune device category based on users department property: https://www.iamsysadmin.eu/mobile-device-managment/intune/assign-intune-device-category-based-on-users-department-property/
+
+Intune Device Categorization : https://mdmdumpsterfire.wordpress.com/2025/04/08/pick-your-poison-intune-device-categorization/
+
+Device Group based on the Primary User's Department?: https://www.reddit.com/r/Intune/comments/llyexl/device_group_based_on_the_primary_users_department/
+
+How do you handle multiple departments/"images" with AutoPilot?: https://www.reddit.com/r/Intune/comments/11kedx8/how_do_you_handle_multiple_departmentsimages_with/
+
+Consensus on assignments by user or by device?: https://www.reddit.com/r/Intune/comments/un9hyy/consensus_on_assignments_by_user_or_by_device/
+
+Assign-DeviceScopeTags.ps1: https://carygarvin.github.io/Assign-DeviceScopeTags.ps1/
+
+Assign-category-based-on-users-department.ps1: https://github.com/iamsysadmin/Scripts/blob/main/Assign-category-based-on-users-department.ps1
+
+
+Change-Device-category-intune.ps1: https://github.com/iamsysadmin/Scripts/blob/main/Change-Device-category-intune.ps1
+
+
+
+--------------------
 Entered on 06/3/2025
 --------------------
 
