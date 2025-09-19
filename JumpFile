@@ -79,28 +79,44 @@ https://www.geeksforgeeks.org/linux-unix/disk-cleanup-using-powershell-scripts/(
 
 
 # Variables
-$SourcePath = "D:\Sources\SxS"   # Change this to where your CAB file is located
-$LogFile    = "C:\Temp\DotNet35_Install.log"  # Change log location if needed
+$regkeypath = "HKLM:\SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs"
+$valueName  = "DebugeDdLoopbackApps"
+$logFile    = "C:\Temp\RegKey_Update.log"
 
-# Ensure log folder exists
-$logDir = Split-Path $LogFile
+# Ensure log directory exists
+$logDir = Split-Path $logFile
 if (!(Test-Path $logDir)) {
     New-Item -Path $logDir -ItemType Directory -Force | Out-Null
 }
 
-Write-Host "Starting .NET Framework 3.5 installation..." -ForegroundColor Cyan
-Add-Content -Path $LogFile -Value "=== .NET Framework 3.5 Installation Started: $(Get-Date) ==="
+Function Write-Log {
+    param([string]$Message)
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    Add-Content -Path $logFile -Value "$timestamp : $Message"
+}
 
 try {
-    $arguments = "/Online /Enable-Feature /FeatureName:NetFx3 /All /LimitAccess /Source:$SourcePath /LogPath:$LogFile"
-    
-    # Run DISM with logging
-    Start-Process -FilePath "dism.exe" -ArgumentList $arguments -Wait -NoNewWindow
-    
-    Add-Content -Path $LogFile -Value "=== Installation Completed: $(Get-Date) ==="
-    Write-Host ".NET Framework 3.5 installation completed successfully." -ForegroundColor Green
+    Write-Log "Checking if registry value '$valueName' exists at $regkeypath"
+
+    $existingValue = Get-ItemProperty -Path $regkeypath -Name $valueName -ErrorAction SilentlyContinue
+
+    if ($existingValue) {
+        Write-Log "Registry value '$valueName' found. Deleting..."
+        Remove-ItemProperty -Path $regkeypath -Name $valueName -ErrorAction Stop
+        Write-Log "Registry value '$valueName' deleted successfully."
+    }
+    else {
+        Write-Log "Registry value '$valueName' not found. No deletion required."
+    }
+
+    # Recreate empty registry value
+    Write-Log "Creating empty registry value '$valueName'"
+    New-ItemProperty -Path $regkeypath -Name $valueName -PropertyType String -Force | Out-Null
+    Write-Log "Registry value '$valueName' created successfully."
+
+    Write-Host "Registry operation completed successfully." -ForegroundColor Green
 }
 catch {
-    Add-Content -Path $LogFile -Value "ERROR: $($_.Exception.Message) - $(Get-Date)"
-    Write-Host "Error during installation: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Log "ERROR: $($_.Exception.Message)"
+    Write-Host "An error occurred: $($_.Exception.Message)" -ForegroundColor Red
 }
