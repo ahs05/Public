@@ -120,3 +120,21 @@ catch {
     Write-Log "ERROR: $($_.Exception.Message)"
     Write-Host "An error occurred: $($_.Exception.Message)" -ForegroundColor Red
 }
+------------------------------
+
+
+$regKey = "HKLM\SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs"
+$owner = [System.Security.Principal.NTAccount]"Administrators"
+
+# Take ownership
+$acl = Get-Acl -Path "Registry::$regKey"
+$acl.SetOwner($owner)
+Set-Acl -Path "Registry::$regKey" -AclObject $acl
+
+# Grant Full Control to Administrators
+$rule = New-Object System.Security.AccessControl.RegistryAccessRule ("Administrators","FullControl","ContainerInherit,ObjectInherit","None","Allow")
+$acl.SetAccessRule($rule)
+Set-Acl -Path "Registry::$regKey" -AclObject $acl
+
+Write-Host "Ownership and FullControl granted to Administrators on $regKey"
+
