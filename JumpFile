@@ -106,3 +106,34 @@ $acl.SetAccessRule($rule)
 Set-Acl -Path $RegPath -AclObject $acl
 
 
+---------
+
+# Define the registry key path
+$RegPath = "HKLM:\SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs"
+
+# Step 1: Take ownership
+$owner = [System.Security.Principal.NTAccount]"BUILTIN\Administrators"
+$acl = Get-Acl -Path $RegPath
+$acl.SetOwner($owner)
+Set-Acl -Path $RegPath -AclObject $acl
+
+# Step 2: Add full control for Authenticated Users
+$acl = Get-Acl -Path $RegPath
+$rule = New-Object System.Security.AccessControl.RegistryAccessRule(
+    "NT AUTHORITY\Authenticated Users",
+    "FullControl",
+    "ContainerInherit,ObjectInherit",
+    "None",
+    "Allow"
+)
+$acl.SetAccessRule($rule)
+Set-Acl -Path $RegPath -AclObject $acl
+
+# Step 3 (Optional): Restore ownership to the service account
+# (This keeps Windows happy and avoids service issues)
+$svcOwner = New-Object System.Security.Principal.NTAccount("NT SERVICE\MpsSvc")
+$acl = Get-Acl -Path $RegPath
+$acl.SetOwner($svcOwner)
+Set-Acl -Path $RegPath -AclObject $acl
+
+
