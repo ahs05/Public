@@ -77,64 +77,32 @@ https://darwinsdata.com/how-do-i-run-a-disk-cleanup-in-powershell/
 https://www.geeksforgeeks.org/linux-unix/disk-cleanup-using-powershell-scripts/(Less intrusive Way)
 ---------------------------------------------------
 
+# Define the registry key path
+$RegPath = "HKLM:\SOFTWARE\7-Zip\Hari"
 
-# Variables
-$regkeypath = "HKLM:\SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs"
-$valueName  = "DebugeDdLoopbackApps"
-$logFile    = "C:\Temp\RegKey_Update.log"
+# Get the current ACL of the registry key
+$acl = Get-Acl -Path $RegPath
 
-# Ensure log directory exists
-$logDir = Split-Path $logFile
-if (!(Test-Path $logDir)) {
-    New-Item -Path $logDir -ItemType Directory -Force | Out-Null
-}
+# Create a new access rule
+# BUILTIN\Users = all local users
+# BUILTIN\Administrators = Local admins group
+# NT AUTHORITY\Authenticated Users = All authenticated users (domain or local)
+# FullControl = full rights
+# ContainerInherit, ObjectInherit = apply to subkeys
+# None = no special propagation flags
+# Allow = grant permissions
+$rule = New-Object System.Security.AccessControl.RegistryAccessRule(
+    "BUILTIN\Users",
+    "FullControl",
+    "ContainerInherit,ObjectInherit",
+    "None",
+    "Allow"
+)
 
-Function Write-Log {
-    param([string]$Message)
-    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Add-Content -Path $logFile -Value "$timestamp : $Message"
-}
-
-try {
-    Write-Log "Checking if registry value '$valueName' exists at $regkeypath"
-
-    $existingValue = Get-ItemProperty -Path $regkeypath -Name $valueName -ErrorAction SilentlyContinue
-
-    if ($existingValue) {
-        Write-Log "Registry value '$valueName' found. Deleting..."
-        Remove-ItemProperty -Path $regkeypath -Name $valueName -ErrorAction Stop
-        Write-Log "Registry value '$valueName' deleted successfully."
-    }
-    else {
-        Write-Log "Registry value '$valueName' not found. No deletion required."
-    }
-
-    # Recreate empty registry value
-    Write-Log "Creating empty registry value '$valueName'"
-    New-ItemProperty -Path $regkeypath -Name $valueName -PropertyType String -Force | Out-Null
-    Write-Log "Registry value '$valueName' created successfully."
-
-    Write-Host "Registry operation completed successfully." -ForegroundColor Green
-}
-catch {
-    Write-Log "ERROR: $($_.Exception.Message)"
-    Write-Host "An error occurred: $($_.Exception.Message)" -ForegroundColor Red
-}
-------------------------------
-
-
-$regKey = "HKLM\SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs"
-$owner = [System.Security.Principal.NTAccount]"Administrators"
-
-# Take ownership
-$acl = Get-Acl -Path "Registry::$regKey"
-$acl.SetOwner($owner)
-Set-Acl -Path "Registry::$regKey" -AclObject $acl
-
-# Grant Full Control to Administrators
-$rule = New-Object System.Security.AccessControl.RegistryAccessRule ("Administrators","FullControl","ContainerInherit,ObjectInherit","None","Allow")
+# Add the rule to the ACL
 $acl.SetAccessRule($rule)
-Set-Acl -Path "Registry::$regKey" -AclObject $acl
 
-Write-Host "Ownership and FullControl granted to Administrators on $regKey"
+# Apply the ACL back to the registry key
+Set-Acl -Path $RegPath -AclObject $acl
+
 
