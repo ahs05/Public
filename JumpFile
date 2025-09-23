@@ -183,28 +183,7 @@ $regKey.Close()
 
 ----------------------------
 #4
-# Enable SeTakeOwnershipPrivilege for current session
-$definition = @"
-using System;
-using System.Runtime.InteropServices;
-public class Advapi32 {
-    [DllImport("advapi32.dll", SetLastError=true)] public static extern bool AdjustTokenPrivileges(IntPtr TokenHandle, bool DisableAllPrivileges, ref TOKEN_PRIVILEGES NewState, int BufferLength, IntPtr PreviousState, IntPtr ReturnLength);
-    [DllImport("advapi32.dll", SetLastError=true)] public static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, out long lpLuid);
-    [DllImport("advapi32.dll", SetLastError=true)] public static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
-    [DllImport("kernel32.dll")] public static extern IntPtr GetCurrentProcess();
-    [StructLayout(LayoutKind.Sequential)] public struct LUID { public uint LowPart; public int HighPart; }
-    [StructLayout(LayoutKind.Sequential)] public struct TOKEN_PRIVILEGES { public int PrivilegeCount; public LUID Luid; public uint Attributes; }
-    public static void EnableTakeOwnership() {
-        OpenProcessToken(GetCurrentProcess(), 0x20 + 0x8, out IntPtr token);
-        LookupPrivilegeValue(null, "SeTakeOwnershipPrivilege", out long luidVal);
-        TOKEN_PRIVILEGES tp = new TOKEN_PRIVILEGES { PrivilegeCount=1, Luid=new LUID{LowPart=(uint)luidVal}, Attributes=0x2 };
-        AdjustTokenPrivileges(token, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero);
-    }
-}
-"@
-Add-Type $definition
-[Advapi32]::EnableTakeOwnership()
-Write-Host "SeTakeOwnershipPrivilege enabled. You can now take ownership of registry keys or files."
-
-
-
+$tok = [System.Security.Principal.WindowsIdentity]::GetCurrent().Token
+$SE_TAKE_OWNERSHIP = 0x14
+$null = [advapi32]::AdjustTokenPrivileges($tok, $false, [PSCustomObject]@{PrivilegeCount=1; Luid=$SE_TAKE_OWNERSHIP; Attributes=2}, 0, [IntPtr]::Zero, [IntPtr]::Zero)
+Write-Host "SeTakeOwnershipPrivilege enabled for this session."
