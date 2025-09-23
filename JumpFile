@@ -137,3 +137,48 @@ $acl.SetOwner($svcOwner)
 Set-Acl -Path $RegPath -AclObject $acl
 
 
+---------------------------
+
+
+# Define the registry key path
+$RegPath = "HKLM:\SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs"
+
+# --- Step 0: Force .NET RegistryKey object (sometimes Get-Acl fails directly) ---
+$regKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey(
+    "SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs",
+    [Microsoft.Win32.RegistryKeyPermissionCheck]::ReadWriteSubTree,
+    [System.Security.AccessControl.RegistryRights]::TakeOwnership
+)
+
+if (-not $regKey) {
+    Write-Error "Failed to open registry key: $RegPath"
+    exit
+}
+
+# --- Step 1: Take ownership ---
+$acl = $regKey.GetAccessControl([System.Security.AccessControl.AccessControlSections]::All)
+$owner = [System.Security.Principal.NTAccount]"BUILTIN\Administrators"
+$acl.SetOwner($owner)
+$regKey.SetAccessControl($acl)
+
+# --- Step 2: Add full control for Authenticated Users ---
+$acl = $regKey.GetAccessControl()
+$rule = New-Object System.Security.AccessControl.RegistryAccessRule(
+    "NT AUTHORITY\Authenticated Users",
+    [System.Security.AccessControl.RegistryRights]::FullControl,
+    [System.Security.AccessControl.InheritanceFlags]::ContainerInherit -bor [System.Security.AccessControl.InheritanceFlags]::ObjectInherit,
+    [System.Security.AccessControl.PropagationFlags]::None,
+    [System.Security.AccessControl.AccessControlType]::Allow
+)
+$acl.SetAccessRule($rule)
+$regKey.SetAccessControl($acl)
+
+# --- Step 3 (Optional): Restore ownership back to MpsSvc ---
+$acl = $regKey.GetAccessControl()
+$svcOwner = New-Object System.Security.Principal.NTAccount("NT SERVICE\MpsSvc")
+$acl.SetOwner($svcOwner)
+$regKey.SetAccessControl($acl)
+
+$regKey.Close()
+
+
