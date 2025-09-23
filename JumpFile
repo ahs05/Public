@@ -187,3 +187,37 @@ $tok = [System.Security.Principal.WindowsIdentity]::GetCurrent().Token
 $SE_TAKE_OWNERSHIP = 0x14
 $null = [advapi32]::AdjustTokenPrivileges($tok, $false, [PSCustomObject]@{PrivilegeCount=1; Luid=$SE_TAKE_OWNERSHIP; Attributes=2}, 0, [IntPtr]::Zero, [IntPtr]::Zero)
 Write-Host "SeTakeOwnershipPrivilege enabled for this session."
+
+------------------------
+#5
+# Step 1: Define the registry key path
+$RegPath = "HKLM:\SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs"
+
+# Step 2: Open the registry key with ReadWrite permissions
+$RegKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey(
+    "SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs", 
+    [Microsoft.Win32.RegistryKeyPermissionCheck]::ReadWriteSubTree, 
+    [System.Security.AccessControl.RegistryRights]::ChangePermissions
+)
+
+# Step 3: Get the current ACL
+$acl = $RegKey.GetAccessControl()
+
+# Step 4: Set the owner to Administrators (or your current user)
+$owner = [System.Security.Principal.NTAccount]"Administrators"
+$acl.SetOwner($owner)
+
+# Step 5: Apply the new ACL
+$RegKey.SetAccessControl($acl)
+
+# Step 6: Grant FullControl to Administrators
+$rule = New-Object System.Security.AccessControl.RegistryAccessRule (
+    "Administrators", "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow"
+)
+$acl.AddAccessRule($rule)
+$RegKey.SetAccessControl($acl)
+
+$RegKey.Close()
+
+Write-Host "Ownership and full control granted. You can now modify the key."
+
