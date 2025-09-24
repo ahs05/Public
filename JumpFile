@@ -165,3 +165,26 @@ $RegKey.Close()
 
 Write-Host "Ownership and full control granted. You can now modify the key."
 
+--------------
+
+#Export 
+$HiveRoot = "HKLM\SYSTEM\CurrentControlSet\Services\mpssvc\Parameters\AppCs"
+$OutFile = "C:\Temp\Appcs.hiv"
+Start-Process -FilePath reg -ArgumentList "save `"$HiveRoot`" `"$OutFile`"" -Wait -NoNewWindow
+Write-Host "Saved $HiveRoot to $OutFile"
+
+-----------
+#Import
+
+# Path to your hive file
+$HiveFile = "C:\Users\hkaka\Downloads\firewall_fix_windows_11\mpssvc.hiv"
+
+# Mount location under HKEY_LOCAL_MACHINE (can also use HKEY_USERS)
+$MountPoint = "TempHive"
+
+# Load the hive
+reg load "HKLM\$MountPoint" $HiveFile
+Write-Host "Hive loaded at HKLM:\$MountPoint"
+
+
+
