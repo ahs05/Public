@@ -190,30 +190,6 @@ Got it — here’s a stronger, more formal and escalatory version you can use:
 
 ---
 
-**Subject:** Urgent: Request for Resolution Timeline and Deployable Workaround
-
-Hello [Rep’s Name],
-
-Thank you for your response. While we appreciate the update, this issue is creating significant operational challenges for our end users, and we need clearer guidance from Microsoft.
-
-1. **Timeline for Permanent Fix**
-   Please confirm when Microsoft intends to release an official resolution. Without a defined timeline, it is difficult for us to communicate expectations to leadership and plan our remediation strategy.
-
-2. **Temporary Workaround Required**
-   We urgently require a temporary solution that can be deployed at scale via our enterprise management tools (Intune/SCCM). Our attempts to script the workaround have been unsuccessful, as the **AppSVC registry keys are heavily protected by the operating system**. PowerShell scripting is not viable in this scenario.
-
-   We are specifically asking if Microsoft has an **existing KB article, vetted script, shim, or registry hive** that can be executed in **System Context** through Intune/SCCM. Without this, our technicians are forced to remediate devices manually, which is not sustainable and causes considerable disruption to our user base.
-
-3. **Testing and Feedback**
-   Our team is meeting daily at **2 PM EST** to evaluate and test potential solutions. If Microsoft can provide an automated deployable fix, we will test immediately and report back any issues during these sessions.
-
-Given the scope of impact, we must stress the urgency of this matter. Please escalate internally if necessary to ensure we receive both a timeline for a permanent fix and a workable short-term deployment option as soon as possible.
-
-We look forward to your prompt response.
-
-Best regards,
-[Your Name]
-[Your Title/Team]
 
 ---
 
