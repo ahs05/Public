@@ -193,31 +193,4 @@ Got it. Here’s a stronger, more escalatory draft that reflects your dissatisfa
 
 ---
 
-Hi [Name],
-
-Thank you for the update. We understand that PowerShell scripting, Intune, and SCCM deployments may currently fall outside of your scope. However, from our perspective, this is exactly where we need support. The issue we are facing requires a **scalable remediation approach**, as manual fixes are not sustainable in our environment.
-
-Frankly, we are concerned that despite this issue being known since 2021/2022, there is still no **scalable permanent fix** available, nor even a **temporary scripted or deployment-based solution** that can be pushed at scale. Simply relying on manual remediation is not viable for us, given the impact across devices.
-
-At this point, we would like Microsoft to provide clear guidance on:
-
-1. When a permanent fix will be available.
-2. A temporary solution that can be deployed using SCCM/Intune until the permanent resolution is ready.
-
-If this cannot be addressed within your current scope, we are okay with having this ticket escalated further so the right resources can get involved.
-
-Looking forward to your response.
-
-Best regards,
-[Your Name]
-
----
-
-Would you like me to make it **even sharper and more pressing** (almost pushing for SLA-level urgency), or keep it at this **firm but professional** level?
-
-
----
-
-Would you like me to **add executive visibility language** (e.g., “We may need to escalate this through our account team and TAM if no workaround is provided shortly”)? That would push even harder.
-
 
