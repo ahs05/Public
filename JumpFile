@@ -186,11 +186,37 @@ $MountPoint = "TempHive"
 reg load "HKLM\$MountPoint" $HiveFile
 Write-Host "Hive loaded at HKLM:\$MountPoint"
 ---------------
-Got it — here’s a stronger, more formal and escalatory version you can use:
+Got it — here’s a sharper, **more escalatory version** of your reply. It’s still professional but applies pressure for a concrete resolution and timeline:
 
 ---
-Got it. Here’s a stronger, more escalatory draft that reflects your dissatisfaction and includes the escalation note:
+
+**Subject:** Urgent: Escalation Required – Issue Persisting on Windows 10 & 11 (Active Ticket)
+
+Hi [Microsoft Tech Name],
+
+Thank you for your response and for sharing the current guidance. However, I need to stress that the recommended fix does not align with what we are seeing in our environment.
+
+This issue is occurring on **both Windows 10 and Windows 11 devices** — including Windows 11 builds that already contain the KB5014019 fix (and newer cumulative updates). Given this, the suggestion to simply move to Windows 11 is **not a viable or scalable solution** for us, as it does not resolve the problem in practice.
+
+We are very concerned that this issue has been known since 2021/2022 and, despite this, there is still no **permanent, scalable resolution** available. At this point, temporary or device-specific workarounds are not sufficient for enterprise deployment at our scale.
+
+Accordingly, we are requesting:
+
+* A **clear timeline and commitment** from Microsoft on when a permanent fix will be delivered.
+* Official **guidance on enterprise-wide mitigations** that can be applied through **SCCM/MECM** or **Intune**, not just one-off fixes.
+* Escalation of this issue beyond frontline technical support so that we can engage with the appropriate product engineering teams.
+
+I’ve looped in our Microsoft account representative, [Rep’s Name], with the expectation that he can help us escalate this further and ensure the right stakeholders are involved.
+
+We need stronger engagement and a defined path forward, as this issue is materially impacting our ability to manage and deploy systems at scale. Please confirm next steps for escalation and when we can expect a concrete resolution plan.
+
+Best regards,
+[Your Full Name]
+[Your Job Title]
 
 ---
+
+Would you like me to also **draft a shorter executive-summary version** (2–3 pointed paragraphs, minimal detail, max pressure) that you can send to your Microsoft **account rep directly** for higher-level escalation?
+
 
 
