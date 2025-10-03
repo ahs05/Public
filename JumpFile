@@ -218,5 +218,39 @@ Best regards,
 
 Would you like me to also **draft a shorter executive-summary version** (2–3 pointed paragraphs, minimal detail, max pressure) that you can send to your Microsoft **account rep directly** for higher-level escalation?
 
+Here’s a sharp list of clarifying questions you could ask the requestor before proceeding with an auto-run Disk Cleanup script request:
+
+**Purpose & Scope**
+
+* What is the primary goal of running Disk Cleanup automatically (freeing up space, performance improvement, compliance, etc.)?
+* Which devices/servers does this need to run on (specific OU, group, all endpoints, only certain departments)?
+* Is this for end-user devices, servers, or both?
+
+**Execution Details**
+
+* What is the desired frequency (daily, weekly, monthly)?
+* At what time should the script run (off-hours, during business hours)?
+* Should the cleanup run silently in the background or notify/prompt the user?
+* Do you want logs or reports generated after each run?
+
+**Cleanup Options**
+
+* Which cleanup categories should be included (temporary files, recycle bin, Windows update cleanup, system files, etc.)?
+* Should user profile–specific items (like Downloads or Recycle Bin) be cleaned, or only system-level items?
+* Is there any data that should be excluded from deletion?
+
+**Risk & Control**
+
+* Should users have the ability to opt out or defer the cleanup?
+* Do you want the script to run with elevated/admin privileges, or only user-level cleanup?
+* What’s the rollback plan if the cleanup causes issues (e.g., needed files deleted)?
+
+**Deployment & Management**
+
+* Should this be deployed via SCCM/Intune or as a local scheduled task?
+* Who will own/monitor this going forward (IT Ops, Desktop Engineering, requester’s team)?
+* Is there a requirement for reporting success/failure of the script execution?
+
+Would you like me to reframe this into a **professional email-style list of questions** you can send back to the requestor?
 
 
