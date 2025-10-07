@@ -190,24 +190,7 @@ Here’s a professional, firm, and escalation-ready draft you can send as a resp
 
 ---
 
-**Subject:** Re: Request for Firewall TSS Trace Collection
-
-Hi [Microsoft Support/Engineer’s Name],
-
-Thanks for your response and the detailed steps.
-
-As mentioned in our earlier exchanges, Microsoft has been aware of this issue for quite a while now. In fact, as per the previous emails in this thread, Microsoft has already provided us with a fix that seems to be working effectively in our environment. Based on that, we’ve gone ahead and crafted a **Job Aid** and instructed our technicians to follow it when encountering this issue.
-
-The reason we’re escalating this request now is to understand whether your team can provide an **automated solution**—something that can be deployed centrally via **SCCM or Intune**, rather than having our techs apply the fix manually each time.
-
-Could you please clarify why the **Firewall TSS logs** are being requested again, especially when this issue has been part of your **known issues list** for some time? We want to ensure our efforts to gather logs don’t go wasted—particularly since the affected device is currently in a **bricked state**, and we’re dependent on the logged-in user to perform the actions you outlined.
-
-We’d really appreciate your input on whether automation guidance or a scalable deployment method is available from your side.
-
-Best regards,
-[Your Name]
-[Your Title]
-[Your Organization]
+*
 
 ---
 
