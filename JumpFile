@@ -189,6 +189,28 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 Here’s a professional, firm, and escalation-ready draft you can send as a response to the email in the image:
 
 ---
+Here’s your revised, formal version with that addition included:
+
+---
+
+**Subject:** Clarification on Understanding of the Issue
+
+Hi [Name],
+
+Thank you for summarizing the current understanding. Please find a few clarifications below:
+
+* The manual workaround applies to **both Windows 10 and Windows 11 devices**, and we are exploring options to **automate this process or implement a similar scalable solution that can be deployed via SCCM/Intune**.
+* The issue is **observed on both Windows 10 and Windows 11** devices.
+* The **patch mentioned is already installed** on the affected systems; however, the issue **continues to persist** despite the patch being in place.
+
+Please let me know if you need any additional details or logs from our side to assist with further analysis.
+
+Best regards,
+[Your Name]
+
+---
+
+Would you like me to make this slightly shorter so it reads more like a direct inline reply instead of a standalone email?
 
 *
 
