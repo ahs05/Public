@@ -196,5 +196,31 @@ $ArrowMSI = "$scriptpath\Source\1.Arrow\MSI\AFT Arrow 8.msi"
 $FathomMSI = "$scriptpath\Source\2.Fathom\MSI\AFT Fathom 11.msi" 
 $ChempakMSI = "$scriptpath\Source\3.Chempak\MSI\Chempak Data.msi" 
 
+    $OldappScriptFilename = "AFTProducts2019"
+    Write-Log "Older Version of the Application detected. Executing the Uninstall Logic"
+    $procstartinfo = new-object System.Diagnostics.ProcessStartInfo
+    $procstartinfo.FileName = "$scriptpath\Source\4.Uninstall-2019\AFT_Products_Uninstaller.EXE"
+    $procstartinfo.Arguments = "/s"
+    $procstartinfo.UseShellExecute = $false
+    $procstartinfo.RedirectStandardOutput = $true
+try {$proc = [System.Diagnostics.Process]::Start($procstartinfo)}
+catch {
+    Write-Log "Error executing $scriptpath\$OldappScriptFilename, file likely missing"
+    exit 1603
+}
+$proc.WaitForExit()
+
+$exitcode = $proc.ExitCode
+
+if (($proc.ExitCode -eq 0) -or ($proc.ExitCode -eq 3010) -or ($proc.ExitCode -eq 1641) -or ($proc.ExitCode -eq 1603)) {
+
+    Write-Log ("$OldappScriptFilename main Un-install completed successfully with code: " + $proc.ExitCode)
+}
+else {
+
+    Write-Log ("$OldappScriptFilename Un-install failed with code " + $proc.ExitCode) -type Error
+    exit $exitcode
+}
+
 
 -
