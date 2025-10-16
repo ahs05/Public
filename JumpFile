@@ -186,15 +186,36 @@ $MountPoint = "TempHive"
 reg load "HKLM\$MountPoint" $HiveFile
 Write-Host "Hive loaded at HKLM:\$MountPoint"
 ---------------
-A **Project Closure Deck** (or “Project Closure Presentation”) is typically used by Project Managers to summarize the project’s lifecycle, outcomes, lessons learned, and transition plans when presenting to the **end client** or **stakeholders**.
 
-24H2 Hardening Policy rollout: While the introduction of the new 24H2 security and hardening baselines significantly strengthened the endpoint posture, more extensive end-to-end testing across device models and user scenarios could have further minimized early incidents and policy-related disruptions.
-
-GPO exceptions and tuning: Some Group Policy Object (GPO) exceptions and configuration modifications are still in progress, but stability has notably improved and end-user experience has largely normalized.
-------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
 
+
+
+---
+
+**Subject:** RE: Firewall TSS Trace and Duplicate SID Findings
+
+Hi [Name],
+
+Apologies for the delayed response — as Windows 10 end of life is approaching, I’ve been heavily tied up with Windows 11 upgrade deployment activities.
+
+I’ve now gathered the requested logs from an affected device; however, it was quite a challenging process as the system was in a bricked state. We had to rely on the end user to launch Command Prompt in administrative mode, and due to our internal policies, I had to execute the commands you provided via **PsExec** in *System* context. Running the commands under a standard admin context threw a few curveballs.
+
+I can confirm with confidence that the issue is indeed caused by **duplicate SIDs**. I exported the *DebuggedLopped* registry keys from the affected machine and compared them with a healthy system using *Beyond Compare*. As you mentioned in one of your earlier emails, I could see hundreds of duplicated SIDs in the affected device’s registry. I’ve included these registry exports in the log bundle for your reference.
+
+Additionally, we’ve observed that the **“Stopping” state of the Defender Firewall service** occurs predominantly during the Windows 10 → Windows 11 upgrade process. While it might not be directly related, I wanted to flag it since we’ve also seen it on some existing Windows 11 systems that had completed the upgrade long ago.
+
+We’d greatly appreciate your help in expediting an automated or scalable solution for this issue. The current manual recovery process—connecting with affected users and bringing their devices back online—is consuming significant time and resources.
+
+Please let me know if you need any additional details or artifacts from our side.
+
+Best regards,
+**[Your Full Name]**
+[Your Title / Team Name]
+[Your Organization]
+
+---
 
 
 
