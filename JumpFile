@@ -189,38 +189,59 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
-$scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-$scriptname =  ($MyInvocation.MyCommand.Name) -replace ".ps1",""
+Got it — here’s a revised version of the message that clearly asks each team member to share their inputs so you can consolidate and send the final summary to management:
 
-$ArrowMSI = "$scriptpath\Source\1.Arrow\MSI\AFT Arrow 8.msi"
-$FathomMSI = "$scriptpath\Source\2.Fathom\MSI\AFT Fathom 11.msi" 
-$ChempakMSI = "$scriptpath\Source\3.Chempak\MSI\Chempak Data.msi" 
+```{"id":"57291","variant":"chat_message","title":"Team Inputs Required – Year-End Highlights & Next-Year Roadmap"}
+Hi Team,  
 
-    $OldappScriptFilename = "AFTProducts2019"
-    Write-Log "Older Version of the Application detected. Executing the Uninstall Logic"
-    $procstartinfo = new-object System.Diagnostics.ProcessStartInfo
-    $procstartinfo.FileName = "$scriptpath\Source\4.Uninstall-2019\AFT_Products_Uninstaller.EXE"
-    $procstartinfo.Arguments = "/s"
-    $procstartinfo.UseShellExecute = $false
-    $procstartinfo.RedirectStandardOutput = $true
-try {$proc = [System.Diagnostics.Process]::Start($procstartinfo)}
-catch {
-    Write-Log "Error executing $scriptpath\$OldappScriptFilename, file likely missing"
-    exit 1603
-}
-$proc.WaitForExit()
+Our Tower Head has requested a consolidated summary covering our key highlights and plans. I’ll be compiling this on behalf of our tower, so I need **each of you to share your inputs** under the sections below by **[insert deadline, e.g., EOD Wednesday]**:  
 
-$exitcode = $proc.ExitCode
+**1. Highlights from the Past Year**  
+- Major accomplishments  
+- Key metrics (SLA adherence, incident resolution times, customer satisfaction, etc.)  
+- Notable projects or initiatives  
 
-if (($proc.ExitCode -eq 0) -or ($proc.ExitCode -eq 3010) -or ($proc.ExitCode -eq 1641) -or ($proc.ExitCode -eq 1603)) {
+**2. Operational Performance**  
+- Service delivery KPIs  
+- Volume trends (tickets, requests, changes)  
+- Automation and efficiency improvements  
+- Quality assurance and compliance  
 
-    Write-Log ("$OldappScriptFilename main Un-install completed successfully with code: " + $proc.ExitCode)
-}
-else {
+**3. Innovation & Improvements**  
+- Process enhancements  
+- Tooling upgrades  
+- Automation  
 
-    Write-Log ("$OldappScriptFilename Un-install failed with code " + $proc.ExitCode) -type Error
-    exit $exitcode
-}
+**4. Roadmap for the Next Year**  
+- Strategic goals  
+- Planned initiatives  
+- Resource planning  
+- Risk management  
+
+Your individual inputs are essential for creating a complete summary to be shared with management.  
+Thanks, everyone, for your quick support! 🙌  
+```
+
+Would you like me to make a slightly shorter or more casual version that fits better for a Microsoft Teams chat post?
+----
+Here’s a shorter, more natural version tailored for a Microsoft Teams group chat:
+
+```{"id":"84532","variant":"chat_message","title":"Team Inputs Needed – Highlights & Roadmap"}
+Hey team 👋  
+
+Our Tower Head has asked for a summary of this year’s key highlights and next year’s roadmap. I’ll be consolidating and sending it to management, so I need **each of you to share your inputs** under these areas by **[insert deadline, e.g., EOD Wednesday]**:  
+
+**1. Highlights from the Past Year** – Major accomplishments, key metrics, or notable projects  
+**2. Operational Performance** – Service delivery, volume trends, automation, QA/compliance  
+**3. Innovation & Improvements** – Process or tooling enhancements, automation ideas  
+**4. Roadmap for Next Year** – Goals, planned initiatives, resource planning, risks  
+
+Please keep it short and impactful — I’ll compile everyone’s inputs into one summary for submission.  
+Thanks all! 🙏  
+```
+
+Would you like me to make it sound a touch more **assertive** (e.g., to emphasize accountability/deadline) or keep this **friendly reminder** tone?
+
 
 
 -
