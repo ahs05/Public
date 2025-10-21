@@ -1,4 +1,4 @@
-https://www.kb.ischool.uw.edu/2022/02/04/set-up-ischool-issued-windows-computer/
+ https://www.kb.ischool.uw.edu/2022/02/04/set-up-ischool-issued-windows-computer/
 
 https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-print-to-pdf-feature-broken-by-windows-update/
 
@@ -262,4 +262,52 @@ foreach ($profile in $profiles) {
         # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($profile.PSChildName)" -Recurse -Force
     }
 }
+
+-+---------------
+
+
+# --- Check lingering folders in C:\Users and clean up ---
+
+# Function to calculate folder size in bytes
+function Get-FolderSize {
+    param([string]$Path)
+    if (Test-Path $Path) {
+        return (Get-ChildItem -Path $Path -Recurse -ErrorAction SilentlyContinue | 
+                Measure-Object -Property Length -Sum).Sum
+    }
+    return 0
+}
+
+# Get list of all profile folders actually present
+$UserFolders = Get-ChildItem "C:\Users" -Directory | Select-Object -ExpandProperty Name
+
+# Get list of all users that still have registry profile entries
+$RegistryProfiles = $profiles | ForEach-Object { Split-Path $_.ProfileImagePath -Leaf }
+
+foreach ($folder in $UserFolders) {
+    # Skip excluded users
+    if ($ExcludedUsers -contains $folder) { continue }
+
+    # If folder not in registry list, it’s a leftover
+    if ($RegistryProfiles -notcontains $folder) {
+        $FullPath = "C:\Users\$folder"
+        $size = Get-FolderSize $FullPath
+        $sizeMB = [math]::Round($size / 1MB, 2)
+
+        Write-Host "Lingering folder found: $FullPath — Size: $sizeMB MB"
+
+        # Delete only if very small (e.g. < 1MB)
+        if ($size -lt 1MB) {
+            try {
+                Remove-Item -Path $FullPath -Recurse -Force -ErrorAction Stop
+                Write-Host "Deleted lingering folder: $FullPath"
+            } catch {
+                Write-Warning "Failed to delete: $FullPath — $($_.Exception.Message)"
+            }
+        } else {
+            Write-Host "Skipped deletion — Folder not empty or larger than 1MB"
+        }
+    }
+}
+
 
