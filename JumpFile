@@ -189,6 +189,12 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
+function Convert-FileTime {
+    param ($Low, $High)
+    # Combine Low/High parts into 64-bit integer and convert to DateTime
+    return [DateTime]::FromFileTime(([Int64]$High -shl 32) -bor $Low)
+}
+
 $days = 30
 $cutoff = (Get-Date).AddDays(-$days)
 
@@ -196,14 +202,11 @@ $profiles = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion
     Where-Object { $_.ProfileImagePath -like "C:\Users\*" }
 
 foreach ($profile in $profiles) {
-    # Convert LastUseTime (FILETIME format) to DateTime
-    $lastUse = [DateTime]::FromFileTime([BitConverter]::ToInt64($profile.LastUseTime, 0))
-
-    if ($lastUse -lt $cutoff) {
-        Write-Host "Stale profile: $($profile.ProfileImagePath) — Last Used: $lastUse"
-        # Optional: Delete the profile
-        # $path = $profile.ProfileImagePath
-        # Remove-Item -Path $path -Recurse -Force
+    $lastUnload = Convert-FileTime $profile.LocalProfileUnloadTimeLow $profile.LocalProfileUnloadTimeHigh
+    if ($lastUnload -lt $cutoff) {
+        Write-Host "Stale Profile: $($profile.ProfileImagePath) — Last Unload: $lastUnload"
+        # Optional deletion:
+        # Remove-Item -Path $profile.ProfileImagePath -Recurse -Force
         # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($profile.PSChildName)" -Recurse -Force
     }
 }
