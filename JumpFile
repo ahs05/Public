@@ -210,4 +210,56 @@ foreach ($profile in $profiles) {
         # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($profile.PSChildName)" -Recurse -Force
     }
 }
+----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function Convert-FileTime {
+    param ($Low, $High)
+    # Combine Low/High parts into 64-bit integer and convert to DateTime
+    return [DateTime]::FromFileTime(([Int64]$High -shl 32) -bor $Low)
+}
+
+# Define excluded usernames (just the folder names under C:\Users)
+$ExcludedUsers = @('Administrator', 'Public', 'Default', 'svcAccount1', 'hkaka')
+
+$days = 30
+$cutoff = (Get-Date).AddDays(-$days)
+
+$profiles = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*" |
+    Where-Object { $_.ProfileImagePath -like "C:\Users\*" }
+
+foreach ($profile in $profiles) {
+    $userFolder = Split-Path $profile.ProfileImagePath -Leaf
+
+    # Skip excluded users
+    if ($ExcludedUsers -contains $userFolder) {
+        Write-Host "Skipping excluded profile: $userFolder"
+        continue
+    }
+
+    $lastUnload = Convert-FileTime $profile.LocalProfileUnloadTimeLow $profile.LocalProfileUnloadTimeHigh
+
+    if ($lastUnload -lt $cutoff) {
+        Write-Host "Stale Profile: $($profile.ProfileImagePath) — Last Unload: $lastUnload"
+        # Optional deletion:
+        # Remove-Item -Path $profile.ProfileImagePath -Recurse -Force
+        # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($profile.PSChildName)" -Recurse -Force
+    }
+}
 
