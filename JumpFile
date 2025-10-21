@@ -189,3 +189,22 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
+$days = 30
+$cutoff = (Get-Date).AddDays(-$days)
+
+$profiles = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*" |
+    Where-Object { $_.ProfileImagePath -like "C:\Users\*" }
+
+foreach ($profile in $profiles) {
+    # Convert LastUseTime (FILETIME format) to DateTime
+    $lastUse = [DateTime]::FromFileTime([BitConverter]::ToInt64($profile.LastUseTime, 0))
+
+    if ($lastUse -lt $cutoff) {
+        Write-Host "Stale profile: $($profile.ProfileImagePath) — Last Used: $lastUse"
+        # Optional: Delete the profile
+        # $path = $profile.ProfileImagePath
+        # Remove-Item -Path $path -Recurse -Force
+        # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($profile.PSChildName)" -Recurse -Force
+    }
+}
+
