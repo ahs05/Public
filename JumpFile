@@ -189,125 +189,20 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
-function Convert-FileTime {
-    param ($Low, $High)
-    # Combine Low/High parts into 64-bit integer and convert to DateTime
-    return [DateTime]::FromFileTime(([Int64]$High -shl 32) -bor $Low)
-}
+Here’s a polished, professional draft you can send to Microsoft:
 
-$days = 30
-$cutoff = (Get-Date).AddDays(-$days)
+```{"id":"82347","variant":"standard","title":"Request for Defender Firewall Service Issue to Be Reviewed by Product Team"}
+Hi [Microsoft Contact/Team],
 
-$profiles = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*" |
-    Where-Object { $_.ProfileImagePath -like "C:\Users\*" }
+Thank you for your continued support on this case. Given the intensity and impact of the Defender Firewall Service issue — and considering that Microsoft Defender is widely deployed across organizations — we’d like to request that this matter be reviewed by the Defender Product Team.  
 
-foreach ($profile in $profiles) {
-    $lastUnload = Convert-FileTime $profile.LocalProfileUnloadTimeLow $profile.LocalProfileUnloadTimeHigh
-    if ($lastUnload -lt $cutoff) {
-        Write-Host "Stale Profile: $($profile.ProfileImagePath) — Last Unload: $lastUnload"
-        # Optional deletion:
-        # Remove-Item -Path $profile.ProfileImagePath -Recurse -Force
-        # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($profile.PSChildName)" -Recurse -Force
-    }
-}
-----------------------
+If possible, could this issue be added to their backlog or Kanban board for further assessment? We completely understand that developing a sustainable solution may take time, but it would be reassuring to have acknowledgment from the product team that this is under active consideration and that a resolution is being planned for the forthcoming months.  
 
+We appreciate your efforts and look forward to your feedback or confirmation on the next steps.
 
+Best regards,  
+[Your Name]  
+```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function Convert-FileTime {
-    param ($Low, $High)
-    # Combine Low/High parts into 64-bit integer and convert to DateTime
-    return [DateTime]::FromFileTime(([Int64]$High -shl 32) -bor $Low)
-}
-
-# Define excluded usernames (just the folder names under C:\Users)
-$ExcludedUsers = @('Administrator', 'Public', 'Default', 'svcAccount1', 'hkaka')
-
-$days = 30
-$cutoff = (Get-Date).AddDays(-$days)
-
-$profiles = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*" |
-    Where-Object { $_.ProfileImagePath -like "C:\Users\*" }
-
-foreach ($profile in $profiles) {
-    $userFolder = Split-Path $profile.ProfileImagePath -Leaf
-
-    # Skip excluded users
-    if ($ExcludedUsers -contains $userFolder) {
-        Write-Host "Skipping excluded profile: $userFolder"
-        continue
-    }
-
-    $lastUnload = Convert-FileTime $profile.LocalProfileUnloadTimeLow $profile.LocalProfileUnloadTimeHigh
-
-    if ($lastUnload -lt $cutoff) {
-        Write-Host "Stale Profile: $($profile.ProfileImagePath) — Last Unload: $lastUnload"
-        # Optional deletion:
-        # Remove-Item -Path $profile.ProfileImagePath -Recurse -Force
-        # Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\$($profile.PSChildName)" -Recurse -Force
-    }
-}
-
--+---------------
-
-
-# --- Check lingering folders in C:\Users and clean up ---
-
-# Function to calculate folder size in bytes
-function Get-FolderSize {
-    param([string]$Path)
-    if (Test-Path $Path) {
-        return (Get-ChildItem -Path $Path -Recurse -ErrorAction SilentlyContinue | 
-                Measure-Object -Property Length -Sum).Sum
-    }
-    return 0
-}
-
-# Get list of all profile folders actually present
-$UserFolders = Get-ChildItem "C:\Users" -Directory | Select-Object -ExpandProperty Name
-
-# Get list of all users that still have registry profile entries
-$RegistryProfiles = $profiles | ForEach-Object { Split-Path $_.ProfileImagePath -Leaf }
-
-foreach ($folder in $UserFolders) {
-    # Skip excluded users
-    if ($ExcludedUsers -contains $folder) { continue }
-
-    # If folder not in registry list, it’s a leftover
-    if ($RegistryProfiles -notcontains $folder) {
-        $FullPath = "C:\Users\$folder"
-        $size = Get-FolderSize $FullPath
-        $sizeMB = [math]::Round($size / 1MB, 2)
-
-        Write-Host "Lingering folder found: $FullPath — Size: $sizeMB MB"
-
-        # Delete only if very small (e.g. < 1MB)
-        if ($size -lt 1MB) {
-            try {
-                Remove-Item -Path $FullPath -Recurse -Force -ErrorAction Stop
-                Write-Host "Deleted lingering folder: $FullPath"
-            } catch {
-                Write-Warning "Failed to delete: $FullPath — $($_.Exception.Message)"
-            }
-        } else {
-            Write-Host "Skipped deletion — Folder not empty or larger than 1MB"
-        }
-    }
-}
-
+Would you like me to make it sound slightly firmer (more like a leadership escalation) or keep it as a diplomatic request?
 
