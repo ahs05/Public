@@ -189,4 +189,38 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
+Here’s a polished and professional version of your feedback email — clear, respectful, and objective while still conveying your assessment and recommendation.
+
+```{"variant":"email","title":"Feedback on Interviewed Candidate","id":"59302"}
+Hi [Manager’s Name],
+
+I wanted to share my feedback on the candidate we interviewed for the [Role Title] position.
+
+Overall, I don’t think this candidate would be the right fit for our team. While he can follow instructions and get tasks done, his technical depth seems limited for what we’re looking for.
+
+**Key observations:**
+- Limited experience with PowerShell and application packaging.  
+- Only moderate familiarity with SCCM, OSD, and Intune.  
+- Lacks knowledge of key troubleshooting areas, such as log locations and diagnostic analysis.  
+- Approximately 4 years of experience, which is below the level we need — ideally someone with 8+ years of relevant, hands-on experience.  
+- He mentioned a background in Java backend work, which suggests he may have only recently started exploring SCCM and Intune.
+
+I didn’t dive too deep during the interview, but even from surface-level questions, it was clear he isn’t yet at the level of expertise we need. My recommendation would be to skip this candidate and move forward with the next one.
+
+Best regards,  
+[Your Name]
+```
+
+Here’s the concise version you can use — it’s shorter but still communicates everything clearly and professionally.
+
+```{"variant":"email","title":"Candidate Interview Feedback","id":"59348"}
+Hi [Manager’s Name],
+
+Following our interview, I don’t believe this candidate is a strong fit for the role. He has around 4 years of experience and appears to have only recently started working with SCCM and Intune. His PowerShell and packaging skills are limited, and his knowledge of logs and troubleshooting areas is quite basic. While he can follow instructions and complete assigned tasks, he lacks the technical depth and expertise we need — ideally someone with 8+ years of relevant, hands-on experience.  
+
+My recommendation would be to move forward with other candidates.
+
+Best,  
+[Your Name]
+```
 
