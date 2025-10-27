@@ -189,4 +189,5 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
-Collaborated with the EIS team to identify and remediate active vulnerabilities, validate deviations and exclusions, and address false positives, thereby improving overall security compliance accuracy. Created detailed pivot tables and analyzed vulnerability data to identify key remediation priorities across P1 (Critical), P2 (High), and P3 (Low) classifications, focusing on items aged over 30 days for timely action and closure.
+If Microsoft flags an OOB update as critical or broadly required, Autopatch will automatically deploy it to all enrolled devices in a fast-tracked rollout.
+If the OOB update is optional or narrowly scoped, it won’t install automatically — you (the admin) must decide whether to deploy it via Intune or WUfB expedite policies.
