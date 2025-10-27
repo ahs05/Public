@@ -189,84 +189,80 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
- Highlights from the Past Year (Nov 2024 to Oct 2025)
-
- Major Accomplishments:
-
- Successfully led enterprise-wide Windows 11 migration initiative, upgrading over 8,000 endpoints from Windows 10 to Windows 11 24H2, ensuring full hardware and application compatibility.
- Deployed and managed Windows 11 Operating System Task Sequence with latest OS Drivers via SCCM. 
-Successfully transitioned from creating Legacy Driver Packages in SCCM to creating Package Objects that houses the Model Specific OS Drivers Content by decreasing the storage occupied by 50% on the SCCM Site Servers and SCCM Distribution points. 
-Successfully created, tested & deployed the POS Task Sequence and upgraded 99% of the POS devices to the latest Windows 11 24H2 OS.
-
-
- Key Metrics (SLA adherence, incident resolution times, customer satisfaction, etc.):
-
- Maintained 99% SLA adherence across all MECM/Intune service requests and incidents.
- Reduced incident resolution time by 25% through improved proactive Job Aid Creations, GPOs Tweaks, Minor Application/Package fixes and streamlined escalation workflows.
- Achieved positive user satisfaction score for OS delivery and technical support.
-
- Notable Projects or Initiatives:
-
- Implemented CIS Level Hardening settings for Windows11 24H2 devices which significantly strengthened the entire endpoint posture and assisted resolving any conflicting GPOs. 
-Successfully removed all the Push Start Menu related GPO policies from the ACG Environment.
- 
- 
+ Excellent — your content is very strong and detailed; it just needs refinement for grammar, formality, and leadership readability. Below is the **polished, grammatically correct, and professionally phrased** version while keeping all your technical substance intact.
 
 ---
 
- Operational Performance
+## **Highlights from the Past Year (Nov 2024 – Oct 2025)**
 
- Service Delivery KPIs:
+### **Major Accomplishments:**
 
- 99% successful deployment rate for monthly software updates via MECM.
- 98% compliance rate in Windows quality and feature updates.
- 100% adherence to change management protocols for production deployments.
+* Successfully led the **enterprise-wide Windows 11 migration initiative**, upgrading over **8,000 endpoints** from Windows 10 to Windows 11 (24H2), ensuring full hardware and application compatibility.
+* Designed and deployed the **Windows 11 Operating System Task Sequence** with the latest OEM driver integrations via SCCM.
+* Transitioned from **legacy driver packages** to **model-specific driver package objects** in SCCM, reducing storage utilization by **50%** across site servers and distribution points.
+* Created, tested, and deployed the **POS Task Sequence**, successfully upgrading **99% of POS devices** to Windows 11 (24H2).
 
- Volume Trends (Tickets, Requests, Changes):
+### **Key Metrics (SLA adherence, incident resolution times, customer satisfaction, etc.):**
 
- Processed over 7,500 support tickets, 1,200 change requests, and 350 automation-driven deployments through the EDM platform.
+* Maintained **99% SLA adherence** across all MECM/Intune service requests and incidents.
+* Reduced **incident resolution time by 25%** through proactive job aid development, targeted GPO optimizations, minor application/package fixes, and streamlined escalation workflows.
+* Achieved **positive end-user satisfaction** ratings for OS deployment quality and technical support responsiveness.
 
- Quality Assurance and Compliance:
+### **Notable Projects or Initiatives:**
 
- Conducted compliance audits when requested and maintained endpoint health above 97% across the enterprise for the core stack of Apps like S1, Palo Alto, Zscaler, M365 Apps.
- coordinated between PMO, engineering, imaging, DSS, Deployment, EIS, and support functions ensured smooth execution and rapid mitigation of issues.
-continually developed software packages (e.g., Zscaler Client Utility, S1, VS Code, .Net Framework 3.5, Modern Secure Print Driver Installers and many more) to streamline W11 deployments and improved application stability on Windows 11.
-Leveraged the Microsoft Autopatch Services to deploy OS, Office, and Drivers to all ACG Workstations ensured monthly patches are always 95% complaint. 
-
-
-
----
-
- Innovation & Improvements
-
-
-
- Automation:Custom PowerShell scripts for user-profile cleanup and disk cleanup significantly reduced manual overhead, improved device readiness, and optimized storage utilization.
-
-maintained a repository of custom SQL queries, to assist the team with data analysis for instant visibility into deployment health, compliance, and error trends, enabling proactive corrective actions.
-
-Build and deploy the Windows 11 In Place Upgrade script that was used during the deployment. Set the Windows 10 & Windows 11 TS to TATOO the image with the proper information
-
-
+* Implemented **CIS Level Hardening** for Windows 11 (24H2) devices, significantly strengthening endpoint security posture and resolving multiple GPO conflicts.
+* Successfully **removed all Start Menu–related legacy GPOs** from the ACG environment, aligning policies with modern Windows 11 standards.
 
 ---
 
- Roadmap for the Next Year (Nov 2025 to Oct 2026)
+## **Operational Performance**
 
- Planned Initiatives & Strategic Goals:
+### **Service Delivery KPIs:**
 
- Expand Zero Trust initiatives and help ACG get onto Modern Management Journey by leveraging conditional access and compliance-based device restrictions.
- Continue automation expansion leveraging Winget to keep our 3rd party applications always up to date, targeting at least 40% reduction in manual packaging the application updates and deployments.
- Ensure atleast 90% of the BitLocker recovery keys be migrated from Legacy On Prem AD environment to Entra/Intune. So that Technicians from DSS/SD teams can fetch the recovery keys themselves when in need. reducing the reliance on IAM Teams when in need. 
+* Achieved a **99% successful deployment rate** for monthly software updates via MECM.
+* Maintained **98% compliance** in Windows quality and feature update deployments.
+* Ensured **100% adherence** to change management protocols for all production deployments.
 
- Collaborate with Application teams, SMEs/Power Users to determine the apps that are not being used in the environment and start cleaning/uninstalling them up to reduce our App foot print and in turn reduce the need for keeping them up to date. 
-Reduce the redundant apps in the Task Sequence images which will keep the Personas/images Lite improving device performance and reduces the time during the imaging process. 
-Modernize the download of OS Drivers during Imaging process to let it fetch the content straight from the vendor's FTP site eliminating the need to packaging these OS Drivers ensuring the latest and greatest drivers are always installed on the machine. 
-Implement Power BI with SCCM, Intune & Create visually appealing dashboards to reduce manual compilation of any weekly reporting data. 
-Upgrade MECM infrastructure to 2403 build, ensuring Stability & enabling improved Intune co-management features.
-Develop a Concrete more robust plan for handling the Vulnerabilities in ACG Enviroment. 
+### **Volume Trends (Tickets, Requests, Changes):**
 
+* Processed over **7,500 support tickets**, **1,200 change requests**, and **350 automation-driven deployments** through the EDM platform.
 
+### **Quality Assurance and Compliance:**
+
+* Conducted compliance audits as required and maintained endpoint health above **97%** across the enterprise for core applications such as SentinelOne, Palo Alto GlobalProtect, Zscaler, and Microsoft 365 Apps.
+* Coordinated across PMO, Engineering, Imaging, DSS, Deployment, EIS, and Support functions to ensure **seamless execution** and **rapid mitigation** of deployment issues.
+* Continuously developed and maintained **critical software packages** (e.g., Zscaler Client Connector, SentinelOne, VS Code, .NET Framework 3.5, and Modern Secure Print Driver Installers) to streamline Windows 11 deployments and improve application stability.
+* Leveraged **Microsoft Autopatch** to deploy OS, Office, and drivers to all ACG workstations, ensuring **95% patch compliance** on a monthly basis.
+
+---
+
+## **Innovation & Improvements**
+
+### **Automation:**
+
+* Developed **custom PowerShell scripts** for user-profile cleanup and disk optimization, significantly reducing manual effort, improving device readiness, and optimizing storage utilization.
+* Maintained a **centralized SQL query repository** to provide real-time insights into deployment health, compliance status, and error trends—enabling faster data-driven decision-making.
+* Built and deployed the **Windows 11 In-Place Upgrade Script** used during migration activities. Enhanced both Windows 10 and Windows 11 Task Sequences to **tattoo deployment metadata** for improved visibility and audit tracking.
+
+---
+
+## **Roadmap for the Next Year (Nov 2025 – Oct 2026)**
+
+### **Planned Initiatives & Strategic Goals:**
+
+* Expand **Zero Trust initiatives** and advance ACG’s **Modern Management journey** by implementing conditional access and compliance-based device restrictions.
+* Continue automation expansion by leveraging **WinGet** to automatically update third-party applications—targeting at least a **40% reduction in manual packaging and deployment effort**.
+* Ensure **90% migration of BitLocker recovery keys** from the legacy on-prem AD environment to **Entra ID/Intune**, enabling DSS and Service Desk technicians to retrieve recovery keys independently, reducing dependency on IAM teams.
+* Collaborate with **Application Teams and SMEs/Power Users** to identify and decommission unused applications, reducing the overall application footprint and minimizing patching overhead.
+* Streamline **Task Sequence images** by eliminating redundant applications to improve device performance and reduce imaging time.
+* Modernize the **driver management process** by enabling dynamic driver downloads directly from vendor FTP repositories—eliminating the need for packaging and ensuring the latest drivers are always deployed.
+* Implement **Power BI dashboards** integrated with SCCM and Intune to automate weekly reporting and provide visually rich operational insights.
+* Upgrade the **MECM infrastructure to build 2403**, enhancing stability and enabling advanced Intune co-management capabilities.
+* Develop a **comprehensive vulnerability management framework** for ACG’s environment, focusing on faster remediation and continuous security posture improvement.
+
+---
+
+Would you like me to format this into a **Word or PDF version with company-style headings and indentation** (e.g., suitable for presentation or submission to leadership)?
 
 
 
