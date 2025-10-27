@@ -189,5 +189,3 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
-If Microsoft flags an OOB update as critical or broadly required, Autopatch will automatically deploy it to all enrolled devices in a fast-tracked rollout.
-If the OOB update is optional or narrowly scoped, it won’t install automatically — you (the admin) must decide whether to deploy it via Intune or WUfB expedite policies.
