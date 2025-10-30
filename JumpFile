@@ -189,4 +189,3 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
-Developing and deploying a dedicated POS Task Sequence with the latest drivers ensured stable, hardware-optimized imaging across all POS devices. This streamlined deployment reduced setup time, improved device reliability, and eliminated manual driver handling. The updated image now delivers faster provisioning, improved performance, and consistent end-user experience at retail locations.
