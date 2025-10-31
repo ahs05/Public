@@ -189,3 +189,28 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 
 ------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
+Here’s a polished version of your forwarding email to leadership — clear, professional, and aligned with the attached context from Jacob’s message:
+
+```{"id":"82415","variant":"email","title":"Follow-up on Zscaler FW/AV Automation and Next Steps Discussion"}
+Hi Joe,
+
+I was advised by Kamal and Eric to reach out to you regarding the below thread to understand your recommended next steps.
+
+Long story short, to date we have received and resolved nearly 90 incidents related to the **Zscaler FW/AV error**. These typically come into our queue as Outlook or Teams connectivity issues. Upon investigation, we’ve found that the root cause ties back to Zscaler’s FW/AV component.
+
+So far, our resolution paths have been:
+1. Replacing the user’s device with a new one, or  
+2. Following the manual remediation steps outlined in the attached job aid.  
+
+Both approaches are time-consuming and non-automated.
+
+As you know, our **Citrix VDIs** and **RO Writer systems** are still running on **Windows 10** and are next in line for the **Windows 11 migration**. Given that RO Writer is considered business-critical, we want to ensure the Zscaler FW/AV issue does not recur on those systems post-migration.
+
+Per Jacob’s note below, scripting automation is possible but will require additional proactive credits to proceed. Could you please advise how you’d like us to move forward from here?
+
+Thanks,  
+[Your Name]  
+[Your Title/Team]  
+```
+
+Would you like me to make it sound slightly **more assertive** (to push for funding approval) or keep it **neutral and status-seeking** as it is now?
