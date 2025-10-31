@@ -217,3 +217,8 @@ Would you like me to make it sound slightly **more assertive** (to push for fund
 
 
 We have also attempted to develop an automated remediation internally. However, the registry keys and associated services tied to Windows Defender are deeply integrated within the operating system, making it extremely difficult to modify them through standard scripting methods without causing integrity issues. Despite multiple script iterations and testing, none have been successful in reliably resolving the Zscaler FW/AV errors without manual intervention.
+
+
+
+**What Could Be Improved:**
+Early procurement and subsequent changes in project managers introduced some delays and coordination challenges. Having a dedicated project manager assigned from the project’s inception would have ensured smoother execution and continuity throughout the lifecycle.
