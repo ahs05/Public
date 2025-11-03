@@ -186,3 +186,29 @@ $MountPoint = "TempHive"
 reg load "HKLM\$MountPoint" $HiveFile
 Write-Host "Hive loaded at HKLM:\$MountPoint"
 ---------------
+Here’s the slightly more formal version of your email:
+
+---
+
+**Subject:** Follow-up on Zscaler FW/AV Error – Request for Next Steps and Clarification
+
+Hi [Name],
+
+We currently do not have any active incidents at this time on which we can run your scripts or apply the new instructions.
+
+Additionally, the previous instructions provided did not yield the desired results, as I am still encountering the same issue (please refer to the attached screenshot).
+
+Could you please share your availability for the next five days? I can arrange a call during the next active incident so that we can execute your script together, either with your direct assistance or while you observe the session.
+
+As Microsoft is already engaged on this issue, could you please review and consider supplementing the existing case with our recent findings? Based on our observations, the **‘debugloopback’** registry key appears to become bloated with multiple SIDs. When this key is deleted and the machine restarted, the issue appears to be resolved.
+
+Additionally, Julio had Erica from Concentric assist us with developing a scalable solution. We are currently working on the credits portion of that engagement. Please confirm if you still require the logs from our side for further analysis.
+
+Best regards,
+[Your Name]
+[Your Title / Team Name]
+[Company Name]
+
+---
+
+Would you like me to make it suitable for a **direct Microsoft escalation email** (more authoritative and structured for a case update)?
