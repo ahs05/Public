@@ -186,12 +186,45 @@ $MountPoint = "TempHive"
 reg load "HKLM\$MountPoint" $HiveFile
 Write-Host "Hive loaded at HKLM:\$MountPoint"
 ---------------
-Here’s the slightly more formal version of your email:
+# Subject: Updated Summary — Zscaler FW/AV Issue & Recommended Next Steps
 
----
+Hi Leadership Team,
 
+Brief update and ask regarding the ongoing Zscaler Firewall/AV (FW/AV) incidents we’ve been tracking with Microsoft:
 
+Summary / Impact
 
----
+* To date we’ve received and resolved **~80 incidents** related to the Zscaler FW/AV error; users typically report Outlook/Teams connectivity failures.
+* Root cause investigation shows the issue ties to the **Windows Defender Firewall service becoming stuck in a “Stopping” state**, which causes Zscaler to surface the FW/AV error.
+* Risk vector: our **Citrix VDIs and RO Writer systems are still on Windows 10** (next for migration), while we have **~8,000 systems already on Windows 11** — we must prevent recurrence across both estates.
 
-Would you like me to make it suitable for a **direct Microsoft escalation email** (more authoritative and structured for a case update)?
+What we’ve done so far
+
+* Short-term/resolution paths currently used:
+
+  1. **Device replacement** (new machine) when remediation is not feasible, or
+  2. **Manual remediation steps** per our attached job aid.
+* We attempted to build an **automated remediation**, but it has not been successful. The Defender Firewall registry keys and related services are **deeply integrated with the OS**, making safe automation via scripts unreliable and causing integrity concerns during testing.
+* We have engaged Microsoft and Zscaler engineering for deeper analysis and provided diagnostic logs and test system data.
+
+Current blockers / vendor note
+
+* Microsoft has indicated that a reliable, vendor-endorsed automated remediation will require additional **proactive support credits** (per Jacob’s note) to proceed with the level of engineering engagement and remediation validated testing we need.
+
+Recommended immediate asks (decision requested)
+
+1. Approve purchase/allocation of the required **proactive support credits** so Microsoft can pursue a validated automated remediation path.
+2. Approve **a short-term mitigation window** for manual remediation and device replacement while vendor remediation is pursued.
+3. Prioritize **Windows 10 -> Windows 11 migration** for Citrix/RO Writer hosts (or establish compensating controls) to reduce exposure.
+
+If approved, next steps we’ll take
+
+* Engage Microsoft with the approved credits and request expedited RCA + validated remediation steps.
+* Continue close coordination with Zscaler for policy-level mitigations and cross-validation.
+* Provide a detailed remediation timeline and rollback plan once vendor recommendations are provided.
+
+Thanks — please advise which of the asks above you’d like us to proceed with.
+
+Best regards,
+**[Your Name]**
+[Your Title / Team]
