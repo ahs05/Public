@@ -186,3 +186,4 @@ $MountPoint = "TempHive"
 reg load "HKLM\$MountPoint" $HiveFile
 Write-Host "Hive loaded at HKLM:\$MountPoint"
 ---------------
+https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
