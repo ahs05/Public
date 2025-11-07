@@ -194,27 +194,17 @@ Absolutely — here’s the refined version with that final paragraph adjusted t
 
 ---
 
-**Subject:** Re: Mac Support and Migration Plan
-
-Hi [Leader’s Name],
-
-Thank you for bringing this up and for highlighting the importance of our upcoming JAMF renewal and Mac management transition.
-
-Moving from one MDM platform (JAMF) to another (Intune) is indeed a significant effort. While we’re confident it can be accomplished, it will require dedicated time, focus, and the right technical expertise — it’s not something that can be handled as part of regular BAU activities.
-
-It may also be important to note that there could be roadblocks or technical limitations within Intune that we may not be fully aware of yet, especially as we start mapping JAMF capabilities to Intune equivalents. Early discovery and testing will be key to identifying any such gaps and planning appropriate workarounds.
-
-This could also be a good opportunity for TCS to review available skillsets and consider bringing in or developing talent with deeper macOS management experience. Historically, only a limited number of trainings were provided when the team was with ACG, so cross-training on Mac management has been minimal. The team is willing and motivated to learn, but would definitely benefit from structured guidance and a clear direction.
-
-Additionally, this might be an appropriate time for ACG to re-evaluate the overall Mac strategy — specifically, the business need for maintaining a larger Mac footprint. Many applications that once required Macs are now fully supported on Windows, which might open opportunities to consolidate and simplify management. Reducing the active Mac fleet from around 90 systems to a more manageable number could make ongoing support much more efficient.
-
-At present, the team’s experience with managing Mac environments is fairly limited, and this transition would require external expertise or mentorship to ensure it’s executed correctly. With the right support and knowledge transfer, we can build the necessary competency over time to manage Macs effectively under Intune.
-
-Best regards,
-[Your Full Name]
-[Your Title]
+Here’s a casual and friendly IM version you can drop in Teams or Slack:
 
 ---
 
-Would you like me to make a slightly **shorter and more polished version for executive leadership** (2–3 short paragraphs, same tone)?
+**Hey everyone,**
+Just a quick heads-up — today’s **[Project Manager’s Name]’s** last day with us.
 
+It’s been awesome working together, and we really appreciate all the support and coordination throughout the project. Wishing [him/her/them] all the best for the next adventure! 👏
+
+— [Your Name]
+
+---
+
+Would you like me to make it even **shorter and more chat-style** (like a quick post message without sign-off)?
