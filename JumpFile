@@ -188,110 +188,50 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
 
----
+# =====================================================================
+# Script Name: Delete-RegKey-IfExists.ps1
+# Description: Checks if a registry key exists and deletes it if found.
+#              Logs all actions and creates a transcript for traceability.
+# =====================================================================
 
-Absolutely — here’s the refined version with that final paragraph adjusted to reflect the team’s current Mac management knowledge in a diplomatic tone:
+# --- CONFIGURABLE VARIABLES ---
+$RegPath = "HKLM:\SOFTWARE\MyTestKey"   # <-- Change this to your target key path
+$LogDir  = "$env:ProgramData\RegKeyCleanupLogs"
+$LogFile = Join-Path $LogDir "RegKeyCleanup_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 
----
-Excellent — since you’re a **senior Intune/SCCM/MEM admin and OSD/endpoint management specialist**, here’s a detailed breakdown of what **Intune and Azure permissions** you’ll need for full day-to-day operational capability without requiring Global Admin.
+# --- CREATE LOG DIRECTORY IF MISSING ---
+if (!(Test-Path $LogDir)) {
+    New-Item -Path $LogDir -ItemType Directory -Force | Out-Null
+}
 
----
+# --- START TRANSCRIPT ---
+Start-Transcript -Path $LogFile -Append
 
-### 🧭 Core Objective
+# --- FUNCTION TO LOG ---
+function Write-Log {
+    param ([string]$Message)
+    $Timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    $Entry = "$Timestamp`t$Message"
+    Add-Content -Path $LogFile -Value $Entry
+    Write-Host $Entry
+}
 
-Enable you to:
+# --- MAIN LOGIC ---
+Write-Log "Starting registry key cleanup..."
 
-* Manage devices, compliance, and configurations
-* Deploy and troubleshoot apps
-* Manage enrollment and policies
-* Integrate with SCCM, AAD, and Autopilot
-* Perform reporting and advanced troubleshooting
-  —all without tenant-wide or security-critical privileges.
+if (Test-Path $RegPath) {
+    try {
+        Remove-Item -Path $RegPath -Recurse -Force
+        Write-Log "SUCCESS: Deleted registry key '$RegPath'."
+    }
+    catch {
+        Write-Log "ERROR: Failed to delete registry key '$RegPath'. $_"
+    }
+}
+else {
+    Write-Log "INFO: Registry key '$RegPath' does not exist. No action needed."
+}
 
----
-
-## 1. **Microsoft Intune Permissions**
-
-### **A. Roles in Intune (Endpoint Manager)**
-
-Your Azure admin can create a **custom Intune role** (or assign existing ones like *Intune Administrator* or *Endpoint Security Manager*) containing these permission sets:
-
-| **Category**                    | **Key Permissions You Need**                                                                   | **Purpose / Day-to-Day Use**                                  |
-| ------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| **Device Management**           | - Read/Write Devices<br>- Remote Lock, Wipe, Retire, Sync<br>- Restart, BitLocker key rotation | Manage and support enrolled Windows/iOS/macOS/Android devices |
-| **Compliance Policies**         | - Create/Read/Update/Delete Compliance Policies                                                | Enforce device compliance baselines                           |
-| **Configuration Profiles**      | - Create/Modify/Delete/Assign Configuration Profiles                                           | Push Wi-Fi, VPN, Certificates, and Custom CSP policies        |
-| **Scripts & Automation**        | - Create/Read/Assign PowerShell scripts and Remediation Scripts                                | Deploy and monitor custom PS scripts and remediations         |
-| **App Management**              | - Create/Modify/Delete/Assign Applications                                                     | Add Win32, LOB, and Store apps; manage deployment rings       |
-| **Enrollment**                  | - Manage Autopilot Devices and Profiles<br>- Read/Write Enrollment Restrictions                | Enroll and configure devices through Windows Autopilot        |
-| **Endpoint Security**           | - Create/Modify/Delete Security Baselines<br>- Manage AV/Firewall/BitLocker Policies           | Implement Defender and BitLocker management                   |
-| **Reporting & Troubleshooting** | - Read Device and User Reports<br>- Device Diagnostics                                         | Analyze compliance and deployment results                     |
-| **Remote Tasks**                | - Restart, Sync, Wipe, Reset passcode                                                          | Day-to-day support actions for users                          |
-
----
-
-## 2. **Azure AD (Entra ID) Permissions**
-
-Since Intune heavily relies on Entra (Azure AD), the Global Admin can create a **custom Azure AD role** with these delegated permissions:
-
-| **Area**                                 | **Permission Name**                                                     | **Why You Need It**                                         |
-| ---------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **Device Objects**                       | - Read/Write Devices<br>- Join devices to AAD<br>- Manage device owners | To view and manage hybrid-joined / Autopilot devices        |
-| **Group Management**                     | - Read/Write Groups (Security + M365)<br>- Assign Dynamic Rules         | For targeting deployments and policies                      |
-| **User Read**                            | - Directory.Read.All                                                    | To view users for targeting and troubleshooting             |
-| **Role Assignments (Optional)**          | - Read Directory Roles                                                  | To check your access levels for troubleshooting             |
-| **Application Registrations (Optional)** | - Read/Write App Registrations                                          | For integration scripts and automation tools like Graph API |
-| **Autopilot Device Import (Graph API)**  | - DeviceManagementServiceConfig.ReadWrite.All                           | Needed if you import Autopilot hardware hashes via Graph    |
-
----
-
-## 3. **SCCM / Co-management Integration (Optional)**
-
-If your org uses MECM (SCCM) with Intune co-management:
-
-* Ensure your account has **Full Administrator** in SCCM or **custom RBAC** with:
-
-  * Device Collections read/write
-  * Application/Package Deployment
-  * Task Sequence and OS Image management
-  * Client Notification and Endpoint Protection permissions
-
----
-
-## 4. **Additional Graph API / Automation Needs**
-
-If you use PowerShell or automation:
-You’ll need **API permissions** (either via delegated or service principal) for:
-
-* `DeviceManagementApps.ReadWrite.All`
-* `DeviceManagementConfiguration.ReadWrite.All`
-* `DeviceManagementManagedDevices.ReadWrite.All`
-* `Directory.Read.All`
-
----
-
-## ✅ Recommended Role Setup
-
-### Option 1: Use Built-in Roles
-
-Assign **Intune Administrator** (or **Endpoint Security Manager**) + **Intune Reader** as base access.
-Then add **custom Azure AD role** with:
-
-* `Device.ReadWrite.All`
-* `Group.ReadWrite.All`
-* `Directory.Read.All`
-* `DeviceManagementConfiguration.ReadWrite.All`
-
-### Option 2: Custom Role Combination (Best Practice)
-
-Create a **custom Entra role** named:
-
-> “Endpoint & Device Management Admin (Custom)”
-
-Include the above permissions and assign via **Privileged Identity Management (PIM)** for security.
-
----
-
-Would you like me to **generate a ready-to-share permission list JSON (for Azure custom role creation)** that your Global Admin can directly import in Azure AD?
-That would make it easy for him to provision it cleanly.
+Write-Log "Registry cleanup completed."
+Stop-Transcript
 
