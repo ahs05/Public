@@ -189,15 +189,16 @@ Write-Host "Hive loaded at HKLM:\$MountPoint"
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
 
 # =====================================================================
-# Script Name: Delete-RegKey-IfExists.ps1
-# Description: Checks if a registry key exists and deletes it if found.
+# Script Name: Delete-RegValue-IfExists.ps1
+# Description: Checks if a specific registry value exists and deletes it.
 #              Logs all actions and creates a transcript for traceability.
 # =====================================================================
 
 # --- CONFIGURABLE VARIABLES ---
-$RegPath = "HKLM:\SOFTWARE\MyTestKey"   # <-- Change this to your target key path
-$LogDir  = "$env:ProgramData\RegKeyCleanupLogs"
-$LogFile = Join-Path $LogDir "RegKeyCleanup_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
+$RegPath  = "HKLM:\SOFTWARE\MyTestKey"   # <-- Change this to your registry key path
+$ValueName = "MyDWORDValue"               # <-- Change this to the DWORD value name to delete
+$LogDir   = "$env:ProgramData\RegValueCleanupLogs"
+$LogFile  = Join-Path $LogDir "RegValueCleanup_$(Get-Date -Format 'yyyyMMdd_HHmmss').log"
 
 # --- CREATE LOG DIRECTORY IF MISSING ---
 if (!(Test-Path $LogDir)) {
@@ -217,21 +218,29 @@ function Write-Log {
 }
 
 # --- MAIN LOGIC ---
-Write-Log "Starting registry key cleanup..."
+Write-Log "Starting registry value cleanup..."
 
 if (Test-Path $RegPath) {
-    try {
-        Remove-Item -Path $RegPath -Recurse -Force
-        Write-Log "SUCCESS: Deleted registry key '$RegPath'."
+    $RegKey = Get-Item -Path $RegPath
+    $Value = Get-ItemProperty -Path $RegPath -ErrorAction SilentlyContinue | Select-Object -ExpandProperty $ValueName -ErrorAction SilentlyContinue
+
+    if ($null -ne $Value) {
+        try {
+            Remove-ItemProperty -Path $RegPath -Name $ValueName -Force
+            Write-Log "SUCCESS: Deleted registry value '$ValueName' under '$RegPath'."
+        }
+        catch {
+            Write-Log "ERROR: Failed to delete registry value '$ValueName'. $_"
+        }
     }
-    catch {
-        Write-Log "ERROR: Failed to delete registry key '$RegPath'. $_"
+    else {
+        Write-Log "INFO: Registry value '$ValueName' not found under '$RegPath'. No action taken."
     }
 }
 else {
-    Write-Log "INFO: Registry key '$RegPath' does not exist. No action needed."
+    Write-Log "INFO: Registry key '$RegPath' not found. No action taken."
 }
 
-Write-Log "Registry cleanup completed."
+Write-Log "Registry value cleanup completed."
 Stop-Transcript
 
