@@ -362,3 +362,75 @@ foreach ($Profile in $UserProfiles) {
 
 Write-Output "=== Script completed ==="
 Stop-Transcript
+
+
+
+-------------------------------------------------
+---------------------------------------------
+----------------------------------------------
+function Invoke-HKCURegistrySettingsForAllUsers {
+    param (
+        [Parameter(Mandatory = $true)]
+        [scriptblock]$RegistrySettings
+    )
+
+    $ProfileList = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList"
+
+    # Get non-system profiles
+    $UserProfiles = Get-ChildItem $ProfileList |
+        Where-Object {
+            $_.GetValue("ProfileImagePath") -notmatch "systemprofile|localservice|networkservice"
+        }
+
+    foreach ($UserProfile in $UserProfiles) {
+
+        $SID = $UserProfile.PSChildName
+        $ProfilePath = $UserProfile.GetValue("ProfileImagePath")
+        $NtUserDat = Join-Path $ProfilePath "NTUSER.DAT"
+        
+        if (!(Test-Path $NtUserDat)) { continue }
+
+        # Load hive
+        if (-not (Test-Path "HKU:\$SID")) {
+            reg load "HKU\$SID" "$NtUserDat" | Out-Null
+            Start-Sleep -Milliseconds 300
+            $HiveLoaded = $true
+        }
+        else {
+            $HiveLoaded = $false
+        }
+
+        # Make these variables accessible inside the scriptblock
+        $script:UserProfile = @{
+            SID = $SID
+            Path = $ProfilePath
+        }
+
+        $script:FullKeyPath = "HKU:\$SID\$SubKeyPath"
+
+        # Execute the scriptblock
+        & $RegistrySettings
+
+        # Unload hive
+        if ($HiveLoaded) {
+            reg unload "HKU\$SID" | Out-Null
+        }
+    }
+}
+
+
+$SubKeyPath = "SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+$ValueName = "AllowCMD"
+
+[scriptblock]$HKCURegistrySettings = {
+
+    if (Test-Path $FullKeyPath) {
+        Remove-ItemProperty -Path $FullKeyPath -Name $ValueName -ErrorAction SilentlyContinue
+        Write-Output "Removed $ValueName from $($UserProfile.SID)"
+    }
+    else {
+        Write-Output "Key not found for $($UserProfile.SID)"
+    }
+}
+
+Invoke-HKCURegistrySettingsForAllUsers -RegistrySettings $HKCURegistrySettings
