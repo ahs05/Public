@@ -214,28 +214,3 @@ Process Overview: Role-Based Grouping and Automation
     Enhanced security and governance through persona-driven policy enforcement.
 
 -----------------------------------
-
-$KeyMatch = "\Software\Microsoft\OfficeCompat\Outlook\Addin"
-$ValueMatch = "*AppData\Roaming\ZeroSpam*"
-
-# Enumerate loaded HKU SIDs
-$UserHives = Get-ChildItem "HKU:\" |
-    Where-Object { $_.Name -match "S-1-5-21" }
-
-foreach ($Hive in $UserHives) {
-
-    $KeyPath = "Registry::$($Hive.Name)$KeyMatch"
-
-    if (Test-Path $KeyPath) {
-        $ValuesToRemove = (Get-Item $KeyPath).GetValueNames() |
-            Where-Object { $_ -like $ValueMatch }
-
-        foreach ($Value in $ValuesToRemove) {
-            Remove-ItemProperty -Path $KeyPath -Name $Value -ErrorAction SilentlyContinue
-            Write-Output "Removed value '$Value' from $KeyPath"
-        }
-    }
-}
-
-
------------------------------------------------------------------
