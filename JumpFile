@@ -174,17 +174,7 @@ Start-Process -FilePath reg -ArgumentList "save `"$HiveRoot`" `"$OutFile`"" -Wai
 Write-Host "Saved $HiveRoot to $OutFile"
 
 -----------
-#Import
 
-# Path to your hive file
-$HiveFile = "C:\Users\hkaka\Downloads\firewall_fix_windows_11\mpssvc.hiv"
-
-# Mount location under HKEY_LOCAL_MACHINE (can also use HKEY_USERS)
-$MountPoint = "TempHive"
-
-# Load the hive
-reg load "HKLM\$MountPoint" $HiveFile
-Write-Host "Hive loaded at HKLM:\$MountPoint"
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
 
