@@ -222,3 +222,80 @@ Process Overview: Role-Based Grouping and Automation
     Consistent experience across devices and platforms.
     Reduced administrative overhead and misconfiguration risk.
     Enhanced security and governance through persona-driven policy enforcement.
+
+-----------------------------------
+
+<#
+.SYNOPSIS
+    Deletes the DWORD value 'AllowCMD' from:
+    HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\DataCollection
+    across all user profiles on the system.
+
+.NOTES
+    Safe for SCCM/Intune deployment.
+#>
+
+# =======================
+#  Logging + Transcript
+# =======================
+$LogPath = "C:\Windows\Temp\Delete-AllowCMD.log"
+Start-Transcript -Path $LogPath -Append
+
+Write-Output "=== Starting AllowCMD removal script ==="
+
+# Registry value & path
+$SubKeyPath = "SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+$ValueName = "AllowCMD"
+
+# Get all profile directories except system profiles
+$UserProfiles = Get-ChildItem "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" |
+    Where-Object { 
+        $_.GetValue("ProfileImagePath") -notmatch "systemprofile|LocalService|NetworkService"
+    }
+
+foreach ($Profile in $UserProfiles) {
+    try {
+        $SID = $Profile.PSChildName
+        $ProfilePath = $Profile.GetValue("ProfileImagePath")
+
+        Write-Output "Processing profile: $ProfilePath ($SID)"
+
+        # Check if hive already loaded under HKU
+        if (-not (Test-Path "HKU:\$SID")) {
+            Write-Output "Loading user hive for $SID"
+            reg load "HKU\$SID" "$ProfilePath\NTUSER.DAT" | Out-Null
+            $HiveLoaded = $true
+        } else {
+            $HiveLoaded = $false
+        }
+
+        $FullKeyPath = "HKU:\$SID\$SubKeyPath"
+
+        # Delete the value if present
+        if (Test-Path $FullKeyPath) {
+            if (Get-ItemProperty -Path $FullKeyPath -Name $ValueName -ErrorAction SilentlyContinue) {
+                Write-Output "Deleting value '$ValueName' for $SID"
+                Remove-ItemProperty -Path $FullKeyPath -Name $ValueName -ErrorAction SilentlyContinue
+            } else {
+                Write-Output "Value '$ValueName' not found for $SID"
+            }
+        } else {
+            Write-Output "Key path not found for $SID"
+        }
+
+        # Unload hive if we loaded it
+        if ($HiveLoaded) {
+            Write-Output "Unloading hive for $SID"
+            reg unload "HKU\$SID" | Out-Null
+        }
+
+    }
+    catch {
+        Write-Output "Error processing $SID: $_"
+    }
+}
+
+Write-Output "=== Script completed ==="
+
+Stop-Transcript
+
