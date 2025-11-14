@@ -289,3 +289,76 @@ Write-Output "=== Script completed ==="
 
 Stop-Transcript
 
+-----------------------------------------------------------------
+# =======================
+#  Logging + Transcript
+# =======================
+$LogPath = "C:\Windows\Temp\Delete-AllowCMD.log"
+Start-Transcript -Path $LogPath -Append
+
+Write-Output "=== Starting AllowCMD removal script ==="
+
+$SubKeyPath = "SOFTWARE\Policies\Microsoft\Windows\DataCollection"
+$ValueName = "AllowCMD"
+
+# Enumerate all non-system user profiles
+$UserProfiles = Get-ChildItem "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList" |
+    Where-Object {
+        $_.GetValue("ProfileImagePath") -notmatch "systemprofile|LocalService|NetworkService"
+    }
+
+foreach ($Profile in $UserProfiles) {
+
+    $SID = $Profile.PSChildName
+    $ProfilePath = $Profile.GetValue("ProfileImagePath")
+    $NtUserDat = Join-Path $ProfilePath "NTUSER.DAT"
+
+    Write-Output "`nProcessing profile: $ProfilePath ($SID)"
+
+    # Skip missing or corrupted profiles
+    if (-not (Test-Path $NtUserDat)) {
+        Write-Output "NTUSER.DAT not found — skipping"
+        continue
+    }
+
+    # Load hive if not loaded
+    if (-not (Test-Path "HKU:\$SID")) {
+        Write-Output "Loading hive for $SID"
+        reg load "HKU\$SID" "$NtUserDat" | Out-Null
+
+        Start-Sleep -Milliseconds 300
+
+        if (-not (Test-Path "HKU:\$SID")) {
+            Write-Output "Hive failed to load — skipping"
+            continue
+        }
+
+        $HiveLoaded = $true
+    } else {
+        $HiveLoaded = $false
+    }
+
+    $FullPath = "HKU:\$SID\$SubKeyPath"
+
+    # --- Improved detection using reg.exe to avoid PS provider bugs ---
+    $RegQueryPath = "HKU\$SID\$SubKeyPath"
+
+    $RegQuery = reg query "$RegQueryPath" /v $ValueName 2>&1
+
+    if ($RegQuery -match "REG_DWORD") {
+        Write-Output "Found value — deleting for $SID"
+        reg delete "$RegQueryPath" /v $ValueName /f | Out-Null
+    }
+    else {
+        Write-Output "Value not found for $SID"
+    }
+
+    # Unload hive if we loaded it
+    if ($HiveLoaded) {
+        Write-Output "Unloading hive for $SID"
+        reg unload "HKU\$SID" | Out-Null
+    }
+}
+
+Write-Output "=== Script completed ==="
+Stop-Transcript
