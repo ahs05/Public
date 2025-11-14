@@ -178,39 +178,6 @@ Write-Host "Saved $HiveRoot to $OutFile"
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
 
-Process Overview: Role-Based Grouping and Automation
 
-1. Define Job Personas
-
-    Clearly outline key Job Personas across the organization (e.g., Finance Analyst, Field Engineer, Support Staff).
-    Each persona should represent a distinct set of access, application, and configuration needs.
-
-2. Add Persona Attribute in Active Directory
-
-    Introduce a dedicated AD attribute (e.g., JobPersona or RoleProfile) per user account.
-    Populate this attribute for each user based on their identified persona.
-
-3. Automate Group Creation
-
-    Use the AD attribute to dynamically create and maintain security groups aligned to each persona.
-    This ensures consistent membership and simplifies role-based targeting.
-
-4. Replicate Across Management Systems
-
-    SCCM / MECM – Sync groups for software deployments and compliance baselines.
-    Intune / MEM – Leverage persona-based groups for application, policy, and configuration profile targeting.
-    Active Directory / Entra ID – Ensure unified identity and access alignment across on-prem and cloud environments.
-
-5. Enable Central Governance
-
-    Establish automated workflows or scripts to keep group membership up to date.
-    Monitor changes and maintain audit trails for compliance and reporting.
-
-6. Business Impact
-
-    Streamlined onboarding and access provisioning.
-    Consistent experience across devices and platforms.
-    Reduced administrative overhead and misconfiguration risk.
-    Enhanced security and governance through persona-driven policy enforcement.
 
 -----------------------------------
