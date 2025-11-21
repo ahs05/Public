@@ -178,6 +178,26 @@ Write-Host "Saved $HiveRoot to $OutFile"
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
 
+Here’s a clean, professional email crafted from the text you shared:
+
+---
+
+**Subject:** Update on User Setup and Recent Device Issues
+
+Hi Team,
+
+New users need to be added to the *clid.ini* update and then distributed. The Travelport team will assist with configuring Galileo Desktop window alignment, FlexView, and agent logins, as most users typically don’t remember their agent login credentials once they are initially entered into the application.
+
+Additionally, Theresa has gone through three machines in a short period of time. I’m not sure what the full story is or why she’s experiencing so many issues, but it may require further review.
+
+Please let me know if any additional information is needed.
+
+Thank you,
+[Your Name]
+
+---
+
+If you want it to sound more formal, casual, or include action items, I can refine it further!
 
 
 -----------------------------------
