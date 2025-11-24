@@ -182,3 +182,37 @@ https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key
 
 
 -----------------------------------
+
+Here’s a clean, professional reply you can send back. I’ve filled in everything clearly and firmly while keeping the tone respectful and aligned with escalation-level communication:
+
+---
+
+**Subject:** Follow-up Questions on MpsSvc Registry Migration Behavior & Proposed Prevention Steps
+
+Hi <Name>,
+
+Thank you for the detailed update. I had a few follow-up questions and clarifications based on the points you highlighted:
+
+1. You mentioned that *“the escalation team confirmed that during upgrades, the MpsSvc registry hive is migrated unchanged, so duplicate entries under DebuggedLoopbackApps can persist and block the service from starting.”*
+   **Given this confirmation, can you please clarify what Microsoft has done or is planning to do to permanently address this behavior?**
+   Since this occurs during the upgrade migration process itself, I want to understand whether there is a fix in the pipeline that prevents duplicate SIDs from being carried over during OS upgrades.
+
+2. Under the **“Prevent this issue”** section:
+
+   * The recommendation to install *KB5014019* prior to upgrading to Windows 11 is confusing because this KB is from **2022** and has been superseded by numerous cumulative updates since then.
+     **Can you clarify the relevance of this specific KB today, and whether its contents are already included in current cumulative updates for Windows 10?**
+
+   * Additionally, the recommendation to *pre-clean duplicate SIDs manually by clearing or recreating the value* raises operational concerns.
+     **In an enterprise environment with thousands of endpoints, manually touching each device’s registry is not practical or scalable.**
+     Could you please provide guidance on how Microsoft expects enterprises to handle this at scale, or whether an automated/seamless fix will be provided?
+
+We want to ensure we are aligned before proceeding further, so clarification on these points will help us determine the right approach.
+
+Looking forward to your response.
+
+Best regards, <Your Name>
+
+---
+
+If you'd like, I can also tighten this further, adjust tone (more firm / more diplomatic), or add bullets referencing your existing testing or logs.
+
