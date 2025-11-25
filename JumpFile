@@ -179,17 +179,42 @@ Write-Host "Saved $HiveRoot to $OutFile"
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
 
 
-
-
------------------------------------
-For Windows 10 version 22H2 / build 19045, the relevant November 2025 patch KB numbers are:
-
-* KB 5068781 – OS Build 19045.6575. ([Microsoft Support][1])
-* KB 5071959 – OS Build 19045.6466 (Out-of-band) ([Microsoft Support][2])
-
-If you need KB numbers for earlier builds of 19045 (e.g., 19045.6456, 19045.6396, etc.) I can provide those too.
-
-[1]: https://support.microsoft.com/en-us/topic/november-11-2025-kb5068781-os-builds-19044-6575-and-19045-6575-7fe13257-9079-49af-9369-e0e6242701dd?utm_source=chatgpt.com "November 11, 2025—KB5068781 (OS Builds 19044.6575 ..."
-[2]: https://support.microsoft.com/en-us/topic/november-11-2025-kb5071959-windows-10-version-22h2-os-build-19045-6466-out-of-band-565c78a7-5b5f-4cbd-8ca8-2a73a48f4e2b?utm_source=chatgpt.com "November 11, 2025—KB5071959: Windows 10, version ..."
+Here is the revised version with escalation, request for further guidance, and the scheduling ask added cleanly and professionally:
 
 ---
+
+**Subject:** Follow-up and Request for Escalation – Duplicate SID / MpsSvc Registry Migration Issue
+
+Hi Team,
+
+Thank you for the detailed clarification.
+
+I do have a few follow-up points that need to be addressed so we can fully close the loop on this issue:
+
+1. **Permanent Fix / Migration Logic**
+   You noted that the MpsSvc registry hive is migrated “as-is” during in-place upgrades and that this behavior is *by design*. However, this design is what ultimately leads to duplicate `DebuggedLoopbackApps` entries and causes the firewall service to fail post-upgrade.
+   **Given this, what steps has Microsoft taken—or is planning to take—to update the migration logic itself** so that duplicate entries do not carry forward?
+   Relying solely on pre-clean and pre-patch is not operationally scalable for enterprise environments.
+
+2. **Regarding KB5014019**
+   You mentioned that KB5014019 introduced improvements and that subsequent cumulative updates already include this fix.
+   **However, we are still observing firewall service start failures on devices patched beyond that baseline.**
+   Can you confirm whether Microsoft has fully validated that the changes introduced in KB5014019 prevent recurrence across all upgrade paths (e.g., 19044 → 19045, 22H2 → 23H2)?
+
+3. **Operational Sustainability**
+   While we understand the recommendation to manually pre-clean, this approach is not feasible at scale.
+   **We need further guidance and a scalable, supportable solution from Microsoft**—whether that is an automated cleanup mechanism, an updated migration process, or a validated script/tool endorsed by the product group.
+
+Given the ongoing impact and the limitations of manual remediation, **we would like to escalate this matter for additional review and direction**.
+
+**Jacob**, please share your availability for a meeting tomorrow (11/26).
+If tomorrow does not work, we can schedule for **Monday (12/01) at the latest**.
+
+Looking forward to your response and next steps.
+
+Warm regards,
+Ari
+
+---
+
+If you'd like, I can adjust the tone (firmer, softer, more authoritative) or shorten the message for direct escalation.
