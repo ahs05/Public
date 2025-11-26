@@ -5,6 +5,32 @@ https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-print-to-pdf-fea
 https://www.catalog.update.microsoft.com/Search.aspx?q=KB5060829
 
 S
+
+try {
+    Get-AppxPackage -AllUsers | Where-Object {$_.Name -Like '*Microsoft.Copilot*'} | Remove-AppxPackage -AllUsers -ErrorAction Stop -ErrorVariable errVar
+    Write-Host "Uninstallation succeeded."
+} catch {
+    Write-Host "Uninstallation failed: $($errVar.Exception.Message)"
+    Write-Debug $errVar
+}
+
+
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\WindowsCopilot]
+"TurnOffWindowsCopilot"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot]
+"TurnOffWindowsCopilot"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Edge]
+"HubsSidebarEnabled"=dword:00000000
+
+[HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Explorer]
+"DisableSearchBoxSuggestions"=dword:00000001
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer]
+"DisableSearchBoxSuggestions"=dword:00000001
 ---------------------------------------------------
 Start of Script
 ---------------------------------------
@@ -178,43 +204,3 @@ Write-Host "Saved $HiveRoot to $OutFile"
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
 
-
-Here is the revised version with escalation, request for further guidance, and the scheduling ask added cleanly and professionally:
-
----
-
-**Subject:** Follow-up and Request for Escalation – Duplicate SID / MpsSvc Registry Migration Issue
-
-Hi Team,
-
-Thank you for the detailed clarification.
-
-I do have a few follow-up points that need to be addressed so we can fully close the loop on this issue:
-
-1. **Permanent Fix / Migration Logic**
-   You noted that the MpsSvc registry hive is migrated “as-is” during in-place upgrades and that this behavior is *by design*. However, this design is what ultimately leads to duplicate `DebuggedLoopbackApps` entries and causes the firewall service to fail post-upgrade.
-   **Given this, what steps has Microsoft taken—or is planning to take—to update the migration logic itself** so that duplicate entries do not carry forward?
-   Relying solely on pre-clean and pre-patch is not operationally scalable for enterprise environments.
-
-2. **Regarding KB5014019**
-   You mentioned that KB5014019 introduced improvements and that subsequent cumulative updates already include this fix.
-   **However, we are still observing firewall service start failures on devices patched beyond that baseline.**
-   Can you confirm whether Microsoft has fully validated that the changes introduced in KB5014019 prevent recurrence across all upgrade paths (e.g., 19044 → 19045, 22H2 → 23H2)?
-
-3. **Operational Sustainability**
-   While we understand the recommendation to manually pre-clean, this approach is not feasible at scale.
-   **We need further guidance and a scalable, supportable solution from Microsoft**—whether that is an automated cleanup mechanism, an updated migration process, or a validated script/tool endorsed by the product group.
-
-Given the ongoing impact and the limitations of manual remediation, **we would like to escalate this matter for additional review and direction**.
-
-**Jacob**, please share your availability for a meeting tomorrow (11/26).
-If tomorrow does not work, we can schedule for **Monday (12/01) at the latest**.
-
-Looking forward to your response and next steps.
-
-Warm regards,
-Ari
-
----
-
-If you'd like, I can adjust the tone (firmer, softer, more authoritative) or shorten the message for direct escalation.
