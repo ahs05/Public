@@ -204,3 +204,28 @@ Write-Host "Saved $HiveRoot to $OutFile"
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
 
+Here’s a clean, professional, and pointed way to ask that question:
+
+---
+
+Hi <Name>,
+
+I need some clarification regarding the installation behavior of Copilot.
+
+When I install the **Consumer version of Copilot**, I can see the package listed in PowerShell using:
+
+```
+Get-AppxPackage -AllUsers
+```
+
+Specifically, I can confirm **Microsoft.Copilot** is registered.
+
+However, when I install the **Microsoft Copilot (Enterprise) version**, the app installs successfully (I can see it in Start Menu and launch it without any issues), but when I run the same PowerShell command as Administrator, **no corresponding package appears in Get-AppxPackage -AllUsers**.
+
+Can you please clarify why the Enterprise version behaves differently, and whether this is expected? Is there a different mechanism/location where the package is registered?
+
+Thanks, and looking forward to your guidance.
+
+---
+
+If you want it to sound more demanding/escalation-ready, just say the word.
