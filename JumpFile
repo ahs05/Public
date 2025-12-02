@@ -207,24 +207,51 @@ https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key
 Here’s a clean, professional, and pointed way to ask that question:
 
 ---
+# Variables
+$SourceFile  = "C:\Windows\Temp\UserReport.csv"
+$Hostname    = $env:COMPUTERNAME
+$DestShare   = "\\Server\Share\UserReports"
+$DestFile    = Join-Path $DestShare "UserReport_$Hostname.csv"
+$LogFile     = "C:\Windows\Temp\UserReport_Copy.log"
 
-Hi <Name>,
+Function Log {
+    param([string]$Message)
+    $Timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    Add-Content -Path $LogFile -Value "$Timestamp - $Message"
+}
 
-I need some clarification regarding the installation behavior of Copilot.
+Log "==== Script Started ===="
 
-When I install the **Consumer version of Copilot**, I can see the package listed in PowerShell using:
+# Validate Source
+If (!(Test-Path $SourceFile)) {
+    Log "ERROR: Source file does not exist: $SourceFile"
+    Exit 1
+}
 
-```
-Get-AppxPackage -AllUsers
-```
+# Ensure UNC folder exists
+If (!(Test-Path $DestShare)) {
+    Try {
+        New-Item -Path $DestShare -ItemType Directory -Force | Out-Null
+        Log "Created destination folder: $DestShare"
+    }
+    Catch {
+        Log "ERROR: Failed to create destination folder. $_"
+        Exit 1
+    }
+}
 
-Specifically, I can confirm **Microsoft.Copilot** is registered.
+# Copy the file and rename
+Try {
+    Copy-Item -Path $SourceFile -Destination $DestFile -Force
+    Log "SUCCESS: Copied to $DestFile"
+}
+Catch {
+    Log "ERROR: Failed copying. $_"
+    Exit 1
+}
 
-However, when I install the **Microsoft Copilot (Enterprise) version**, the app installs successfully (I can see it in Start Menu and launch it without any issues), but when I run the same PowerShell command as Administrator, **no corresponding package appears in Get-AppxPackage -AllUsers**.
-
-Can you please clarify why the Enterprise version behaves differently, and whether this is expected? Is there a different mechanism/location where the package is registered?
-
-Thanks, and looking forward to your guidance.
+Log "==== Script Completed Successfully ===="
+Exit 0
 
 ---
 
