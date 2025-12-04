@@ -203,56 +203,37 @@ Write-Host "Saved $HiveRoot to $OutFile"
 
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
+# Path to the TXT file containing hostnames
+$TxtPath = "C:\Windows\Temp\Computers.txt"
 
-Here’s a clean, professional, and pointed way to ask that question:
+# Output CSV in the same folder
+$CsvPath = Join-Path (Split-Path $TxtPath) "PingResults.csv"
 
----
-# Variables
-$SourceFile  = "C:\Windows\Temp\UserReport.csv"
-$Hostname    = $env:COMPUTERNAME
-$DestShare   = "\\Server\Share\UserReports"
-$DestFile    = Join-Path $DestShare "UserReport_$Hostname.csv"
-$LogFile     = "C:\Windows\Temp\UserReport_Copy.log"
+# Read hostnames
+$Computers = Get-Content $TxtPath
 
-Function Log {
-    param([string]$Message)
-    $Timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
-    Add-Content -Path $LogFile -Value "$Timestamp - $Message"
-}
+# Create results
+$Results = foreach ($Computer in $Computers) {
 
-Log "==== Script Started ===="
+    $PingResult = Test-Connection -ComputerName $Computer -Count 1 -ErrorAction SilentlyContinue
 
-# Validate Source
-If (!(Test-Path $SourceFile)) {
-    Log "ERROR: Source file does not exist: $SourceFile"
-    Exit 1
-}
-
-# Ensure UNC folder exists
-If (!(Test-Path $DestShare)) {
-    Try {
-        New-Item -Path $DestShare -ItemType Directory -Force | Out-Null
-        Log "Created destination folder: $DestShare"
+    if ($PingResult) {
+        $IP = ($PingResult.IPV4Address).IPAddressToString
+        $Status = "Pingable"
     }
-    Catch {
-        Log "ERROR: Failed to create destination folder. $_"
-        Exit 1
+    else {
+        $IP = ""
+        $Status = "Non-Pingable"
+    }
+
+    [PSCustomObject]@{
+        ComputerName = $Computer
+        Status       = $Status
+        IPAddress    = $IP
+        Timestamp    = (Get-Date)
     }
 }
 
-# Copy the file and rename
-Try {
-    Copy-Item -Path $SourceFile -Destination $DestFile -Force
-    Log "SUCCESS: Copied to $DestFile"
-}
-Catch {
-    Log "ERROR: Failed copying. $_"
-    Exit 1
-}
+# Export to CSV
+$Results | Export-Csv -Path $CsvPath -NoTypeInformation
 
-Log "==== Script Completed Successfully ===="
-Exit 0
-
----
-
-If you want it to sound more demanding/escalation-ready, just say the word.
