@@ -203,37 +203,15 @@ Write-Host "Saved $HiveRoot to $OutFile"
 
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
-# Path to the TXT file containing hostnames
-$TxtPath = "C:\Windows\Temp\Computers.txt"
+#f You Need Tenant-Wide Storage Read Access
 
-# Output CSV in the same folder
-$CsvPath = Join-Path (Split-Path $TxtPath) "PingResults.csv"
+Apply this at the root-management level:
 
-# Read hostnames
-$Computers = Get-Content $TxtPath
+✔ Management Group (Tenant Root Group) → Assign:
 
-# Create results
-$Results = foreach ($Computer in $Computers) {
+Reader
 
-    $PingResult = Test-Connection -ComputerName $Computer -Count 1 -ErrorAction SilentlyContinue
+Storage Blob Data Reader
 
-    if ($PingResult) {
-        $IP = ($PingResult.IPV4Address).IPAddressToString
-        $Status = "Pingable"
-    }
-    else {
-        $IP = ""
-        $Status = "Non-Pingable"
-    }
-
-    [PSCustomObject]@{
-        ComputerName = $Computer
-        Status       = $Status
-        IPAddress    = $IP
-        Timestamp    = (Get-Date)
-    }
-}
-
-# Export to CSV
-$Results | Export-Csv -Path $CsvPath -NoTypeInformation
+This gives true global, tenant-wide read across all storage accounts and all blobs.
 
