@@ -219,18 +219,21 @@ Here’s a clean, professional email you can send to your manager:
 
 ---
 
-Hi Kenny,
+Here’s a clean, professional version you can send:
 
-Thanks for checking.
+---
 
-To clarify the access I’m requesting — I only need **Reader** access to the specific Blob Storage container that was created for this task. The purpose is simply to **review and document the configuration settings** of that blob. There are several settings and sub-settings applied during the initial setup, and documenting them now will help us with **internal tracking** and ensure we can perform an apples-to-apples comparison later if we run into any issues writing to the blob.
+Hi Team,
 
-This access will be strictly read-only. I will **not** be able to modify or change any settings, and I do **not** need access to other containers within the Storage Account.
+I wanted to validate something regarding AD group membership.
+Can you please confirm whether users who are **terminated or in the process of terminating** will be removed from the **Non-Exempt AD Group** within **1 day**, or if the removal occurs after **30 days**?
 
-Let me know if you need any additional details from my end.
+Please let me know the expected timeline so we can plan accordingly.
 
 Thanks,
 Harish
+
+---
 
 ---
 
