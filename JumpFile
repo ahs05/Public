@@ -215,3 +215,23 @@ Storage Blob Data Reader
 
 This gives true global, tenant-wide read across all storage accounts and all blobs.
 
+Here’s a clean, professional email you can send to your manager:
+
+---
+
+Hi Kenny,
+
+Thanks for checking.
+
+To clarify the access I’m requesting — I only need **Reader** access to the specific Blob Storage container that was created for this task. The purpose is simply to **review and document the configuration settings** of that blob. There are several settings and sub-settings applied during the initial setup, and documenting them now will help us with **internal tracking** and ensure we can perform an apples-to-apples comparison later if we run into any issues writing to the blob.
+
+This access will be strictly read-only. I will **not** be able to modify or change any settings, and I do **not** need access to other containers within the Storage Account.
+
+Let me know if you need any additional details from my end.
+
+Thanks,
+Harish
+
+---
+
+
