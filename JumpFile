@@ -203,55 +203,43 @@ Write-Host "Saved $HiveRoot to $OutFile"
 
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
-# Set AD Group Name
-$GroupName = "Your-AD-Group-Name"
+function Get-SCCMUserCollections {
+    <#
+        .SYNOPSIS
+            Returns the User Collections that apply to the currently logged-in user
+            based on SCCM client policy (works offline, no VPN needed).
+    #>
 
-# Get AD group members (users only)
-$Members = Get-ADGroupMember -Identity $GroupName -Recursive |
-           Where-Object { $_.ObjectClass -eq "user" }
-
-# Get detailed user info including Enabled status
-$UserDetails = $Members | ForEach-Object {
-    Get-ADUser $_.DistinguishedName -Properties DisplayName, Enabled, SamAccountName, Mail
-}
-
-# Build detailed list with status
-$UserList = $UserDetails | ForEach-Object {
-    [PSCustomObject]@{
-        DisplayName     = $_.DisplayName
-        SamAccountName  = $_.SamAccountName
-        Email           = $_.Mail
-        Enabled         = $_.Enabled
-        Status          = if ($_.Enabled) { "Active" } else { "Inactive/Disabled" }
+    # Get logged-in user
+    $LoggedOnUser = (Get-WmiObject Win32_ComputerSystem).UserName
+    if (-not $LoggedOnUser) {
+        Write-Warning "No user is currently logged in."
+        return
     }
+
+    Write-Verbose "Logged in user: $LoggedOnUser"
+
+    # Normalize username (DOMAIN\USERNAME → DOMAIN/USERNAME)
+    $LoggedOnUser = $LoggedOnUser.Replace("\", "\\")
+
+    # Query SCCM User Policy namespace
+    $Collections = Get-WmiObject `
+        -Namespace "root\ccm\Policy\User" `
+        -Class CCM_CollectionMembership `
+        -ErrorAction SilentlyContinue
+
+    if (-not $Collections) {
+        Write-Warning "No SCCM user collections found. User policy may not be downloaded yet."
+        return
+    }
+
+    # Format output
+    $Output = $Collections | Select-Object `
+        CollectionID,
+        CollectionName,
+        IsEnabled
+
+    return $Output
 }
-
-# Summary counts
-$ActiveCount   = ($UserList | Where-Object { $_.Enabled -eq $true }).Count
-$InactiveCount = ($UserList | Where-Object { $_.Enabled -eq $false }).Count
-$Total         = $UserList.Count
-
-# Add summary row at the bottom
-$Summary = [PSCustomObject]@{
-    DisplayName     = "TOTALS"
-    SamAccountName  = ""
-    Email           = ""
-    Enabled         = ""
-    Status          = "Active: $ActiveCount | Inactive: $InactiveCount | Total: $Total"
-}
-
-# Combine member details + summary row
-$Final = $UserList + $Summary
-
-# Export to CSV
-$Path = "C:\Temp\ADGroup_Members_Status_Report.csv"
-$Final | Export-Csv -Path $Path -NoTypeInformation
-
-Write-Host "Report generated:`n$Path"
-
-
----
-
----
 
 
