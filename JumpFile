@@ -1,3 +1,5 @@
+$CCMClient = Get-WmiObject -Namespace "root\ccm" -Class "SMS_Client"
+$Collections = Invoke-CimMethod -Namespace "root\ccm" -ClassName "SMS_Client" -MethodName "GetAssignedUserCollections"
 
 Windows Registry Editor Version 5.00
 
