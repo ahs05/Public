@@ -203,35 +203,52 @@ Write-Host "Saved $HiveRoot to $OutFile"
 
 ---------------
 https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
-#f You Need Tenant-Wide Storage Read Access
+# Set AD Group Name
+$GroupName = "Your-AD-Group-Name"
 
-Apply this at the root-management level:
+# Get AD group members (users only)
+$Members = Get-ADGroupMember -Identity $GroupName -Recursive |
+           Where-Object { $_.ObjectClass -eq "user" }
 
-✔ Management Group (Tenant Root Group) → Assign:
+# Get detailed user info including Enabled status
+$UserDetails = $Members | ForEach-Object {
+    Get-ADUser $_.DistinguishedName -Properties DisplayName, Enabled, SamAccountName, Mail
+}
 
-Reader
+# Build detailed list with status
+$UserList = $UserDetails | ForEach-Object {
+    [PSCustomObject]@{
+        DisplayName     = $_.DisplayName
+        SamAccountName  = $_.SamAccountName
+        Email           = $_.Mail
+        Enabled         = $_.Enabled
+        Status          = if ($_.Enabled) { "Active" } else { "Inactive/Disabled" }
+    }
+}
 
-Storage Blob Data Reader
+# Summary counts
+$ActiveCount   = ($UserList | Where-Object { $_.Enabled -eq $true }).Count
+$InactiveCount = ($UserList | Where-Object { $_.Enabled -eq $false }).Count
+$Total         = $UserList.Count
 
-This gives true global, tenant-wide read across all storage accounts and all blobs.
+# Add summary row at the bottom
+$Summary = [PSCustomObject]@{
+    DisplayName     = "TOTALS"
+    SamAccountName  = ""
+    Email           = ""
+    Enabled         = ""
+    Status          = "Active: $ActiveCount | Inactive: $InactiveCount | Total: $Total"
+}
 
-Here’s a clean, professional email you can send to your manager:
+# Combine member details + summary row
+$Final = $UserList + $Summary
 
----
+# Export to CSV
+$Path = "C:\Temp\ADGroup_Members_Status_Report.csv"
+$Final | Export-Csv -Path $Path -NoTypeInformation
 
-Here’s a clean, professional version you can send:
+Write-Host "Report generated:`n$Path"
 
----
-
-Hi Team,
-
-I wanted to validate something regarding AD group membership.
-Can you please confirm whether users who are **terminated or in the process of terminating** will be removed from the **Non-Exempt AD Group** within **1 day**, or if the removal occurs after **30 days**?
-
-Please let me know the expected timeline so we can plan accordingly.
-
-Thanks,
-Harish
 
 ---
 
