@@ -20,6 +20,124 @@ Defender Error Fix: https://www.windows11forums.com/threads/windows-11-defender-
 Defender Error Fix: https://techlou.com/fix-unable-to-delete-all-specified-values-error-in-registry-editor/
 https://windowsforum.com/threads/win11-upgrade-2025-07-cu-causing-mpssvc-break.375192/
 ---------------------------------------------------
+SQL Summary Query
+WITH UserBase AS (
+    SELECT
+        usr.ResourceID AS UserID,
+        usr.Unique_User_Name0 AS UserName,
+        usr.Full_User_Name0 AS FullName
+    FROM v_FullCollectionMembership fcm
+    INNER JOIN v_R_User usr
+        ON fcm.ResourceID = usr.ResourceID
+    WHERE fcm.CollectionID = 'XYZ-CollectionID'
+),
+
+UserDevice AS (
+    SELECT
+        ub.UserID,
+        rela.MachineResourceID AS DeviceID,
+        dev.Client0 AS ClientInstalled,
+        rela.IsPrimary AS IsPrimaryUDA
+    FROM UserBase ub
+    LEFT JOIN v_UserMachineRelation rela
+        ON ub.UserID = rela.UserResourceID
+    LEFT JOIN v_R_System dev
+        ON rela.MachineResourceID = dev.ResourceID
+),
+
+UserSummary AS (
+    SELECT
+        ub.UserID,
+
+        /* 1. User has NO devices */
+        CASE WHEN ud.DeviceID IS NULL THEN 1 ELSE 0 END AS NoDevice,
+
+        /* 2. User has at least one device with no SCCM client */
+        CASE WHEN ud.DeviceID IS NOT NULL AND ud.ClientInstalled = 0 THEN 1 ELSE 0 END AS DeviceNoClient,
+
+        /* 3. User has at least one device WITH SCCM client */
+        CASE WHEN ud.ClientInstalled = 1 THEN 1 ELSE 0 END AS DeviceWithClient,
+
+        /* 4. User has a UDA primary device */
+        CASE WHEN ud.IsPrimaryUDA = 1 THEN 1 ELSE 0 END AS PrimaryUDA
+    FROM UserBase ub
+    LEFT JOIN UserDevice ud
+        ON ub.UserID = ud.UserID
+)
+
+SELECT
+    (SELECT COUNT(*) FROM UserBase) AS TotalUsersInCollection,
+
+    (SELECT COUNT(DISTINCT UserID) FROM UserSummary WHERE NoDevice = 1) AS UsersWithNoDevices,
+
+    (SELECT COUNT(DISTINCT UserID) FROM UserSummary WHERE DeviceNoClient = 1) AS UsersWithDevicesButNoClient,
+
+    (SELECT COUNT(DISTINCT UserID) FROM UserSummary WHERE DeviceWithClient = 1) AS UsersWithAtLeastOneClientDevice,
+
+    (SELECT COUNT(DISTINCT UserID) FROM UserSummary WHERE PrimaryUDA = 1) AS UsersWithPrimaryUDA,
+
+    (SELECT COUNT(DISTINCT UserID) 
+        FROM UserSummary 
+        WHERE DeviceWithClient = 1 AND PrimaryUDA = 0) AS UsersWithDevicesButNoUDA
+
+-----------
+
+---------------
+
+/* 
+   USER vs DEVICE DIAGNOSTIC REPORT
+   Shows:
+   - Users in the collection
+   - Their devices
+   - Device has SCCM client?
+   - User has UDA (Primary Device)?
+*/
+
+SELECT
+    usr.Unique_User_Name0       AS [UserName],
+    usr.Full_User_Name0         AS [Full Name],
+    usr.Windows_NT_Domain0      AS [Domain],
+    coll.CollectionID           AS [CollectionID],
+    coll.CollectionName         AS [CollectionName],
+
+    /* Device Details */
+    dev.Name0                   AS [DeviceName],
+    dev.Client0                 AS [ClientInstalled],
+    dev.Active0                 AS [ClientActive],
+    dev.LastLogonTimestamp0     AS [LastLogon],
+    rela.IsPrimary              AS [UDA Primary Device],
+
+    /* Classification */
+    CASE 
+        WHEN dev.Name0 IS NULL THEN 'NO DEVICE FOUND'
+        WHEN dev.Client0 = 0 THEN 'DEVICE HAS NO SCCM CLIENT'
+        WHEN rela.IsPrimary = 1 THEN 'UDA PRIMARY DEVICE'
+        ELSE 'HAS DEVICE (NON-UDA)'
+    END AS [Status]
+    
+FROM
+    v_FullCollectionMembership colm
+
+    /* Join user details */
+    INNER JOIN v_R_User usr 
+        ON colm.ResourceID = usr.ResourceID
+
+    /* Join collection name */
+    INNER JOIN v_Collection coll
+        ON colm.CollectionID = coll.CollectionID
+
+    /* Left join device mapping (logon history) */
+    LEFT JOIN v_UserMachineRelation rela
+        ON usr.ResourceID = rela.UserResourceID
+
+    /* Left join device details */
+    LEFT JOIN v_R_System dev
+        ON rela.MachineResourceID = dev.ResourceID
+
+WHERE
+    colm.CollectionID = 'XYZ-CollectionID'
+
+ORDER BY usr.Unique_User_Name0;
 
 
 -----------
