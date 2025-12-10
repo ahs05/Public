@@ -65,4 +65,42 @@ function Get-SCCMUserCollections {
     return $Output
 }
 
+---------------------
+----------------------
+function Get-SCCMUserCollections {
+    <#
+        .SYNOPSIS
+            Returns the SCCM User Collections for the currently logged-in user.
+    #>
+
+    # Get logged-in user
+    $user = (Get-WmiObject Win32_ComputerSystem).UserName
+    if (-not $user) {
+        Write-Warning "No logged-in user detected."
+        return
+    }
+
+    $domain, $username = $user.Split("\")
+    $ADUser = New-Object System.Security.Principal.NTAccount($domain, $username)
+    $SID = $ADUser.Translate([System.Security.Principal.SecurityIdentifier]).Value
+
+    $Namespace = "root\ccm\policy\User$SID"
+
+    if (-not (Get-WmiObject -Namespace "root\ccm\policy" -List | Where-Object { $_.Name -match $SID })) {
+        Write-Warning "User policy for $user not found. User may not have received SCCM user policy yet."
+        return
+    }
+
+    $Collections = Get-WmiObject `
+        -Namespace $Namespace `
+        -Class CCM_CollectionMembership `
+        -ErrorAction SilentlyContinue
+
+    if (-not $Collections) {
+        Write-Warning "No user collections found in SCCM user policy for $user."
+        return
+    }
+
+    return $Collections | Select-Object CollectionID, CollectionName, IsEnabled
+}
 
