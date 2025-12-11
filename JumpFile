@@ -22,205 +22,69 @@ Defender Error Fix: https://www.windows11forums.com/threads/windows-11-defender-
 Defender Error Fix: https://techlou.com/fix-unable-to-delete-all-specified-values-error-in-registry-editor/
 https://windowsforum.com/threads/win11-upgrade-2025-07-cu-causing-mpssvc-break.375192/
 ---------------------------------------------------
-SQL Summary Query
-WITH UserBase AS (
-    SELECT
-        usr.ResourceID AS UserID,
-        usr.Unique_User_Name0 AS UserName,
-        usr.Full_User_Name0 AS FullName
-    FROM v_FullCollectionMembership fcm
-    INNER JOIN v_R_User usr
-        ON fcm.ResourceID = usr.ResourceID
-    WHERE fcm.CollectionID = 'XYZ-CollectionID'
-),
-
-UserDevice AS (
-    SELECT
-        ub.UserID,
-        rela.MachineResourceID AS DeviceID,
-        dev.Client0 AS ClientInstalled,
-        rela.IsPrimary AS IsPrimaryUDA
-    FROM UserBase ub
-    LEFT JOIN v_UserMachineRelation rela
-        ON ub.UserID = rela.UserResourceID
-    LEFT JOIN v_R_System dev
-        ON rela.MachineResourceID = dev.ResourceID
-),
-
-UserSummary AS (
-    SELECT
-        ub.UserID,
-
-        /* 1. User has NO devices */
-        CASE WHEN ud.DeviceID IS NULL THEN 1 ELSE 0 END AS NoDevice,
-
-        /* 2. User has at least one device with no SCCM client */
-        CASE WHEN ud.DeviceID IS NOT NULL AND ud.ClientInstalled = 0 THEN 1 ELSE 0 END AS DeviceNoClient,
-
-        /* 3. User has at least one device WITH SCCM client */
-        CASE WHEN ud.ClientInstalled = 1 THEN 1 ELSE 0 END AS DeviceWithClient,
-
-        /* 4. User has a UDA primary device */
-        CASE WHEN ud.IsPrimaryUDA = 1 THEN 1 ELSE 0 END AS PrimaryUDA
-    FROM UserBase ub
-    LEFT JOIN UserDevice ud
-        ON ub.UserID = ud.UserID
-)
-
-SELECT
-    (SELECT COUNT(*) FROM UserBase) AS TotalUsersInCollection,
-
-    (SELECT COUNT(DISTINCT UserID) FROM UserSummary WHERE NoDevice = 1) AS UsersWithNoDevices,
-
-    (SELECT COUNT(DISTINCT UserID) FROM UserSummary WHERE DeviceNoClient = 1) AS UsersWithDevicesButNoClient,
-
-    (SELECT COUNT(DISTINCT UserID) FROM UserSummary WHERE DeviceWithClient = 1) AS UsersWithAtLeastOneClientDevice,
-
-    (SELECT COUNT(DISTINCT UserID) FROM UserSummary WHERE PrimaryUDA = 1) AS UsersWithPrimaryUDA,
-
-    (SELECT COUNT(DISTINCT UserID) 
-        FROM UserSummary 
-        WHERE DeviceWithClient = 1 AND PrimaryUDA = 0) AS UsersWithDevicesButNoUDA
-
------------
-
----------------
-
-/* 
-   USER vs DEVICE DIAGNOSTIC REPORT
-   Shows:
-   - Users in the collection
-   - Their devices
-   - Device has SCCM client?
-   - User has UDA (Primary Device)?
+/* FULL USER ↔ DEVICE MAPPING REPORT
+   Combines:
+   - Logon-based mappings (v_UserMachineRelation)
+   - UDA primary device relationships (v_UserMachineRelationship)
 */
 
-SELECT
-    usr.Unique_User_Name0       AS [UserName],
-    usr.Full_User_Name0         AS [Full Name],
-    usr.Windows_NT_Domain0      AS [Domain],
-    coll.CollectionID           AS [CollectionID],
-    coll.CollectionName         AS [CollectionName],
+SELECT DISTINCT
+    usr.Unique_User_Name0           AS [UserName],
+    usr.Full_User_Name0             AS [FullName],
+    usr.Windows_NT_Domain0          AS [Domain],
+    coll.CollectionName             AS [Collection],
 
-    /* Device Details */
-    dev.Name0                   AS [DeviceName],
-    dev.Client0                 AS [ClientInstalled],
-    dev.Active0                 AS [ClientActive],
-    dev.LastLogonTimestamp0     AS [LastLogon],
-    rela.IsPrimary              AS [UDA Primary Device],
+    /* Device Info */
+    dev.Name0                       AS [DeviceName],
+    dev.Client0                     AS [ClientInstalled],
+    dev.Active0                     AS [ClientActive],
+    dev.LastLogonTimestamp0         AS [DeviceLastLogon],
 
-    /* Classification */
-    CASE 
+    /* Logon-based Relation */
+    rel.RelationActive              AS [LogonRelationActive],
+    rel.CreationTime                AS [LogonRelationCreated],
+    rel.InactivationTime            AS [LogonRelationInactive],
+
+    /* UDA Relationship */
+    CASE WHEN uda.IsPrimaryUser = 1 THEN 1 ELSE 0 END 
+                                    AS [UDAPrimary],
+    uda.SourceType                  AS [UDASource],
+    uda.CreationTime                AS [UDACreated],
+    uda.IsActive                    AS [UDAActive],
+
+    /* Final Classification */
+    CASE
         WHEN dev.Name0 IS NULL THEN 'NO DEVICE FOUND'
+        WHEN uda.IsPrimaryUser = 1 THEN 'UDA PRIMARY DEVICE'
+        WHEN rel.RelationActive = 1 THEN 'ACTIVE LOGON DEVICE'
+        WHEN rel.RelationActive = 0 THEN 'INACTIVE LOGON RELATION'
         WHEN dev.Client0 = 0 THEN 'DEVICE HAS NO SCCM CLIENT'
-        WHEN rela.IsPrimary = 1 THEN 'UDA PRIMARY DEVICE'
-        ELSE 'HAS DEVICE (NON-UDA)'
+        ELSE 'OTHER DEVICE'
     END AS [Status]
-    
-FROM
-    v_FullCollectionMembership colm
 
-    /* Join user details */
-    INNER JOIN v_R_User usr 
-        ON colm.ResourceID = usr.ResourceID
+FROM v_FullCollectionMembership colm
+INNER JOIN v_R_User usr
+    ON colm.ResourceID = usr.ResourceID
+INNER JOIN v_Collection coll
+    ON colm.CollectionID = coll.CollectionID
 
-    /* Join collection name */
-    INNER JOIN v_Collection coll
-        ON colm.CollectionID = coll.CollectionID
+/* Logon-based User ↔ Device mapping */
+LEFT JOIN v_UserMachineRelation rel
+    ON usr.Unique_User_Name0 = rel.UniqueUserName
 
-    /* Left join device mapping (logon history) */
-    LEFT JOIN v_UserMachineRelation rela
-        ON usr.ResourceID = rela.UserResourceID
+/* UDA (Primary Device) relationship */
+LEFT JOIN v_UserMachineRelationship uda
+    ON usr.ResourceID = uda.UserResourceID
 
-    /* Left join device details */
-    LEFT JOIN v_R_System dev
-        ON rela.MachineResourceID = dev.ResourceID
+/* Device details joined via MachineResourceID */
+LEFT JOIN v_R_System dev
+    ON (
+           dev.ResourceID = rel.MachineResourceID
+        OR dev.ResourceID = uda.MachineResourceID
+       )
 
 WHERE
-    colm.CollectionID = 'XYZ-CollectionID'
+    colm.CollectionID = 'XYZ-COLLECTIONID'
 
-ORDER BY usr.Unique_User_Name0;
-
-
------------
-
----------------
-https://www.systemcenterdudes.com/deploy-windows-10-extended-security-update-key-with-intune-or-sccm/
-function Get-SCCMUserCollections {
-    <#
-        .SYNOPSIS
-            Returns the User Collections that apply to the currently logged-in user
-            based on SCCM client policy (works offline, no VPN needed).
-    #>
-
-    # Get logged-in user
-    $LoggedOnUser = (Get-WmiObject Win32_ComputerSystem).UserName
-    if (-not $LoggedOnUser) {
-        Write-Warning "No user is currently logged in."
-        return
-    }
-
-    Write-Verbose "Logged in user: $LoggedOnUser"
-
-    # Normalize username (DOMAIN\USERNAME → DOMAIN/USERNAME)
-    $LoggedOnUser = $LoggedOnUser.Replace("\", "\\")
-
-    # Query SCCM User Policy namespace
-    $Collections = Get-WmiObject `
-        -Namespace "root\ccm\Policy\User" `
-        -Class CCM_CollectionMembership `
-        -ErrorAction SilentlyContinue
-
-    if (-not $Collections) {
-        Write-Warning "No SCCM user collections found. User policy may not be downloaded yet."
-        return
-    }
-
-    # Format output
-    $Output = $Collections | Select-Object `
-        CollectionID,
-        CollectionName,
-        IsEnabled
-
-    return $Output
-}
-
----------------------
-----------------------
-function Get-SCCMUserCollections {
-    <#
-        .SYNOPSIS
-            Returns the SCCM User Collections for the currently logged-in user.
-    #>
-
-    # Get logged-in user
-    $user = (Get-WmiObject Win32_ComputerSystem).UserName
-    if (-not $user) {
-        Write-Warning "No logged-in user detected."
-        return
-    }
-
-    $domain, $username = $user.Split("\")
-    $ADUser = New-Object System.Security.Principal.NTAccount($domain, $username)
-    $SID = $ADUser.Translate([System.Security.Principal.SecurityIdentifier]).Value
-
-    $Namespace = "root\ccm\policy\User$SID"
-
-    if (-not (Get-WmiObject -Namespace "root\ccm\policy" -List | Where-Object { $_.Name -match $SID })) {
-        Write-Warning "User policy for $user not found. User may not have received SCCM user policy yet."
-        return
-    }
-
-    $Collections = Get-WmiObject `
-        -Namespace $Namespace `
-        -Class CCM_CollectionMembership `
-        -ErrorAction SilentlyContinue
-
-    if (-not $Collections) {
-        Write-Warning "No user collections found in SCCM user policy for $user."
-        return
-    }
-
-    return $Collections | Select-Object CollectionID, CollectionName, IsEnabled
-}
+ORDER BY usr.Unique_User_Name0, dev.Name0;
 
