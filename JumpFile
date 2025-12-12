@@ -88,3 +88,32 @@ WHERE
 
 ORDER BY usr.Unique_User_Name0, dev.Name0;
 
+---------------------------
+
+
+Here’s a clean, professional email you can send:
+
+---
+
+**Subject:** Recommendation to Adjust UDA Settings in SCCM for Accurate Primary User Mapping
+
+Hi <Name>,
+
+I reviewed our current User Device Affinity (UDA) settings in SCCM and noticed that the thresholds are set quite high (2100 minutes over 7 days). These values make it difficult for SCCM to correctly identify primary users, which is why many devices in our environment are missing UDA assignments.
+
+**Recommended adjustments:**
+
+* **Usage threshold (minutes):** Reduce from *2100* → **600 minutes** (10 hours)
+* **Usage threshold (days):** Reduce from *7 days* → **3 days**
+* **Automatically configure UDA from usage:** Keep set to **Yes**
+
+These settings align with Microsoft best practices and are commonly used across enterprise environments. Lowering the thresholds will allow SCCM to more accurately detect legitimate primary users, improve UDA reporting, and help with device-based deployments that rely on primary user mapping.
+
+Let me know if you’d like to review this together or if you need any additional details.
+
+Thanks, <Your Name>
+
+---
+
+If you want a shorter version, more formal version, or one addressed with technical justification, I can craft that too.
+
