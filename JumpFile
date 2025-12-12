@@ -90,38 +90,45 @@ ORDER BY usr.Unique_User_Name0, dev.Name0;
 
 ---------------------------
 
+# ----------------------------------------
+# Script: Assign-PrimaryUserFromCSV_Fixed.ps1
+# Purpose: Assign users as primary to devices in SCCM from CSV
+# Checks if user is already assigned before adding
+# ----------------------------------------
 
-Here’s a clean, professional email you can send:
+# CSV path
+$CsvPath = "C:\Scripts\UserDeviceList.csv"
 
----
+# Import CSV
+if (-not (Test-Path $CsvPath)) {
+    Write-Error "CSV file not found: $CsvPath"
+    return
+}
 
-SELECT 
-    s.ResourceID,
-    s.Name0 AS DeviceName,
-    s.Client0 AS HasClient,
-    os.Caption0 AS OS,
-    os.CSDVersion0 AS ServicePack,
-    s.LastLogonTimestamp0,
-    s.LastLogonUserName0
-FROM v_R_System AS s
-LEFT JOIN v_UserMachineRelationship AS umr
-    ON s.ResourceID = umr.ResourceID
-LEFT JOIN v_GS_OPERATING_SYSTEM AS os
-    ON s.ResourceID = os.ResourceID
-WHERE umr.ResourceID IS NULL
-ORDER BY s.Name0;
+$entries = Import-Csv -Path $CsvPath
 
------------------------------------
+# Loop through each row
+foreach ($entry in $entries) {
 
-Import-Module ($env:SMS_ADMIN_UI_PATH.Substring(0,$env:SMS_ADMIN_UI_PATH.Length-5) + '\ConfigurationManager.psd1')
+    $user = $entry.UserName
+    $device = $entry.DeviceName
 
-# Set your site code
-cd <SiteCode>:
+    try {
+        # Get current primary users for the device
+        $currentUsers = Get-CMUserDeviceAffinity -DeviceName $device -ErrorAction SilentlyContinue | Select-Object -ExpandProperty UserName
 
-# Variables
-$User = "DOMAIN\\SamAccountName"
-$Device = "DeviceName"
+        if ($currentUsers -contains $user) {
+            Write-Host "SKIPPING: $user is already assigned to $device" -ForegroundColor Yellow
+        } else {
+            Write-Host "Assigning $user to $device..." -ForegroundColor Cyan
+            Add-CMUserAffinityToDevice -DeviceName $device -UserName $user -Confirm:$false -ErrorAction Stop
+            Write-Host "SUCCESS: $user → $device" -ForegroundColor Green
+        }
 
-# Assign UDA
-Add-CMUserDeviceAffinity -UserName $User -DeviceName $Device -Type "PrimaryUser"
+    } catch {
+        Write-Warning "FAILED: $user → $device : $($_.Exception.Message)"
+    }
+}
+
+Write-Host "All entries processed." -ForegroundColor Yellow
 
