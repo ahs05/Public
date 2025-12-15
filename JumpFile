@@ -91,44 +91,43 @@ ORDER BY usr.Unique_User_Name0, dev.Name0;
 ---------------------------
 
 # ----------------------------------------
-# Script: Assign-PrimaryUserFromCSV_Fixed.ps1
-# Purpose: Assign users as primary to devices in SCCM from CSV
-# Checks if user is already assigned before adding
-# ----------------------------------------
+Here’s a **clean, professional, leadership-ready email** based on your content, with gaps filled and wording tightened while keeping the intent intact:
 
-# CSV path
-$CsvPath = "C:\Scripts\UserDeviceList.csv"
+---
 
-# Import CSV
-if (-not (Test-Path $CsvPath)) {
-    Write-Error "CSV file not found: $CsvPath"
-    return
-}
+**Subject:** Approval Request – SCCM Site Upgrade (v2409 → v2609)
 
-$entries = Import-Csv -Path $CsvPath
+Hi Joe,
 
-# Loop through each row
-foreach ($entry in $entries) {
+We are seeking a **green signal from ACG** to proceed with the **SCCM site upgrade** from **version 2409 to 2609**.
 
-    $user = $entry.UserName
-    $device = $entry.DeviceName
+**Planned upgrade window**
 
-    try {
-        # Get current primary users for the device
-        $currentUsers = Get-CMUserDeviceAffinity -DeviceName $device -ErrorAction SilentlyContinue | Select-Object -ExpandProperty UserName
+* **Start:** Thursday, **January 17** at **7:00 PM ET**
+* **End:** Monday, **January 20** at **7:00 AM ET**
 
-        if ($currentUsers -contains $user) {
-            Write-Host "SKIPPING: $user is already assigned to $device" -ForegroundColor Yellow
-        } else {
-            Write-Host "Assigning $user to $device..." -ForegroundColor Cyan
-            Add-CMUserAffinityToDevice -DeviceName $device -UserName $user -Confirm:$false -ErrorAction Stop
-            Write-Host "SUCCESS: $user → $device" -ForegroundColor Green
-        }
+As a heads-up, **Monday, January 20 is MLK Day**, which provides an ideal window to complete all **post-upgrade validation and cleanup activities** with minimal business impact.
 
-    } catch {
-        Write-Warning "FAILED: $user → $device : $($_.Exception.Message)"
-    }
-}
+The **detailed task list and timelines** covering **pre-upgrade, upgrade, and post-upgrade activities** are documented in the attached spreadsheet. The dates and times are currently aligned to the proposed window and will be **finalized and updated once the upgrade dates are confirmed**.
 
-Write-Host "All entries processed." -ForegroundColor Yellow
+We have **successfully completed multiple SCCM site upgrades in the past** and do not anticipate any issues. Additionally, we will be performing the **same upgrade on the SCCM lab environment ahead of production** to validate changes and avoid any surprises in the production environment.
 
+If there are any **environment-level initiatives or dependencies** that could conflict with this upgrade window, please let us know so we can adjust our schedule accordingly. We are planning to proceed **after the completion of all Windows 11–related activities** to avoid overlap.
+
+Please let us know if ACG has any concerns or if additional information is required for approval.
+
+Thanks,
+**[Your Name]**
+**[Your Title / Team]**
+**[Contact Information]**
+
+---
+
+If you want, I can:
+
+* Make it **more executive-level**
+* Make it **more technical**
+* Adjust tone for **CAB / Change Management**
+* Add **risk & rollback language**
+
+Just tell me the audience.
