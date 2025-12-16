@@ -91,43 +91,39 @@ ORDER BY usr.Unique_User_Name0, dev.Name0;
 ---------------------------
 
 # ----------------------------------------
-Here’s a **clean, professional, leadership-ready email** based on your content, with gaps filled and wording tightened while keeping the intent intact:
+Here’s a clean, professional email you can send to your team. I’ve filled in gaps and tightened the language while keeping your intent clear:
 
 ---
 
-**Subject:** Approval Request – SCCM Site Upgrade (v2409 → v2609)
+**Subject:** Update: Zscaler FW/AV Issue – Intune Proactive Remediation Deployment
 
-Hi Joe,
+Hi Team,
 
-We are seeking a **green signal from ACG** to proceed with the **SCCM site upgrade** from **version 2409 to 2609**.
+I wanted to provide an update on the Zscaler FW/AV issue we’ve been troubleshooting.
 
-**Planned upgrade window**
+Long story short, Microsoft has now provided us with a PowerShell script to address the problem. Based on this, I’ve created an **Intune Proactive Remediation** package to remediate the issue on affected devices.
 
-* **Start:** Thursday, **January 17** at **7:00 PM ET**
-* **End:** Monday, **January 20** at **7:00 AM ET**
+**Key points to note:**
 
-As a heads-up, **Monday, January 20 is MLK Day**, which provides an ideal window to complete all **post-upgrade validation and cleanup activities** with minimal business impact.
+* The remediation script is fully configured in Intune.
+* This solution **must be delivered via Intune only**, as the impacted devices are:
 
-The **detailed task list and timelines** covering **pre-upgrade, upgrade, and post-upgrade activities** are documented in the attached spreadsheet. The dates and times are currently aligned to the proposed window and will be **finalized and updated once the upgrade dates are confirmed**.
+  * Off the corporate network
+  * Unable to connect to VPN
+  * Connected only to the internet
+    Given these constraints, Intune is currently the **only viable deployment mechanism**.
 
-We have **successfully completed multiple SCCM site upgrades in the past** and do not anticipate any issues. Additionally, we will be performing the **same upgrade on the SCCM lab environment ahead of production** to validate changes and avoid any surprises in the production environment.
+I’ve attached:
 
-If there are any **environment-level initiatives or dependencies** that could conflict with this upgrade window, please let us know so we can adjust our schedule accordingly. We are planning to proceed **after the completion of all Windows 11–related activities** to avoid overlap.
+* A screenshot of the Proactive Remediation configuration
+* A screenshot showing how the Proactive Remediation is applied via Intune
 
-Please let us know if ACG has any concerns or if additional information is required for approval.
+I understand that not all team members currently have **Intune Admin console access**. Until the required access is provisioned, please coordinate and work closely with team members who already have console access to ensure smooth execution and monitoring.
 
-Thanks,
+If you have any questions or notice any anomalies during deployment or remediation results, please raise them so we can address them quickly.
+
+Thanks everyone for the continued collaboration on this.
+
+Best regards,
 **[Your Name]**
-**[Your Title / Team]**
-**[Contact Information]**
 
----
-
-If you want, I can:
-
-* Make it **more executive-level**
-* Make it **more technical**
-* Adjust tone for **CAB / Change Management**
-* Add **risk & rollback language**
-
-Just tell me the audience.
