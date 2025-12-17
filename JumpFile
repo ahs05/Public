@@ -91,39 +91,53 @@ ORDER BY usr.Unique_User_Name0, dev.Name0;
 ---------------------------
 
 # ----------------------------------------
-Here’s a clean, professional email you can send to your team. I’ve filled in gaps and tightened the language while keeping your intent clear:
+Here’s a polished email you can send to your team, using the screenshot context and filling in the gaps clearly and professionally:
 
 ---
 
-**Subject:** Update: Zscaler FW/AV Issue – Intune Proactive Remediation Deployment
+**Subject:** SCCM Packages Created – CSV Generation & Consolidation Workflow
 
 Hi Team,
 
-I wanted to provide an update on the Zscaler FW/AV issue we’ve been troubleshooting.
+I wanted to share an update on the work completed around the CSV processing workflow aligned with ACG requirements.
 
-Long story short, Microsoft has now provided us with a PowerShell script to address the problem. Based on this, I’ve created an **Intune Proactive Remediation** package to remediate the issue on affected devices.
+I have created **two SCCM packages** to support the current design:
 
-**Key points to note:**
+**1. CSV Generation Package**
 
-* The remediation script is fully configured in Intune.
-* This solution **must be delivered via Intune only**, as the impacted devices are:
+* This package runs a PowerShell script that **generates CSV files throughout the day**.
+* The script executes **four times daily** at:
 
-  * Off the corporate network
-  * Unable to connect to VPN
-  * Connected only to the internet
-    Given these constraints, Intune is currently the **only viable deployment mechanism**.
+  * 12:01 AM
+  * 6:00 AM
+  * 12:00 PM
+  * 6:00 PM
+* Each run generates log files and outputs CSVs to **Blob Storage**.
+* (Screenshot attached: *Package that generates the CSVs in SCCM*)
 
-I’ve attached:
+**2. CSV Consolidation Package**
 
-* A screenshot of the Proactive Remediation configuration
-* A screenshot showing how the Proactive Remediation is applied via Intune
+* This package processes **all CSVs generated during the day** and consolidates them into a **single “mega” CSV**.
+* The consolidation script runs **once daily at 8:00 PM**.
+* The consolidated CSV is stored back in **Blob Storage**.
+* An **FTP job runs at 8:30 PM EST** to pick up the consolidated file from Blob Storage and deliver it to the **GCS bucket**.
+* (Screenshot attached: *Package that consolidates the CSVs in SCCM*)
 
-I understand that not all team members currently have **Intune Admin console access**. Until the required access is provisioned, please coordinate and work closely with team members who already have console access to ensure smooth execution and monitoring.
+**Important Notes / Ownership Model**
 
-If you have any questions or notice any anomalies during deployment or remediation results, please raise them so we can address them quickly.
+* ACG requirements are **still evolving**, and as those requirements change, **new or updated versions of the scripts** will be provided by the **TCS Transformation team**.
+* **TCS Transformation team** will remain the **developers and owners of the scripts**.
+* **EDM team’s responsibility** will be:
 
-Thanks everyone for the continued collaboration on this.
+  * Creating/updating SCCM packages
+  * Deploying the scripts to the required workstations
+  * Assisting with delivery, scheduling, and operational support as new revisions come in
 
-Best regards,
-**[Your Name]**
+This setup gives us flexibility to quickly roll out newer script versions as ACG requirements mature, while keeping development and deployment responsibilities clearly separated.
+
+Please review and let me know if there are any questions, concerns, or suggested improvements to this approach.
+
+Thanks,
+[Your Name]
+EDM Team
 
