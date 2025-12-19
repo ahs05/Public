@@ -90,3 +90,27 @@ ORDER BY usr.Unique_User_Name0, dev.Name0;
 
 ---------------------------
 
+Here’s a clean, professional reply you can send to the Microsoft rep, aligned with the prior Zscaler FW/AV context and remediation work:
+
+---
+
+Hi **[Name]**,
+
+Thank you for sharing the script and supporting us through this issue.
+
+We wanted to confirm that the PowerShell script you provided appears to be working as expected. After deploying it via Intune as a Proactive Remediation, we are seeing the previously reported Zscaler Firewall/AV issues getting resolved on affected devices. Based on our current observations and validation, we are comfortable confirming that the issue is mitigated and you may proceed with closing the ticket.
+
+Should we have any follow-up questions related to this same topic, please let us know if you would prefer that we respond directly to this email thread, or if you would like us to open a new support ticket and reference this existing case.
+
+Thanks again for your assistance and continued support.
+
+Best regards,
+**[Your Name]**
+**[Your Title / Team]**
+**[Company Name]**
+
+---
+
+If you want a slightly more **formal** or **more concise** version, I can tailor it quickly.
+
+
