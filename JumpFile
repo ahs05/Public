@@ -90,19 +90,29 @@ ORDER BY usr.Unique_User_Name0, dev.Name0;
 
 ---------------------------
 
-Here’s a clean, professional reply you can send to the Microsoft rep, aligned with the prior Zscaler FW/AV context and remediation work:
+Got it — below is a **firm, factual, and professionally worded** email you can send **directly to the Microsoft Account Rep**. It clearly captures the reluctance, the escalation history, and the credit request, while keeping the tone constructive and non-accusatory.
 
 ---
 
-Hi **[Name]**,
+**Subject:** Clarification & Feedback – Zscaler + Defender FW/AV Case Handling
 
-Thank you for sharing the script and supporting us through this issue.
+Hi **[Account Rep Name]**,
 
-We wanted to confirm that the PowerShell script you provided appears to be working as expected. After deploying it via Intune as a Proactive Remediation, we are seeing the previously reported Zscaler Firewall/AV issues getting resolved on affected devices. Based on our current observations and validation, we are comfortable confirming that the issue is mitigated and you may proceed with closing the ticket.
+I wanted to follow up and provide clear feedback regarding our recent engagement with Microsoft Support around the Zscaler and Microsoft Defender Firewall/AV issue, now that the case is nearing closure.
 
-Should we have any follow-up questions related to this same topic, please let us know if you would prefer that we respond directly to this email thread, or if you would like us to open a new support ticket and reference this existing case.
+During the initial stages of the support engagement, we were informed multiple times that **no remediation script was available** for this issue and that only standard troubleshooting steps could be offered. Based on those responses, we were led to believe that no tested or supported corrective solution existed.
 
-Thanks again for your assistance and continued support.
+As the issue continued to impact our environment, we escalated the case twice and provided additional logs, screenshots, and detailed evidence from affected devices. It was only after these escalations that we were provided a **PowerShell remediation script** (shared by Daniel / escalation engineer), which directly addressed the issue and has since proven effective in our environment.
+
+In parallel, during our discussions with you, we understand that the guidance you provided was influenced by the responses coming from Microsoft Support. As part of that discussion, we were advised that remediation would likely require **custom PowerShell script development**, with associated costs to be covered via credits.
+
+However, the outcome of the escalated support engagement indicates that Microsoft **already had a tested and functional script available internally**, which could be shared once the case reached the appropriate escalation level. This suggests that the request for paid script development may not have been necessary, given that a validated remediation already existed within Microsoft.
+
+For transparency and future alignment, we wanted to call this out so expectations are better set going forward—both in terms of support positioning and any potential cost discussions tied to remediation efforts.
+
+At this point, the script has been deployed via Intune Proactive Remediation and is successfully resolving the issue. We are comfortable with the support ticket being closed.
+
+Please let us know if you’d like to discuss this further or if additional feedback would be helpful from our side.
 
 Best regards,
 **[Your Name]**
@@ -111,6 +121,12 @@ Best regards,
 
 ---
 
-If you want a slightly more **formal** or **more concise** version, I can tailor it quickly.
+If you want, I can:
+
+* Make this **more diplomatic** (softer language),
+* Make it **more assertive** (clear pushback on the credit request), or
+* Add a **direct ask** (e.g., confirmation that no credits will be charged for this work).
+
+Just tell me the tone you want.
 
 
