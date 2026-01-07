@@ -90,42 +90,50 @@ ORDER BY usr.Unique_User_Name0, dev.Name0;
 
 ---------------------------
 
-Got it — below is a **firm, factual, and professionally worded** email you can send **directly to the Microsoft Account Rep**. It clearly captures the reluctance, the escalation history, and the credit request, while keeping the tone constructive and non-accusatory.
+Here’s a **polished, leadership-ready email** that is **fact-based, risk-focused, and follows chain of command**, without sounding accusatory. I’ve filled gaps where appropriate and kept it professional.
 
----
+Hi [Leadership Team / Recipient Names],
 
-**Subject:** Clarification & Feedback – Zscaler + Defender FW/AV Case Handling
+I am writing to formally raise and seek guidance on a **known gap identified during the ACICF to ACG migration**, and to ensure this is addressed through the appropriate chain of command.
 
-Hi **[Account Rep Name]**,
+During the migration, **approximately 22 VMs were not transitioned to the ACG environment** due to unresolved technical dependencies (reported concerns around SQL Server access, data retrieval from the ACICF environment, and required port configurations). At this time, the **exact blockers remain unclear**.
 
-I wanted to follow up and provide clear feedback regarding our recent engagement with Microsoft Support around the Zscaler and Microsoft Defender Firewall/AV issue, now that the case is nearing closure.
+The key risk I want to highlight is that **these VMs currently do not have the SCCM agent installed** and are therefore **not managed by any of our standard endpoint or configuration management tools**. As a result:
 
-During the initial stages of the support engagement, we were informed multiple times that **no remediation script was available** for this issue and that only standard troubleshooting steps could be offered. Based on those responses, we were led to believe that no tested or supported corrective solution existed.
+* These systems **do not receive patches, updates, or application deployments automatically**
+* Any application installs or changes have been performed **manually**
+* **Vulnerability remediation requires manual login**, which is also reflected in an associated **Problem Record** and involves the **EDM Vulnerability Remediation team**
 
-As the issue continued to impact our environment, we escalated the case twice and provided additional logs, screenshots, and detailed evidence from affected devices. It was only after these escalations that we were provided a **PowerShell remediation script** (shared by Daniel / escalation engineer), which directly addressed the issue and has since proven effective in our environment.
+Joe is aware of this situation, and at this stage, I believe **executive sponsorship and prioritization** is required to move this forward. I respectfully request that **Jeff Kolenda’s support** be leveraged to drive resolution and ensure these VMs are migrated and brought under standard management controls.
 
-In parallel, during our discussions with you, we understand that the guidance you provided was influenced by the responses coming from Microsoft Support. As part of that discussion, we were advised that remediation would likely require **custom PowerShell script development**, with associated costs to be covered via credits.
+From a risk perspective, **any vulnerability exploitation or security incident on these unmanaged systems would directly impact ACG**. Given that **TCS is now the MSP**, I strongly recommend this item be treated with **utmost priority** and driven to closure at the earliest.
 
-However, the outcome of the escalated support engagement indicates that Microsoft **already had a tested and functional script available internally**, which could be shared once the case reached the appropriate escalation level. This suggests that the request for paid script development may not have been necessary, given that a validated remediation already existed within Microsoft.
+Additionally, as we plan the upcoming **migration from VMware Workspot to Citrix**, I would like to request that **these VMs be formally included within the migration scope**, so this gap is not carried forward.
 
-For transparency and future alignment, we wanted to call this out so expectations are better set going forward—both in terms of support positioning and any potential cost discussions tied to remediation efforts.
+For context:
 
-At this point, the script has been deployed via Intune Proactive Remediation and is successfully resolving the issue. We are comfortable with the support ticket being closed.
+* **Owner:** Marica
+* **Support:** Dan has been kind enough to assist whenever requested
+* **Related:** Existing Problem Record for vulnerability remediation
 
-Please let us know if you’d like to discuss this further or if additional feedback would be helpful from our side.
+Please let me know the best next steps or if a focused discussion is required to align all stakeholders and unblock this effort.
 
-Best regards,
-**[Your Name]**
-**[Your Title / Team]**
-**[Company Name]**
+Thank you for your time and support.
+
+Regards,
+Ari K
+Tower Lead – EUC / Endpoint Management
 
 ---
 
 If you want, I can:
 
-* Make this **more diplomatic** (softer language),
-* Make it **more assertive** (clear pushback on the credit request), or
-* Add a **direct ask** (e.g., confirmation that no credits will be charged for this work).
+* Make this **more assertive** (stronger risk language)
+* Make it **shorter for exec audience**
+* Add **explicit asks / action items**
+* Rephrase for **client-facing leadership**
+
+Just tell me the audience and tone.
 
 Just tell me the tone you want.
 
