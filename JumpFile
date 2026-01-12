@@ -1,35 +1,51 @@
-
-
-
-
----------------
-
-Here’s a **polished, professional email** based on your content, with clarity, leadership tone, and proper justification filled in:
+Here’s a **more technical, AD-centric version** that clearly addresses **schema vs. extensionAttribute usage**, **delegation**, and **security considerations**, while maintaining a professional flow for AD Security admins:
 
 Hello Team,
 
-Attached is the **list of systems that require replacement at the earliest**.
+I am reaching out to request your support on an **Active Directory configuration change** required for an ongoing ACG initiative led by the TCS Transformation team.
 
-Based on reports from **SCCM and Intune/Autopatch**, these systems have **not been receiving Windows monthly security patches for an extended period of time**. As a result, they are consistently failing patch compliance and are **negatively impacting our overall compliance metrics**.
+**Requirement Overview:**
+We need to leverage **five (5) user-level attributes in Active Directory** to store and manage **User Persona identifiers**. Our preference is to utilize existing **extensionAttribute fields** (e.g., extensionAttribute1–15) if available, rather than introducing new custom schema attributes, to minimize schema impact and risk.
 
-Please note that the **EDM team has already completed due diligence** on these devices. This includes extensive troubleshooting of failed Windows Updates following **industry best practices**. Despite these efforts, the issues persist and are not recoverable through standard remediation.
+If the existing extensionAttributes are already allocated or reserved, we are open to discussing:
 
-While the list includes both **Windows 10 and Windows 11 devices**, we have collectively agreed to **prioritize the replacement of Windows 10 systems first** for the following reasons:
+* Creation of **new custom schema attributes**, or
+* Alternative supported attributes that align with AD governance standards.
 
-* These devices have been **in the replacement queue for an extended period**
-* They **do not meet the minimum hardware requirements for Windows 11**
-* Continued use poses an **ongoing compliance and security risk**
+**Use Case / Background:**
+The User Persona framework will drive **persona-based application deployment**, ensuring applications are dynamically installed based on the user’s assigned persona. These attributes will act as authoritative signals consumed by downstream systems (e.g., SCCM / Intune) for targeting and automation.
 
-We would appreciate it if the replacement of these systems could be **completed at the earliest possible timeframe** to help restore patch compliance and reduce audit risk.
+**Access & Delegation Model:**
+We are requesting **delegated permissions** (not full administrative rights) to:
 
-Please let us know if additional information or coordination is required from our side.
+* **Write/modify only the specified attributes**
+* **Scope access to user objects only**
+* Ideally restrict delegation to a **dedicated AD security group or service account**, following least-privilege principles
 
-Thank you for your support and cooperation.
+We do **not** require permissions to create or modify schema objects directly, unless explicitly required by the agreed design.
+
+**Governance & Process:**
+If there is an **internal change process, schema review board, or security approval workflow** that needs to be followed for:
+
+* Attribute usage confirmation,
+* Schema extensions (if needed), or
+* Delegation approval,
+
+please let us know the required steps and documentation. We will align fully with AD governance standards.
+
+**Next Steps:**
+I will be scheduling a working session to:
+
+* Confirm attribute strategy (extensionAttribute vs. custom schema)
+* Review delegation and security boundaries
+* Align on implementation timelines and ownership
+
+Thank you in advance for your guidance and support.
 
 Best regards,
 Ari K
 
-If you want, I can also provide:
+If you want, I can also:
 
-* a **more firm/escalation-ready version**, or
-* a **short executive summary version** for leadership threads.
+* add **exact LDAP attribute names & example values**, or
+* convert this into a **formal AD change request / CAB-ready version**.
