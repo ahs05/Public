@@ -1,7 +1,23 @@
-Here are **clean, professional rephrasings** of both statements:
+Heads-Up: SCCM Upgrade & Imaging Freeze – 01/16/2026
+Action Required: SCCM Upgrade – Imaging Freeze on Friday, 01/16/2026
+Hello Team,
 
-1. **“The script executes daily on the (N+1)ᵗʰ day at 1:30 AM EST to consolidate the CSV file covering data from 00:00:00 to 23:59:59 of the previous day.”**
+This is to inform you that an SCCM upgrade is scheduled for Friday, January 16, 2026.
 
-2. **“An FTP job runs daily on the (N+1)ᵗʰ day at 8:30 PM EST.”**
+To ensure a smooth and risk-free upgrade, please adhere to the following timeline:
 
-If you want them **more concise**, **more technical**, or **more business-friendly**, tell me the audience and I’ll adjust.
+All imaging activities must be completed by end of day Thursday, January 15, 2026, preferably by 7:00 PM ET.
+
+Please do not image any workstations on Friday, January 16, 2026, as SCCM pre-upgrade activities (including backups and other preparatory tasks) will begin on Friday morning. This is to avoid any potential impact during the upgrade window.
+
+Additional information:
+
+The SCCM Admin Console installed on workstations used by L1, L2, and L3 teams will be automatically updated as part of this upgrade.
+
+When you log back into the SCCM Admin Console after the upgrade (next business day), the console will already be updated.
+
+No user interaction is required from your side.
+
+If there are any further updates or announcements, we will be sure to keep your teams informed.
+
+Thank you for your cooperation and support.
