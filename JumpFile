@@ -1,1 +1,34 @@
+Here’s a **friendly, concise version** you can use for Teams or Outlook:
+
+---
+
+**Subject:** Enable Security Copilot Agents in Lab Tenant
+
+Hi [Global Admin Name],
+
+Hope you’re doing well!
+
+Microsoft recently released **Security Copilot Agents in Intune**, including:
+
+1. Change Review Agent
+2. Policy Configuration Agent
+3. Vulnerability Remediation Agent
+4. Device Offboarding Agent
+
+Could we get Security Copilot **enabled in our lab tenant** so we can do a quick pre-walkthrough of these agents? This will help us test functionality, evaluate workflows, and prepare for production rollout.
+
+We’ll need:
+
+* SCU allocation / Security Copilot license
+* Security Copilot Administrator role in Entra ID
+* RBAC and Defender access for admin accounts
+
+Appreciate your help in getting this set up — this will let us safely test before production.
+
+Thanks so much!
+Ari K.
+
+---
+
+If you want, I can also make an **ultra-short one-paragraph version** that’s even snappier for Teams chat. Do you want me to do that?
 
