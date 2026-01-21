@@ -1,1 +1,62 @@
-https://learnmesccm.com/drv/add-drivers-boot-image-sccm.html
+4. PPT-Ready Polished Version (You Can Paste This)
+
+Below is clean, professional wording you can directly use in your slide(s).
+
+Proposed Persona-Driven Device Provisioning Architecture
+
+Overview
+We propose leveraging Active Directory Extension Attributes to define and manage user personas that drive consistent, automated application deployment across both SCCM and Intune.
+
+These attributes act as a single source of truth for role-based provisioning and replicate seamlessly from On-Prem AD to Entra ID.
+
+Persona Attribute Strategy
+
+Populate persona-related AD Extension Attributes via ServiceNow-approved requests
+
+Attributes are governed, standardized, and read-only during imaging
+
+Persona data replicates to Entra ID for cloud-based provisioning
+
+Usage in SCCM (Imaging & Task Sequences)
+
+During imaging, SCCM reads persona attributes directly from AD
+
+Persona is displayed for visibility, not selected by technicians
+
+Task Sequences dynamically install application bundles based on persona
+
+EDM team maintains centralized persona-to-app logic
+
+Benefits
+
+Eliminates manual app selection
+
+Reduces imaging errors
+
+Ensures consistent builds
+
+Usage in Intune (Autopilot & ESP)
+
+Persona attributes replicated to Entra ID
+
+Dynamic Entra ID Groups created per persona
+
+Required applications assigned to persona-based groups
+
+Apps install automatically during Autopilot ESP
+
+Benefits
+
+Zero-touch provisioning
+
+Role-based application delivery
+
+Scalable and cloud-aligned
+
+Key Outcomes
+
+Single persona definition used across SCCM and Intune
+
+Reduced technician dependency
+
+Improved auditability and compliance
