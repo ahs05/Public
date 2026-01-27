@@ -1,1 +1,147 @@
 
+EUC Engineering Roadmap (12–18 Month Horizon)
+Theme
+
+Advance Modern Management, Automation, and Operational Maturity
+
+🧱 Roadmap Pillars
+
+Your items naturally group into 4 strategic pillars. This is important — leadership thinks in pillars, not bullets.
+
+Pillar A — Modern Management & Zero Trust
+
+(Items 1, 3, 8)
+
+Pillar B — Automation & Operational Efficiency
+
+(Items 2, 5)
+
+Pillar C — Application & Platform Rationalization
+
+(Items 4)
+
+Pillar D — Visibility, Insights & Security Posture
+
+(Items 6, 7)
+
+🗓️ Phased Roadmap View
+Phase 1: Foundation & Enablement (Q1–Q2)
+
+“Fix fundamentals, remove dependencies, enable scale”
+
+Key Initiatives
+
+Expand Zero Trust posture via:
+
+Entra Join
+
+Conditional Access
+
+Compliance policies
+
+Begin BitLocker key migration from on-prem AD to Entra ID / Intune
+
+Define WinGet automation standards and pilot third-party app updates
+
+Baseline Task Sequence images and identify redundant applications
+
+Outcomes
+
+Reduced dependency on IAM teams
+
+Improved device security posture
+
+Faster, cleaner provisioning foundation
+
+Phase 2: Automation & Optimization (Q2–Q3)
+
+“Reduce manual effort and operational noise”
+
+Key Initiatives
+
+Scale WinGet automation to target 40% reduction in manual packaging
+
+Streamline Task Sequences:
+
+Remove redundant applications
+
+Improve imaging time and device performance
+
+Partner with Application Teams & SMEs to:
+
+Identify unused applications
+
+Decommission low-value software
+
+Outcomes
+
+Measurable reduction in EUC operational effort
+
+Smaller application footprint
+
+Faster imaging and reduced patching overhead
+
+Phase 3: Visibility, Insights & Security Maturity (Q3–Q4)
+
+“Move from reactive operations to data-driven decisions”
+
+Key Initiatives
+
+Implement Power BI dashboards integrated with SCCM & Intune:
+
+Device health
+
+Compliance
+
+Deployment success
+
+Establish a vulnerability management framework:
+
+Prioritization model
+
+Faster remediation cycles
+
+Continuous posture improvement
+
+Outcomes
+
+Automated reporting replaces manual weekly effort
+
+Clear visibility into fleet health and risk
+
+Improved audit and leadership reporting readiness
+
+Phase 4: Platform Convergence & Future Readiness (Q4+)
+
+“Reduce tool sprawl and prepare for next-gen EUC”
+
+Key Initiatives
+
+Begin Jamf → Intune migration:
+
+Scope definition
+
+Pilot groups
+
+Platform parity assessment
+
+Align cross-platform management strategy under Intune
+
+Outcomes
+
+Simplified management stack
+
+Reduced licensing and operational complexity
+
+Clear long-term endpoint platform direction
+
+📊 Roadmap Mapped to Your Original Items
+Your Item	Where It Lands
+W365 + Entra Join + CA	Pillar A – Phase 1
+WinGet automation	Pillar B – Phase 2
+BitLocker key migration	Pillar A – Phase 1
+App decommissioning	Pillar C – Phase 2
+TS image streamlining	Pillar B – Phase 2
+Power BI dashboards	Pillar D – Phase 3
+Vulnerability framework	Pillar D – Phase 3
+Jamf → Intune	Pillar A – Phase 4
