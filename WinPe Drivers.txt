@@ -1,0 +1,1015 @@
+Got it. Straight, technical, no fluff.
+
+---
+
+## 1. How to determine the **exact** Network & Storage drivers needed for WinPE
+
+### Step 1: Boot into WinPE **with Command Support enabled**
+
+Use your existing SCCM boot image (even if TS fails).
+
+Press **F8** → Command Prompt.
+
+---
+
+### Step 2: Identify the **NIC**
+
+Run:
+
+```
+wpeinit
+ipconfig
+```
+
+* **If no adapter appears** → missing **network driver**
+* **If adapter appears but no IP** → driver loaded but incompatible or wrong version
+
+Get hardware ID:
+
+```
+wmic nic get name,PNPDeviceID
+```
+
+OR
+
+```
+devcon hwids =net
+```
+
+You are looking for something like:
+
+```
+PCI\VEN_8086&DEV_15F3
+```
+
+That **VEN/DEV** tells you *exactly* which driver you need.
+
+---
+
+### Step 3: Identify the **Storage Controller**
+
+Run:
+
+```
+diskpart
+list disk
+```
+
+* If **no disks** → missing **storage (RST/VMD/RAID/NVMe) driver**
+
+Get storage controller hardware ID:
+
+```
+devcon hwids =scsi
+```
+
+or
+
+```
+devcon hwids =storage
+```
+
+Common Dell issues:
+
+* **Intel VMD enabled** → needs **Intel RST VMD WinPE driver**
+* **RAID On** → needs **iaStorAC / iaStorVD**
+* **AHCI** → usually inbox driver works
+
+---
+
+### Step 4: Match the driver to **WinPE version**
+
+Your SCCM boot image is based on a specific ADK:
+
+| ADK      | WinPE    |
+| -------- | -------- |
+| 10 2004+ | WinPE 10 |
+| 11 22H2+ | WinPE 11 |
+
+You **must** use:
+
+* `WinPE x64`
+* Same OS generation (10 vs 11)
+
+**Dell WinPE Driver CABs often fail because:**
+
+* They include unnecessary models
+* They include non-WinPE drivers
+* SCCM silently rejects incompatible INF files
+
+---
+
+### Step 5: Import **only the required INF**
+
+DO NOT add the full CAB.
+
+Instead:
+
+1. Extract driver
+2. Import **just the matching INF** (VEN/DEV confirmed)
+3. Add driver to boot image
+4. Update DP
+
+This keeps the boot image clean.
+
+---
+
+## 2. Why Dell WinPE CAB “doesn’t work”
+
+Most common causes:
+
+* Wrong ADK version
+* VMD enabled but RST VMD driver missing
+* Secure Boot blocking unsigned drivers
+* NIC firmware newer than CAB driver
+* Boot image not redistributed to DP
+
+Dell CAB ≠ guaranteed WinPE compatibility.
+
+---
+
+## 3. Risks & Impact of adding “random” drivers to Boot Image
+
+### 1. Boot image size increase
+
+* Slower PXE
+* Longer TFTP / HTTP download
+* PXE timeouts (especially over Wi-Fi or VPN PXE)
+
+---
+
+### 2. Driver conflicts
+
+* Wrong NIC driver loads first → **network drops mid-TS**
+* Wrong storage driver → disks disappear during partitioning
+
+WinPE loads drivers **alphabetically**, not “best match”.
+
+---
+
+### 3. Unpredictable behavior
+
+Examples:
+
+* Works on Model A, fails on Model B
+* TS fails only during Apply OS
+* IP drops after reboot into WinPE phase
+
+These are **nightmare issues to troubleshoot**.
+
+---
+
+### 4. Increased maintenance burden
+
+* Every SCCM upgrade → longer boot image update time
+* Harder to validate what driver fixed what issue
+* More breakage after ADK upgrades
+
+---
+
+### 5. Security & stability risk
+
+* Old drivers may have:
+
+  * Known CVEs
+  * Memory leaks
+  * WinPE crashes
+
+WinPE is lightweight — bad drivers hurt more here than full OS.
+
+---
+
+## 4. Best Practice (What you SHOULD be doing)
+
+✔ Identify **hardware IDs in WinPE**
+✔ Add **only required NIC + Storage drivers**
+✔ One driver per controller, per vendor
+✔ Maintain **separate boot images** if hardware differs heavily
+✔ Keep VMD decision consistent (disable if possible)
+
+---
+
+## 5. Quick sanity checklist (Dell-specific)
+
+* BIOS:
+
+  * Storage = **AHCI** (preferred)
+  * Disable VMD if not required
+* ADK updated
+* Boot image regenerated
+* DP updated
+* F8 enabled to validate live
+
+---
+
+If you want, tell me:
+
+* Dell model(s)
+* BIOS storage mode (AHCI / RAID / VMD)
+* ADK version
+
+I’ll tell you **exactly** which driver INF you need and nothing more.
+-----------------------
+Clear and direct.
+
+---
+
+## Dell Pro 14 (Latitude-class) + BIOS = **AHCI / VMD**
+
+This model **will not work reliably in WinPE unless you handle VMD correctly**. This is the root of your issue.
+
+---
+
+## 1. The single most important question
+
+If **VMD is ENABLED** → inbox WinPE storage driver **will NOT see the disk**
+If **VMD is DISABLED (pure AHCI)** → WinPE inbox driver **WILL see the disk**
+
+There is no middle ground.
+
+---
+
+## 2. Correct path (RECOMMENDED)
+
+### ✅ Disable VMD in BIOS
+
+Set:
+
+```
+Storage Controller = AHCI
+VMD = Disabled
+```
+
+**Result**
+
+* WinPE sees NVMe disk using inbox `stornvme.sys`
+* NO storage driver needed in boot image
+* Faster PXE
+* Less risk
+* More stable
+
+This is what Microsoft + SCCM expects.
+
+---
+
+## 3. If VMD MUST remain enabled (not recommended)
+
+You **must** inject the **Intel RST VMD WinPE driver**.
+
+### Required driver (ONLY ONE):
+
+* Intel Rapid Storage Technology
+* File typically:
+
+```
+iaStorVD.inf
+```
+
+or
+
+```
+iaStorAC.inf
+```
+
+Must be:
+
+* **WinPE x64**
+* Version matching **Intel 12th/13th Gen**
+* From Dell OR Intel (not generic Windows)
+
+### Validation in WinPE
+
+After injecting:
+
+```
+diskpart
+list disk
+```
+
+If disk appears → storage fixed
+If not → wrong RST driver version
+
+---
+
+## 4. Network driver for Dell Pro 14
+
+Dell Pro 14 typically uses **Intel I219 / I225 / I226** or **Realtek USB NIC**
+
+### How to confirm in WinPE:
+
+```
+ipconfig
+wmic nic get name,PNPDeviceID
+```
+
+Look for:
+
+```
+VEN_8086   → Intel
+VEN_10EC   → Realtek
+```
+
+### Correct NIC driver:
+
+* **Intel Ethernet WinPE Driver**
+* INF example:
+
+```
+e2f.inf
+e2i.inf
+netrtcx64.inf
+```
+
+⚠ Do NOT use full Dell CAB
+⚠ Do NOT add Wi-Fi drivers (WinPE PXE uses wired only)
+
+---
+
+## 5. Why your Dell WinPE CAB failed
+
+Because:
+
+* CAB includes **VMD + non-VMD + Wi-Fi + USB**
+* SCCM silently skips incompatible INFs
+* Wrong RST version loaded (or none)
+* Boot image bloated and unstable
+
+---
+
+## 6. What NOT to do (this breaks WinPE)
+
+❌ Add entire Dell WinPE CAB
+❌ Add all Intel RST versions “just in case”
+❌ Add multiple NIC drivers for same vendor
+❌ Mix WinPE 10 and WinPE 11 drivers
+
+---
+
+## 7. Minimal, correct Boot Image for Dell Pro 14
+
+### Storage
+
+| BIOS Mode           | Driver Needed              |
+| ------------------- | -------------------------- |
+| AHCI + VMD Disabled | NONE                       |
+| VMD Enabled         | Intel RST VMD (1 INF only) |
+
+### Network
+
+| NIC     | Driver                   |
+| ------- | ------------------------ |
+| Intel   | Intel Ethernet WinPE x64 |
+| Realtek | Realtek WinPE x64        |
+
+Total drivers in boot image: **1–2 max**
+
+---
+
+## 8. Hard truth (no sugarcoating)
+
+If VMD is enabled and you don’t inject the **exact** RST VMD driver:
+
+* SCCM will **never** see the disk
+* TS failures are guaranteed
+* Adding more drivers makes it worse, not better
+
+---
+
+## 9. Next step (optional but precise)
+
+If you want **exact INF names**, tell me:
+
+* ADK version (10/11 + build)
+* Exact Dell Pro 14 sub-model (e.g., 5440, 5450)
+* Intel CPU gen (12th / 13th)
+
+I’ll give you the **exact** driver package and INF — nothing extra.
+---------------------------------------
+Good question. This is **exactly** how you de-risk a bloated boot image.
+
+Below is the **precise, supported way** to see **which NIC driver is actually loaded in WinPE**, including **INF name, provider, and version**, so you can remove the wrong one.
+
+---
+
+## 1. Enumerate loaded network drivers in WinPE (authoritative)
+
+In WinPE command prompt:
+
+```
+drvload
+```
+
+This **does NOT show loaded drivers** — ignore it.
+
+Use **DISM** instead:
+
+```
+dism /image:X:\ /get-drivers /format:table
+```
+
+This lists **every driver currently loaded in WinPE**.
+
+You’re looking for entries like:
+
+```
+Published Name : oem12.inf
+Original File Name : e2f.inf
+Provider Name : Intel
+Class Name : Net
+Driver Version : 12.19.2.45
+```
+
+This is the **exact driver WinPE is using**.
+
+---
+
+## 2. Filter to network drivers only (cleaner)
+
+```
+dism /image:X:\ /get-drivers | findstr /i "net intel realtek"
+```
+
+OR:
+
+```
+dism /image:X:\ /get-drivers /format:table | findstr /i Net
+```
+
+---
+
+## 3. Map the loaded driver to the NIC hardware ID
+
+Get NIC hardware ID:
+
+```
+wmic nic get name,PNPDeviceID
+```
+
+Example:
+
+```
+PCI\VEN_8086&DEV_15F3
+```
+
+Now match that **VEN/DEV** against the INF:
+
+```
+findstr /i "15F3" X:\Windows\INF\oem*.inf
+```
+
+Whichever INF contains that DEV is the driver being used.
+
+---
+
+## 4. Verify driver actually bound to the adapter
+
+This removes guesswork.
+
+```
+netcfg -s n
+```
+
+You’ll see something like:
+
+```
+Intel(R) Ethernet Controller I225-LM
+Service Name : e2fexpress
+```
+
+Now correlate service name to INF:
+
+```
+findstr /i "e2fexpress" X:\Windows\INF\oem*.inf
+```
+
+---
+
+## 5. Why adapter appears but no IP (root causes)
+
+If driver is listed but no IP after:
+
+```
+wpeinit
+ipconfig /all
+```
+
+Then one of these is true:
+
+| Cause                            | Fix                              |
+| -------------------------------- | -------------------------------- |
+| Wrong NIC generation             | Update Intel WinPE driver        |
+| USB-C NIC using inbox USB driver | Add Realtek USB WinPE driver     |
+| Firmware newer than driver       | Use latest Intel WinPE NIC       |
+| Power management bug             | Disable PXE power saving in BIOS |
+
+This is **not** a DHCP or SCCM issue at this stage.
+
+---
+
+## 6. How to safely remove the wrong driver from Boot Image
+
+Once you identify the **Published Name** (example `oem12.inf`):
+
+### In SCCM Console:
+
+1. Boot Images
+2. Select Boot Image
+3. Drivers tab
+4. Remove driver with **matching INF**
+5. Update Distribution Points
+
+DO NOT remove by guessing or by vendor name.
+
+---
+
+## 7. Why alphabetical loading hurts you
+
+Example:
+
+```
+e1d.inf  (older Intel)
+e2f.inf  (correct Intel)
+```
+
+WinPE may load `e1d.inf` first → binds → fails → does NOT retry better match.
+
+This is why:
+
+* “Adapter shows but no IP”
+* Adding more drivers makes it worse
+
+---
+
+## 8. Minimal validation checklist (non-negotiable)
+
+After cleanup:
+
+```
+wpeinit
+ipconfig
+ping <DP>
+```
+
+If this works:
+
+* NIC driver is correct
+* Boot image is clean
+* TS will proceed
+
+---
+
+## Bottom line (very clear)
+
+* **DISM tells the truth** about loaded drivers
+* **OEM*.INF is what matters**, not the CAB
+* Alphabetical load order is real
+* Fewer drivers = higher success rate
+
+If you want, give me:
+
+* Output of `dism /image:X:\ /get-drivers /format:table`
+* NIC VEN/DEV
+
+I’ll tell you **exactly which INF to keep and which to delete**.
+------------------------------------
+Perfect questions. Here’s the **exact truth**, no mythology.
+
+---
+
+## 1. WinPE NIC driver selection logic (what ACTUALLY happens)
+
+### Short answer
+
+**WinPE does NOT retry and does NOT “pick the best driver.”**
+If the *first compatible* driver binds, WinPE **stops**.
+
+---
+
+### Detailed (but precise) flow
+
+1. WinPE enumerates PCI devices
+2. It scans loaded drivers **in the order they are staged**
+3. First INF that matches the NIC’s **VEN/DEV** binds
+4. Binding = **final decision**
+5. WinPE does **NOT**:
+
+   * Compare driver versions
+   * Retry newer drivers
+   * Fail over if link never comes up
+   * Unbind a bad driver
+
+If the driver:
+
+* Loads successfully
+* Creates an adapter
+
+WinPE says: *“Good enough”* — even if:
+
+* No link
+* No DHCP
+* Packet loss
+
+That’s why you see **adapter present, no IP**.
+
+---
+
+### What WinPE does *not* do
+
+❌ No ranking
+❌ No retries
+❌ No dynamic re-evaluation
+❌ No fallback
+
+Admin intervention or boot image cleanup is required.
+
+---
+
+## 2. What happens operationally when wrong driver binds
+
+* WinPE continues boot
+* SCCM TS waits for network
+* Eventually times out
+* **Nothing crashes**
+* **Nothing retries**
+* You just fail later in the TS
+
+This is why it feels like a “hang”.
+
+---
+
+## 3. How to eliminate guesswork COMPLETELY (this is the gold standard)
+
+### Yes — you CAN export a **known-good** NIC driver
+
+And this is the **only reliable way**.
+
+You do this **from full Windows**, not WinPE.
+
+---
+
+## 4. Scenario A: Factory Dell image (BEST case)
+
+Boot the device normally (OEM Windows).
+
+### Step 1: Identify the NIC
+
+```
+pnputil /enum-devices /class Net
+```
+
+### Step 2: Find the active driver
+
+```
+pnputil /enum-drivers | findstr /i net
+```
+
+You’ll see:
+
+```
+Published Name : oem42.inf
+Original Name  : e2f.inf
+Provider       : Intel
+Driver Version : 2.1.4.3
+```
+
+This driver **works** — Windows is proof.
+
+---
+
+### Step 3: Export that exact driver
+
+```
+pnputil /export-driver oem42.inf C:\WinPE-NIC
+```
+
+This exports:
+
+* INF
+* SYS
+* CAT
+
+Zero guesswork.
+
+---
+
+### Step 4: Inject ONLY this driver into SCCM Boot Image
+
+* Import driver
+* Add to boot image
+* Update DP
+
+WinPE will now load the **same INF** that worked in full OS.
+
+---
+
+## 5. Scenario B: Fresh system, never booted to Windows (worse case)
+
+If the device has **never booted into full Windows**, you cannot extract a “known-good” driver.
+
+In that case:
+
+### Correct approach
+
+1. Identify NIC hardware ID in WinPE
+2. Download vendor driver that **explicitly supports that DEV ID**
+3. Use **newest WinPE x64** driver only
+4. Inject **single INF**
+
+Still deterministic, but less ideal than export.
+
+---
+
+## 6. Why you cannot export from WinPE
+
+WinPE:
+
+* Does not keep driver store history
+* Uses transient OEM*.INF
+* Does not support `pnputil /export-driver`
+
+So **WinPE cannot be your source of truth**.
+
+---
+
+## 7. Why this approach always wins
+
+| Method                      | Success Rate    |
+| --------------------------- | --------------- |
+| Dell WinPE CAB              | ❌ Unpredictable |
+| Random Intel NIC            | ❌ Risky         |
+| Hardware ID matching        | ⚠ Better        |
+| **Export from OEM Windows** | ✅ **Best**      |
+
+---
+
+## 8. Final, blunt summary
+
+* WinPE **binds once and never retries**
+* First matching driver wins — even if broken
+* There is **no automatic fallback**
+* Guessing drivers is why WinPE networking “randomly fails”
+* Exporting a known-good driver removes **all uncertainty**
+
+---
+
+If you want, next I can:
+
+* Give you a **repeatable SOP** for NIC + Storage drivers
+* Help you build **model-specific boot images**
+* Or help you clean an already-bloated boot image safely
+
+Just say which one.
+---------------------------
+Alright. This is a **safe, surgical cleanup**. No guessing, no breaking prod.
+
+---
+
+# Goal
+
+Reduce the boot image to **only the drivers WinPE actually needs**, while keeping PXE stable.
+
+---
+
+## PHASE 0 — Safety first (non-negotiable)
+
+### 0.1 Clone the boot image
+
+In SCCM:
+
+* **Boot Images**
+* Right-click current boot image
+* **Copy**
+* Name it clearly:
+
+```
+WinPE-x64-CLEAN-TEST
+```
+
+👉 **Never clean the prod boot image directly**
+
+---
+
+## PHASE 1 — Identify what WinPE is REALLY using
+
+Boot a failing machine with **WinPE-x64-CLEAN-TEST**
+Press **F8**
+
+Run:
+
+```
+wpeinit
+```
+
+### 1.1 Confirm symptoms
+
+```
+ipconfig
+diskpart
+list disk
+```
+
+Now extract truth:
+
+```
+dism /image:X:\ /get-drivers /format:table
+```
+
+Save output:
+
+```
+dism /image:X:\ /get-drivers > X:\drivers.txt
+```
+
+This list = **drivers actually loaded**, not what SCCM *thinks* is used.
+
+---
+
+## PHASE 2 — Classify drivers (keep vs kill)
+
+Open `drivers.txt`
+
+### KEEP only drivers that meet **ALL** criteria
+
+* Class = `Net` OR `SCSIAdapter`
+* Provider = Intel / Realtek / Microsoft
+* Actively binding hardware (confirmed via VEN/DEV)
+
+Everything else is garbage in WinPE.
+
+---
+
+### Common drivers to DELETE immediately
+
+❌ Wi-Fi
+❌ Bluetooth
+❌ Audio
+❌ GPU
+❌ Thunderbolt
+❌ USB Audio
+❌ HID
+❌ Camera
+❌ Serial IO
+❌ Chipset “support” drivers
+
+WinPE **does not need them**.
+
+---
+
+## PHASE 3 — Map loaded INF → SCCM driver objects
+
+Pick one loaded driver example:
+
+```
+Published Name : oem12.inf
+Original File  : e2f.inf
+Class          : Net
+Provider       : Intel
+Version        : 2.1.4.3
+```
+
+Now in SCCM:
+
+* Go to **Drivers**
+* Search by **INF name** (`e2f.inf`)
+* Open driver → check:
+
+  * Version
+  * Boot image association
+
+---
+
+## PHASE 4 — Remove drivers SAFELY (no collateral damage)
+
+### Rule of thumb
+
+If a driver:
+
+* Is NOT shown in `dism /get-drivers`
+* Is NOT required for AHCI/VMD decision
+* Is NOT the NIC in use
+
+➡ **Remove it**
+
+### Removal process (repeatable)
+
+1. Boot Image → Drivers tab
+2. Remove **one vendor group at a time**
+3. Update Distribution Points
+4. Test PXE
+
+Never bulk-delete blindly.
+
+---
+
+## PHASE 5 — Normalize NIC + Storage (critical)
+
+### 5.1 Storage
+
+If BIOS = **AHCI + VMD disabled**:
+
+* Remove **ALL Intel RST / VMD drivers**
+
+If BIOS = **VMD enabled**:
+
+* Keep **ONE**:
+
+  ```
+  iaStorVD.inf  (ONLY)
+  ```
+
+More than one = guaranteed pain.
+
+---
+
+### 5.2 Network
+
+Keep:
+
+* **One Intel NIC driver**
+* OR **one Realtek USB NIC driver**
+
+Remove:
+
+* Older Intel NIC versions
+* Duplicate Intel families
+* Anything not matching VEN/DEV
+
+---
+
+## PHASE 6 — Validate deterministic behavior
+
+Boot again → F8:
+
+```
+wpeinit
+ipconfig /all
+```
+
+Then:
+
+```
+dism /image:X:\ /get-drivers /format:table
+```
+
+You should see:
+
+* **1 Net driver**
+* **0 or 1 Storage driver**
+* Total drivers usually < **10**
+
+That’s a **healthy** boot image.
+
+---
+
+## PHASE 7 — Lock it down (prevent re-bloat)
+
+### Best practices
+
+✔ Stop injecting full WinPE CABs
+✔ Import **model-verified drivers only**
+✔ Keep a changelog:
+
+```
+Added: Intel I225 NIC v2.1.4.3
+Reason: Dell Pro 14
+```
+
+---
+
+## PHASE 8 — Promote to production
+
+Once clean image passes:
+
+* Disk detection
+* IP assignment
+* TS start
+
+➡ Replace prod boot image reference
+➡ Delete bloated image **later**, not same day
+
+---
+
+## Final Reality Check (important)
+
+A clean WinPE:
+
+* Boots faster
+* PXE is stable
+* TS failures disappear
+* Troubleshooting becomes predictable
+
+A bloated WinPE:
+
+* Random failures
+* Driver roulette
+* Endless firefighting
+
+---
+
+If you want next:
+
+* I can give you a **driver hygiene SOP**
+* Or help you clean **storage + NIC conflicts specifically**
+* Or design **per-model boot images**
+
+Say the word.
