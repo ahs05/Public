@@ -1,1 +1,9 @@
 
+# Get recent file write events from the Security log
+Get-WinEvent -LogName Security |
+    Where-Object { $_.Id -eq 4663 -and $_.Properties[5].Value -match "WriteData" } |
+    Select-Object TimeCreated,
+                  @{Name="User";Expression={$_.Properties[1].Value}},
+                  @{Name="Process";Expression={$_.Properties[10].Value}},
+                  @{Name="FilePath";Expression={$_.Properties[6].Value}} |
+    Format-Table -AutoSize
