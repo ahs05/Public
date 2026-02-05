@@ -1,5 +1,26 @@
-At an organizational level, one potential approach could be to leverage the Zscaler Admin Console to identify devices reporting Zscaler FW/AV errors and dynamically place those affected systems into a dedicated AD group.
+Hi [Leader’s Name],
 
-This would allow us to clearly scope only impacted devices, especially since we currently do not have a reliable method to determine FW/AV issues across all systems and want to avoid impacting unaffected endpoints.
+As part of our transition away from Known Folder Movement (KFM) to OneDrive, we need to identify desktop and web applications across the environment that are actively writing data to the legacy **I:\ drive**. This discovery is critical so we can engage the appropriate application owners and request updates to their code or logic to write to supported OneDrive locations.
 
-With this in place, we could then target an Intune Proactive Remediation to that AD group and have the script run on a scheduled (daily) basis.
+Given the size of our environment (~10,000 endpoints), we are looking for a **scalable, reliable, and centrally managed approach** to capture real application behavior in production.
+
+Based on our initial assessment, **SentinelOne’s Deep Visibility capabilities** appear well-suited for this use case. If properly configured, SentinelOne can help identify:
+
+* Processes and applications writing to specific paths (e.g., I:)
+* Frequency and scope of usage across devices and users
+* Enterprise-wide patterns without requiring endpoint-level manual intervention
+
+We would like to request your support to **involve the SentinelOne team** to evaluate feasibility, confirm telemetry coverage for file write activity, and assist with querying/reporting so we can build an accurate offender list.
+
+For completeness, we also evaluated tools such as **Sysinternals ProcMon and Handle.exe**. While these utilities are excellent for **deep, point-in-time troubleshooting and root cause analysis**, they:
+
+* Require interactive or local execution
+* Do not scale across thousands of systems
+* Are better suited for validating behavior on a small set of top offending applications once they are identified
+
+As such, Sysinternals tools would be best used **after discovery**, not as the primary mechanism for enterprise-wide identification.
+
+Please let us know if you are comfortable engaging the SentinelOne team so we can move forward efficiently and reduce risk during the OneDrive migration.
+
+Thank you,
+Ari
