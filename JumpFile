@@ -1,9 +1,5 @@
+At an organizational level, one potential approach could be to leverage the Zscaler Admin Console to identify devices reporting Zscaler FW/AV errors and dynamically place those affected systems into a dedicated AD group.
 
-# Get recent file write events from the Security log
-Get-WinEvent -LogName Security |
-    Where-Object { $_.Id -eq 4663 -and $_.Properties[5].Value -match "WriteData" } |
-    Select-Object TimeCreated,
-                  @{Name="User";Expression={$_.Properties[1].Value}},
-                  @{Name="Process";Expression={$_.Properties[10].Value}},
-                  @{Name="FilePath";Expression={$_.Properties[6].Value}} |
-    Format-Table -AutoSize
+This would allow us to clearly scope only impacted devices, especially since we currently do not have a reliable method to determine FW/AV issues across all systems and want to avoid impacting unaffected endpoints.
+
+With this in place, we could then target an Intune Proactive Remediation to that AD group and have the script run on a scheduled (daily) basis.
