@@ -1,1 +1,15 @@
-https://hiraniconfigmgr.com/collecting-windows-system-event-logs-using-intune-remediation-scripts-collect-diagnostics/?utm_source=copilot.com
+# Define registry path and value name
+$regPath = "HKLM:\SOFTWARE\YourKeyPath"
+$valueName = "YourValueName"
+
+# Check if registry path exists
+if (Test-Path $regPath) {
+
+    # Get the current value
+    $currentValue = (Get-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue).$valueName
+
+    # If value exists and equals 2, change it to 4
+    if ($currentValue -eq 2) {
+        Set-ItemProperty -Path $regPath -Name $valueName -Value 4 -Type DWord
+    }
+}
