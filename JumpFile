@@ -1,15 +1,103 @@
-# Define registry path and value name
-$regPath = "HKLM:\SOFTWARE\YourKeyPath"
-$valueName = "YourValueName"
+Roadmap for 2026
+Planned Initiatives & Strategic Goals
+1. Advance Zero Trust & Modern Management
 
-# Check if registry path exists
-if (Test-Path $regPath) {
+Expand Zero Trust capabilities and further ACG’s Modern Management journey through:
 
-    # Get the current value
-    $currentValue = (Get-ItemProperty -Path $regPath -Name $valueName -ErrorAction SilentlyContinue).$valueName
+Implementation and optimization of Windows 365 and Entra Join
 
-    # If value exists and equals 2, change it to 4
-    if ($currentValue -eq 2) {
-        Set-ItemProperty -Path $regPath -Name $valueName -Value 4 -Type DWord
-    }
-}
+Strengthening Conditional Access and device compliance enforcement
+
+Completed: Foundational policy alignment and readiness assessment
+
+Pending:
+
+Broader workload enablement on Entra-joined devices
+
+Conditional Access tuning and exception reduction
+
+Expansion of cloud-native provisioning scenarios
+
+2. Expand Automation for Application Lifecycle Management
+
+Continue automation maturity by leveraging WinGet-based updating and deployment to reduce manual packaging effort and improve application currency.
+
+Focus areas include automation for commonly used third-party applications such as:
+
+Notepad++
+
+Zoom
+
+7-Zip
+
+Similar frequently updated productivity tools
+
+This initiative aims to increase operational efficiency, standardize update mechanisms, and minimize manual intervention across the endpoint estate.
+
+3. Complete Migration of BitLocker Recovery Keys to Entra ID
+
+Migrate the remaining BitLocker recovery keys from the legacy on-premises Active Directory environment to Entra ID / Intune, enabling:
+
+Independent recovery-key retrieval by DSS and Service Desk teams
+
+Reduced dependency on IAM and infrastructure teams
+
+Improved security posture and operational resilience
+
+4. Platform Convergence for Mac Device Management
+
+Consolidate endpoint management platforms by transitioning macOS device management from Jamf to Intune, delivering:
+
+Tool consolidation and simplified operational model
+
+Cost optimization through reduced platform overlap
+
+Alignment with single-pane modern management strategy
+
+5. Application Footprint Optimization & Cost Efficiency
+
+Leverage SCCM application metering and usage insights to identify low-utilization or unused applications and enable:
+
+Reduction of the overall application footprint
+
+Lower licensing, support, and patching overhead
+
+Improved endpoint performance and manageability
+
+Tangible cost-saving opportunities across the environment
+
+6. Streamline Imaging & Deployment Experience
+
+Optimize Task Sequence images by removing redundant or unused components to:
+
+Improve device performance
+
+Reduce OS deployment time
+
+Simplify image maintenance and supportability
+
+7. Modernize Driver Management During OSD
+
+Enhance OS deployment by enabling dynamic driver acquisition from vendor repositories during imaging, allowing:
+
+Elimination of manual driver packaging
+
+Deployment of current, model-specific drivers
+
+Reduced maintenance overhead and improved deployment reliability
+
+8. Enhance Operational Visibility Through Power BI
+
+Implement integrated Power BI reporting connected to SCCM and Intune to provide:
+
+Automated operational and compliance insights
+
+Visually rich leadership-ready dashboards
+
+Improved decision-making through real-time visibility
+
+10. Strengthen Application Control & Endpoint Hardening (AppLocker)
+
+Advance Zero Trust endpoint protection through phased AppLocker implementation via Intune, beginning with audit-mode telemetry collection and progressing toward a default-deny, allow-listed application model aligned with security best practices.
+
+This initiative builds on existing engineering validation and logging readiness, complements SentinelOne’s detection and containment capabilities, and will transition to controlled enforcement following performance validation and enterprise allow-list definition—enhancing protection against unauthorized software while aligning with ACG’s modern security posture
