@@ -1,1 +1,149 @@
-https://techcommunity.microsoft.com/blog/windows-itpro-blog/secure-boot-playbook-for-certificates-expiring-in-2026/4469235
+
+Proposed Proces Flow for New Full Time Employees:
+
+New employee is onboarded through Workday by the Talent Acquisition team or HR.
+
+Once entered through Workday, Workday has integration with Saviynt & ServiceNow and through which the AD account and SNOW accounts are created.
+
+Post the account creation, the manager submits the SNOW requests with the user’s newly created P# for the PC through PC request / different new‑hire requests.
+
+Here is where our new Proposed Process comes into play, where TCS Transformation team will decomession all the existing New Hire Request form and consolidate them into One. This New New Hire Request Form in ServiceNow will have additional Cascading Dropdowns like
+Q: Select New Hire's Target Club Group
+Acceptable Values: Auto Club Group(ACG), ACICF, AAA-Carolinas, AAA-Colorados,
+Q: Select New Hire's Target BU/Line of Business
+Acceptable Values: Insurance, ERS, Claims, Travel, Membership, Legal, etc
+Q: Select New Hire's Target Job Persona
+Acceptable Values: FrontLine Worker, BackOffice Worker, SuperVisior
+
+Whatever the Hiring Manager selects in this New New Hire Request Form in ServiceNow, this will be replicated in the AD User's Extension Attributes.
+
+Also, EDM Imaging Team will modify the existing TSGUI in the Task Seq to replicate the new updates that were made in the New New Hire Request Form in ServiceNow and update their backend logic to install the Apps based on the New Hire's Target Club Group, New Hire's Target BU/Line of Business, New Hire's Target Job Persona vales selected.
+
+This is then processed by the deployment team for completion.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
