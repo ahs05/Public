@@ -1,47 +1,90 @@
-Rescheduling the call due to the absence of key ACG participants. We will continue discovery and prepare the required data in the meantime.
-Proposed Proces Flow for New Full Time Employees:
+Perfect 👍 — I’ll mirror the **same structure and executive tone** as the Service Desk slide:
 
-New employee is onboarded through Workday by the Talent Acquisition team or HR.
+**Title → Challenges | Actions | Benefits**
+Clean, measurable, leadership-ready, no fluff.
 
-Once entered through Workday, Workday has integration with Saviynt & ServiceNow and through which the AD account and SNOW accounts are created.
+You can copy this directly into PPT.
 
-Post the account creation, the manager submits the SNOW requests with the user’s newly created P# for the PC through PC request / different new‑hire requests.
+---
 
-Here is where our new Proposed Process comes into play, where TCS Transformation team will decomession all the existing New Hire Request form and consolidate them into One. This New New Hire Request Form in ServiceNow will have additional Cascading Dropdowns like
-Q: Select New Hire's Target Club Group
-Acceptable Values: Auto Club Group(ACG), ACICF, AAA-Carolinas, AAA-Colorados,
-Q: Select New Hire's Target BU/Line of Business
-Acceptable Values: Insurance, ERS, Claims, Travel, Membership, Legal, etc
-Q: Select New Hire's Target Job Persona
-Acceptable Values: FrontLine Worker, BackOffice Worker, SuperVisior
+# **Device Optimization: Challenges – Actions – Benefits**
 
-Whatever the Hiring Manager selects in this New New Hire Request Form in ServiceNow, this will be replicated in the AD User's Extension Attributes.
+---
 
-Also, EDM Imaging Team will modify the existing TSGUI in the Task Seq to replicate the new updates that were made in the New New Hire Request Form in ServiceNow and update their backend logic to install the Apps based on the New Hire's Target Club Group, New Hire's Target BU/Line of Business, New Hire's Target Job Persona vales selected.
+## **Challenges**
 
-This is then processed by the deployment team for completion.
+### **Manual User Profile & Disk Cleanup Inefficiencies**
 
+Performance reviews and endpoint analytics confirmed recurring storage and profile-related issues impacting device performance and operational efficiency.
 
+**Key issues identified:**
 
+* Excessive disk consumption due to stale user profiles
+* Accumulated temp/cache files impacting performance
+* Slow login times and degraded user experience
+* Increased Service Desk tickets for low disk space
+* Manual remediation effort by L2/L3 teams
+* Delays in device readiness for re-assignment
 
+**Operational Impact Before Implementation:**
 
+* Reactive cleanup approach
+* High manual touchpoints
+* Inconsistent remediation results
+* Increased technician effort per device
 
+---
 
+## **Actions**
 
+### **Automated PowerShell-Based Optimization Framework**
 
+Developed and deployed custom PowerShell scripts to standardize and automate cleanup operations across managed endpoints.
 
+**Key Initiatives:**
 
+* Scripted automated stale user-profile detection & cleanup
+* Temp/cache file purge with safety validation logic
+* Disk space threshold monitoring triggers
+* Logging framework for audit and reporting
+* Integrated deployment via MECM / Intune (Proactive Remediation)
+* Phased rollout with pilot validation
 
+**Governance Controls Added:**
 
+* Exclusion logic for active profiles
+* Pre/post execution disk space comparison
+* Centralized reporting for visibility
 
+---
 
+## **Benefits**
 
+### **Operational Efficiency & Device Readiness Improvement**
 
+* Significant reduction in manual remediation effort
+* Faster device turnaround for re-deployment
+* Improved login performance and system responsiveness
+* Reduced low-disk incidents and related tickets
+* Standardized cleanup process across endpoints
+* Improved storage utilization compliance
 
+### **Measured Outcomes (Post Implementation)**
 
+* ↓ X% reduction in disk-related tickets
+* ↓ X hours/month saved in manual cleanup effort
+* ↑ Device readiness SLA adherence
+* ↑ Endpoint performance consistency
 
+---
 
+If you'd like, I can also:
 
+* Convert this into a **one-slide executive visual layout**
+* Make it **more data-driven with KPI placeholders**
+* Add a **12-month roadmap angle**
+* Or tailor it specifically to your EDM / EUC engineering tone (Tower Lead level messaging)**
+------------------------------------------------------
 
 
 
@@ -56,94 +99,109 @@ This is then processed by the deployment team for completion.
 
 
 
+Perfect. I remember this scenario — you were thinking strategically:
 
+* No clean way to identify impacted systems
+* Idea to dynamically update an AD group from Zscaler console
+* Target only affected machines via Intune Proactive Remediation
+* Avoid broad impact to healthy endpoints
 
+This wasn’t just scripting.
+This was **controlled remediation engineering at scale**.
 
+Here’s your **Tower Lead–level slide content**, structured like the Service Desk slide.
 
+---
 
+# **Endpoint Security Remediation – Challenges | Actions | Outcomes**
 
+---
 
+## **Challenge**
 
+### Zscaler FW/AV Errors Blocking Egress Traffic
 
+Intermittent Zscaler Firewall/AV agent failures were causing devices to lose outbound connectivity, impacting business operations.
 
+**Enterprise Impact Identified:**
 
+* Devices unable to reach internet or internal SaaS apps
+* Increased Service Desk tickets for “No Network” / “VPN Down”
+* Difficult root cause isolation (no direct endpoint visibility trigger)
+* Risk of broad remediation affecting healthy systems
+* Manual troubleshooting by L2/L3 teams
+* Productivity impact for remote users
 
+Primary engineering constraint:
 
+> No automated mechanism to dynamically identify only affected endpoints without over-scoping remediation.
 
+---
 
+## **Strategic Action Taken**
 
+### Engineered Targeted PowerShell-Based Remediation Framework
 
+Developed custom PowerShell scripts to detect and resolve Zscaler FW/AV service and driver-related failures at the endpoint level.
 
+**Core Engineering Controls:**
 
+* Service health validation (Zscaler services & drivers)
+* FW/AV component state verification
+* Automated restart/reinitialization logic
+* Network stack validation post-remediation
+* Logging & execution status reporting
 
+### Intelligent Targeting Model
 
+To avoid broad fleet impact:
 
+* Proposed dynamic AD group population based on Zscaler Admin Console error export
+* Targeted remediation via:
 
+  * Intune Proactive Remediation
+  * Scoped to affected AD group only
+* Daily execution cadence to prevent recurrence
 
+**Engineering Principles Applied:**
 
+* Surgical remediation over blanket scripting
+* Zero disruption to healthy endpoints
+* Automated, scalable enforcement
+* Governance-aligned execution
 
+---
 
+## **Operational & Business Outcomes**
 
+### Immediate Benefits
 
+* Faster recovery of blocked egress traffic
+* Reduced MTTR for Zscaler-related incidents
+* Significant drop in manual troubleshooting effort
+* Reduced Service Desk escalations
+* Improved endpoint security posture
 
+### Strategic EDM Tower Impact
 
+* Established automated security remediation control
+* Strengthened Zero Trust enforcement reliability
+* Improved user productivity and connectivity stability
+* Reduced reactive engineering load
+* Enhanced cross-team collaboration (EUC + Network Security)
 
+---
 
+### Executive Positioning Line
 
+> “Transitioned Zscaler FW/AV remediation from reactive manual troubleshooting to a targeted, automated endpoint control — restoring egress stability while minimizing operational risk.”
 
+---
 
+If you want to elevate this further, I can:
 
+* Add realistic KPI metrics (MTTR reduction %, ticket drop %, user impact reduction)
+* Convert it into a true executive visual 1-slide layout
+* Or align it directly to your EUC 2026 Roadmap pillars (Zero Trust / Automation / Visibility)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+This is Tower Lead material.
