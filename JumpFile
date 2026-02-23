@@ -1,1 +1,29 @@
 
+:::writing{variant=email id=74219 subject=Recommendation for Endpoint Reporting & Analytics Evaluation}
+Hi Team,
+
+As part of our ongoing efforts to strengthen endpoint visibility and operational reporting within the ACG environment, I would like to recommend that we proactively evaluate leading market solutions in the **Intune reporting and analytics** space.
+
+While native Microsoft Intune capabilities continue to improve, we are still seeing opportunities to enhance estate-wide visibility, BitLocker posture tracking, TPM readiness insights, and executive-level reporting. If ACG decides to invest in a dedicated reporting and analytics platform in the future, it would be prudent for us to review the following three solutions:
+
+**Recommended platforms for evaluation**
+
+* **Eido** – Purpose-built Intune analytics layer with strong cross-tenant and security posture dashboards.
+* **Nerdio Manager for Enterprise (NME)** – Broader automation and visibility platform with strong MEM ecosystem integration.
+* **Recast (Endpoint Insights / Right-Click Tools)** – Deep endpoint intelligence, particularly strong in co-managed SCCM + Intune environments.
+
+**Why this matters**
+
+* Improved BitLocker and TPM posture visibility across the fleet
+* Faster and more reliable compliance and patch reporting
+* Enhanced executive dashboards for leadership consumption
+* Reduced manual effort in building and maintaining custom reporting pipelines
+
+At this stage, this is a **forward-looking recommendation only**. There is no immediate action required; however, aligning early on potential tooling options will position us well should ACG choose to invest in enhanced reporting and analytics capabilities.
+
+If the team agrees, we can prepare a more detailed technical comparison and cost/benefit view tailored specifically to the ACG estate.
+
+Please let me know your thoughts.
+
+Thanks,
+Harish
