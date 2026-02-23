@@ -1,13 +1,1 @@
-MySQL Installer Community
 
-Think of this as the setup manager.
-
-What it does:
-
-Downloads and installs MySQL products
-
-Lets you choose components (Server, Workbench, Shell, etc.)
-
-Handles upgrades and configuration
-
-Windows-only tool
