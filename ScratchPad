@@ -195,7 +195,7 @@ End-to-end guide to get started with macOS endpoints: https://learn.microsoft.co
 --------------------
 Entered on Set-IntunePrimaryUser-ScrapthPad.ps1
 --------------------
-Connect-MgGraph -appid 73b497b5-6c4b-4014-b031-79479736eea5 -tenantid 04f066a7-886b-4d04-b15f-acb544af8551
+Connect-MgGraph -appid 73b497b5-6c4b-4014-b031-794ea5 -tenantid 04f066a7-886b-4d04-b15f-a51
 
 <##
 
