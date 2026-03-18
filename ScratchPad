@@ -223,7 +223,7 @@ Connect-MSGraph
 
 #Step 1: Enter the target User Name
 
-$TargetUserUPN= 'P70294@aaa-acg.net' ##Jeff Cardinal 
+$TargetUserUPN= 'P294@aaa-cg.net' ## 
 
 Get-DeviceManagement_ManagedDevices | Get-MSGraphallpages | Where-Object {($_.UserPrincipalName -eq "$TargetUserUPN") -and ($_.operatingsystem -eq 'windows')} | Select-Object DeviceName, OperatingSystem, emailaddress, UserprincipalName | Export-Csv "C:\temp\some.csv" -Append -NoTypeInformation 
 
