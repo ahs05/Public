@@ -7,61 +7,7 @@ https://configgirl.com/2025/02/15/how-to-fix-managed-by-intune-in-co-managed-env
 https://github.com/paulwetter/DocumentConfigMgrCB
 
 -------------
--- =========================
--- Detailed Results
--- =========================
-SELECT
-    vrs.Name0,
-    vrs.operatingSystem0,
-    vrs.Build01,
-    vrs.Full_Domain_Name0,
-    vrs.Last_Logon_Timestamp0,
-    vrs.User_Name0,
-
-    Appx.TimeStamp,
-    appx.ApplicationName0,
-    appx.Architecture0,
-    appx.FamilyName0,
-    appx.FullName0,
-    appx.InstalledLocation0,
-    appx.Publisher0,
-    appx.PublisherId0,
-    appx.Version0
-
-FROM v_R_System VRS
-LEFT JOIN v_GS_WINDOWS8_APPLICATION Appx 
-    ON VRS.ResourceID = Appx.ResourceID
-LEFT JOIN v_FullCollectionMembership Col 
-    ON VRS.ResourceID = Col.ResourceID
-
-WHERE
-    Appx.ApplicationName0 LIKE '%Microsoft.WindowsNotepad%'
-    AND Col.CollectionID = 'ACG00E45'
-
-ORDER BY appx.Version0;
-
-
--- =========================
--- Summary (Count by Version)
--- =========================
-SELECT
-    appx.ApplicationName0,
-    appx.Version0,
-    COUNT(DISTINCT VRS.ResourceID) AS TotalDevices
-
-FROM v_R_System VRS
-LEFT JOIN v_GS_WINDOWS8_APPLICATION Appx 
-    ON VRS.ResourceID = Appx.ResourceID
-LEFT JOIN v_FullCollectionMembership Col 
-    ON VRS.ResourceID = Col.ResourceID
-
-WHERE
-    Appx.ApplicationName0 LIKE '%Microsoft.WindowsNotepad%'
-    AND Col.CollectionID = 'ACG00E45'
-
-GROUP BY
-    appx.ApplicationName0,
-    appx.Version0
-
-ORDER BY
-    appx.Version0;
+ISNULL(uei.UpgExProp0, 'No SCCM Data') AS UpgExProp0,
+ISNULL(uei.UpgExU0, 'No SCCM Data') AS UpgExU0,
+ISNULL(UEI.Reason0, 'No SCCM Data') AS Reason0,
+ISNULL(uei.Version0, 'No SCCM Data') AS Version0,
