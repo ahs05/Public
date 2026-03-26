@@ -6,3 +6,4 @@ https://configgirl.com/2025/02/15/how-to-fix-managed-by-intune-in-co-managed-env
 
 https://github.com/paulwetter/DocumentConfigMgrCB
 
+Export-CMTaskSequence -TaskSequencePackageId "ABC00012" -ExportFilePath "C:\TS.xml"
