@@ -9,3 +9,6 @@ https://github.com/paulwetter/DocumentConfigMgrCB
 Export-CMTaskSequence -TaskSequencePackageId "ABC00012" -ExportFilePath "C:\TS.xml"
 
 https://www.cloudtekspace.com/post/how-to-streamline-vpps-app-management-with-intune-a-step-by-step-guide
+
+https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/
+https://json-render.dev/
