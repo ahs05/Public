@@ -13,15 +13,3 @@ https://www.cloudtekspace.com/post/how-to-streamline-vpps-app-management-with-in
 https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/
 https://json-render.dev/
 
-SELECT *
-FROM v_R_System VRS
-INNER JOIN v_FullCollectionMembership Col 
-    ON VRS.ResourceID = Col.ResourceID
-WHERE 
-    Col.CollectionID = 'ACG00E45'
-    AND NOT EXISTS (
-        SELECT 1
-        FROM v_GS_WINDOWS8_APPLICATION Appx
-        WHERE Appx.ResourceID = VRS.ResourceID
-        AND Appx.ApplicationName0 LIKE '%Microsoft.Outlookfor%'
-    )
