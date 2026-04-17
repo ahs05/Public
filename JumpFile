@@ -53,3 +53,9 @@ $Searcher = $Session.CreateUpdateSearcher()
 $history = $Searcher.QueryHistory(0,2000)
 
 $history | Select-Object Date, Title, ResultCode | Format-Table -AutoSize
+
+$cutoff = (Get-Date).AddMonths(-3)
+
+$history | Where-Object { $_.Date -ge $cutoff } |
+Select-Object Date, Title, ResultCode |
+Sort-Object Date -Descending
