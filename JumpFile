@@ -45,4 +45,11 @@ https://github.com/FlorianSLZ/scloud/blob/main/Proactive%20Remediation/SecureBoo
 https://github.com/FlorianSLZ/scloud/blob/main/scripts/Secure%20Boot%20Certificate%20Renewal/Remediation/Intune_SecureBoot_CA2023_Detection.ps1
 https://scloud.work/intune-secure-boot-certificate-updates/#secure-boot-controls-in-the-intune-settings-catalog
 
-https://askgarth.com/blog/how-to-use-regkeytomof/
+------------------
+
+$Session = New-Object -ComObject Microsoft.Update.Session
+$Searcher = $Session.CreateUpdateSearcher()
+
+$history = $Searcher.QueryHistory(0,2000)
+
+$history | Select-Object Date, Title, ResultCode | Format-Table -AutoSize
