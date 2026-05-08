@@ -67,24 +67,4 @@ Sort-Object Date -Descending
 
 
 
------
-SELECT
-    smsgs.Time,
-    smwis.InsString1 AS UserName,
-    smwis.InsString2,
-    smsgs.MessageID,
-    smsgs.Component,
-    smsgs.MachineName,
-    smsgs.Severity,
-    smwis.InsString3,
-    smwis.InsString4
-FROM v_StatusMessage smsgs
-JOIN v_StatMsgWithInsStrings smwis
-    ON smsgs.RecordID = smwis.RecordID
-WHERE smsgs.Component = 'SMS Provider'
-AND (
-    smwis.InsString2 LIKE '%delete%'
-    OR smwis.InsString3 LIKE '%deployment%'
-    OR smwis.InsString4 LIKE '%collection%'
-)
-ORDER BY smsgs.Time DESC
+
