@@ -12,32 +12,12 @@ Export-CMTaskSequence -TaskSequencePackageId "ABC00012" -ExportFilePath "C:\TS.x
 https://research.google/blog/generative-ui-a-rich-custom-visual-interactive-user-experience-for-any-prompt/
 https://json-render.dev/
 https://github.com/markstan/IntuneOneDataCollector
-https://chatgpt.com/s/t_69d90537ab7c81918a3546964b5d2e37
-https://chatgpt.com/s/t_69d905b79e64819184916f74f9b5fb2f
-https://chatgpt.com/s/t_69d905d182908191894de80e0e7d8aa9
-https://chatgpt.com/s/t_69d905ed42ec819198fa1cac9ec42030
-https://chatgpt.com/s/t_69d9060339488191be3dacbd80772735
-https://chatgpt.com/s/t_69d9061524888191aff185b74128d9dd
-
-Need to test it.
-
-https://github.com/Byteme-dot/WinPower-Control-Center : Simple .exe Available - Need to test it. 
-
-https://github.com/vellanki-santhosh/CorePulse: Exe Not avaialbe but you need to build it -- dependendet on Python. 
-
-https://github.com/pradyumnagnaik/system-optimizer
-
-https://github.com/winsiderss/systeminformer
-https://github.com/xaspx/hermes-control-interface - Agent with UI
-
-https://github.com/shigsdev/windesktopmgr/tree/main:  Exe Not avaialbe -- dependendet on Python. 
 
 
 
-PlaceHolder: 
-https://github.com/joular/WinPowerMonitor
 
-https://silentinstallhq.com/mozilla-firefox-silent-uninstall-powershell/
+
+
 
 https://github.com/mmelkersen/EndpointManager/blob/main/Remediation/Secure%20Boot/Detect-SecureBootCertificateUpdate.ps1
 https://github.com/FlorianSLZ/scloud/blob/main/Proactive%20Remediation/SecureBoot-CA2023-Update/SecureBoot-CA2023-Update_Remediation.ps1
@@ -63,6 +43,12 @@ Select-Object Date, Title, ResultCode |
 Sort-Object Date -Descending
 
 
+-------------
+Next month marks 18 months since I joined XYM. I was originally hired as a Systems Administrator, as stated in my offer letter, and my compensation was aligned with that role.
+
+Over time(in just about 3 months of my joining), my responsibilities have evolved significantly. In addition to serving as an individual contributor, I’ve also been functioning as a Tower Lead for the team. Given the scope of the work I’ve been handling, I believe it would be appropriate to officially reflect these responsibilities in my title and documentation, essentially as an internal promotion.
+
+I also wanted to ask about immigration filing options. I recently heard that XYM may have started supporting remote filing petitions. A friend of mine at a company in Minnesota recently had his paperwork processed that way, so I was wondering if this is something available at XYM as well. If possible, I’d really appreciate it if you could look into this and see whether I could be considered for that process. As you know, my current arrangement has been quite difficult to manage.
 
 
 
